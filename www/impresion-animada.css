@@ -82,6 +82,14 @@
   flex: 1; min-height: 52px; border-radius: var(--radio);
   font: inherit; font-size: 17px; font-weight: 600; cursor: pointer;
 }
+.imp-whatsapp {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 52px; margin-bottom: 12px; border-radius: var(--radio);
+  background: var(--superficie); color: var(--verde); border: 2px solid var(--verde);
+  font: inherit; font-size: 17px; font-weight: 600; cursor: pointer;
+}
+.imp-whatsapp svg { width: 24px; height: 24px; }
+.imp-capa:not([data-estado="listo"]) .imp-whatsapp { display: none; }
 .imp-principal { background: var(--azul); color: #fff; border: 0; }
 .imp-secundario { background: var(--superficie); color: var(--azul); border: 2px solid var(--azul); }
 .imp-capa[data-estado="imprimiendo"] .imp-botones { visibility: hidden; }

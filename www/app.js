@@ -14,6 +14,7 @@ const $ = (id) => document.getElementById(id);
 const estado = (msg, tipo = '') => { const e = $('estado'); e.textContent = msg; e.className = tipo; };
 const cap = window.Capacitor;
 const esApp = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+const Compartir = esApp ? ((cap.Plugins && cap.Plugins.Compartir) || cap.registerPlugin('Compartir')) : null;
 const Printer = esApp ? ((cap.Plugins && cap.Plugins.BtPrinter) || cap.registerPlugin('BtPrinter')) : null;
 
 const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
@@ -75,6 +76,16 @@ async function imprimir() {
   const trabajo = {
     largoMm: salida.largoMm,
     qrSvg: qrSvg(textoNota(nota, NEGOCIO)),
+    whatsapp: async () => {
+      const telefono = ($('telefono').value || '').replace(/\D/g, '');
+      guardar('telefono', telefono);
+      if (!esApp) return alert('En el celular se abre WhatsApp con la imagen de la nota.');
+      await Compartir.whatsapp({
+        imagen: imagen.toDataURL('image/png').split(',')[1],
+        telefono: telefono ? (telefono.startsWith('56') ? telefono : '56' + telefono) : '',
+        texto: 'Nota de venta COVECA',
+      });
+    },
     velocidad,
     imprimir: () => esApp
       ? Printer.print({ address, data: salida.data })
@@ -89,4 +100,5 @@ $('imprimir').addEventListener('click', imprimir);
 $('impresora').addEventListener('change', (e) => guardar('impresora', e.target.value));
 if (leer('modo')) $('modo').value = leer('modo');
 $('velocidad').value = leer('velocidad') || VELOCIDAD_DEFECTO;
+$('telefono').value = leer('telefono') || '';
 if (esApp) buscar();
