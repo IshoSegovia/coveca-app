@@ -1,4 +1,5 @@
 import { dibujarNota, imagenAEscPos } from './render.js';
+import { notaTexto } from './escpos.js';
 
 const NEGOCIO = {
   nombre: 'COVECA',
@@ -65,10 +66,21 @@ async function imprimir() {
   guardar('impresora', address);
   estado('Imprimiendo…');
   try {
-    const imagen = await dibujarNota(notaDePrueba(), NEGOCIO);
-    $('vista').src = imagen.toDataURL();
-    await Printer.print({ address, data: imagenAEscPos(imagen) });
-    estado('Listo. Compara la nota impresa con la vista previa de abajo.', 'ok');
+    const modo = $('modo').value;
+    guardar('modo', modo);
+    let data;
+    if (modo === 'imagen') {
+      const imagen = await dibujarNota(notaDePrueba(), NEGOCIO);
+      $('vista').src = imagen.toDataURL();
+      data = imagenAEscPos(imagen);
+    } else {
+      $('vista').removeAttribute('src');
+      data = await notaTexto(notaDePrueba(), NEGOCIO, 'pc850', true);
+    }
+    await Printer.print({ address, data });
+    estado(modo === 'imagen'
+      ? 'Listo. Compara la nota impresa con la vista previa de abajo.'
+      : 'Listo. Al final de la nota, revisa qué línea muestra bien los acentos: A o B.', 'ok');
   } catch (e) {
     estado(e.message || String(e), 'error');
   }
@@ -77,4 +89,5 @@ async function imprimir() {
 $('buscar').addEventListener('click', buscar);
 $('imprimir').addEventListener('click', imprimir);
 $('impresora').addEventListener('change', (e) => guardar('impresora', e.target.value));
+if (leer('modo')) $('modo').value = leer('modo');
 if (esApp) buscar();
