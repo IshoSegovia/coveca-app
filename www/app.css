@@ -280,3 +280,13 @@ a.fila:active { background: var(--fondo); }
 .barra-avance { height: 8px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); overflow: hidden; }
 .barra-avance span { display: block; height: 100%; background: var(--verde); border-radius: 999px; }
 .ruta-estado { margin: 8px 0 0; font-size: 14px; font-weight: 600; color: var(--texto-suave); display: flex; align-items: center; gap: 4px; }
+
+/* ---------- Foto de cliente ---------- */
+.avatar.foto { object-fit: cover; padding: 0; border: 1px solid var(--borde); background: var(--superficie); }
+.perfil-foto { position: relative; flex: none; }
+.perfil-foto .avatar.grande { width: 88px; height: 88px; font-size: 28px; }
+.perfil-foto.subiendo::after {
+  content: "…"; position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center;
+  background: var(--superficie); opacity: .9; font-weight: 700; color: var(--azul);
+}
+.foto-acciones.mt { margin-top: 16px; }

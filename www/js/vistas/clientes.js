@@ -1,5 +1,6 @@
 import { $, esc, barra, icono, vacio, leerForm, aviso, ir, clp, fecha, selectorVista, activarSelector } from '../ui.js';
 import * as datos from '../datos.js';
+import { prepararFoto } from '../fotos.js';
 
 let ultimaBusqueda = '';
 
@@ -23,7 +24,7 @@ export async function vistaClientes(v) {
       cont.className = 'grilla';
       cont.innerHTML = cs.map((c) => `
         <a class="tarjeta cliente" href="#/clientes/${c.id}">
-          <span class="avatar grande" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+          ${avatar(c, 'grande')}
           <p class="tarjeta-t">${esc(c.nombre)}</p>
           <p class="tarjeta-s">${lugar(c)}</p>
           ${estado(c)}</a>`).join('');
@@ -31,7 +32,7 @@ export async function vistaClientes(v) {
       cont.className = 'lista';
       cont.innerHTML = cs.map((c) => `
         <a class="fila" href="#/clientes/${c.id}">
-          <span class="avatar" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+          ${avatar(c)}
           <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${lugar(c)}</p></div>
           ${icono('derecha', 'ico-chev')}</a>`).join('');
     }
@@ -42,6 +43,9 @@ export async function vistaClientes(v) {
   await pintar();
 }
 
+const avatar = (c, cls = '') => c.imagen_url
+  ? `<img class="avatar foto ${cls}" src="${esc(c.imagen_url)}" alt="" loading="lazy">`
+  : `<span class="avatar ${cls}" aria-hidden="true">${esc(iniciales(c.nombre))}</span>`;
 const iniciales = (n) => n.split(/\s+/).filter((p) => /^[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(p)).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
 export async function vistaCliente(v, id) {
@@ -55,12 +59,17 @@ export async function vistaCliente(v, id) {
   const faltan = ['rut', 'telefono', 'direccion', 'comuna'].filter((k) => !c[k]);
   v.innerHTML = `
     <div class="perfil-cab">
-      <span class="avatar grande" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+      <div class="perfil-foto">${avatar(c, 'grande')}</div>
       <div>
         ${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido este ciclo</span>` : '<span class="chip">Pendiente este ciclo</span>'}
         <p class="perfil-s">Visita cada ${c.frecuencia_dias} días${c.ultima_compra ? ' · Última compra ' + fecha(c.ultima_compra) : ''}</p>
       </div>
     </div>
+    <div class="foto-acciones mt">
+      <label class="btn sec">${icono('camara')} ${c.imagen_url ? 'Nueva foto' : 'Tomar foto'}<input class="foto-in" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="btn sec">${icono('cuadricula')} Galería<input class="foto-in" type="file" accept="image/*" hidden></label>
+    </div>
+    ${c.imagen_url && datos.esAdmin() ? '<button id="quitar-foto" class="btn link quitar">Quitar foto</button>' : ''}
     ${tel ? `<div class="acciones-rap"><a class="btn sec" href="tel:${esc(tel)}">${icono('telefono')} Llamar</a>
       ${c.direccion || c.comuna ? `<a class="btn sec" href="https://maps.google.com/?q=${encodeURIComponent([c.direccion, c.comuna, 'Chile'].filter(Boolean).join(', '))}" target="_blank" rel="noopener">${icono('mapa')} Mapa</a>` : ''}</div>` : ''}
     ${faltan.length && datos.esAdmin() ? `<a class="nota-falta" href="#/clientes/${id}/editar">Faltan datos: ${faltan.map((k) => ({ rut: 'RUT', telefono: 'teléfono', direccion: 'dirección', comuna: 'comuna' }[k])).join(', ')}. Toca para completar.</a>` : ''}
@@ -88,6 +97,23 @@ export async function vistaCliente(v, id) {
       <p class="fila-s">${c.loyverse_compras} compras · ${clp(c.loyverse_total)} en total</p>
       <p class="fila-s">Desde ${fecha(c.loyverse_primera_compra)} hasta ${fecha(c.loyverse_ultima_compra)}</p></div>` : ''}
     <div class="pie-fijo"><a class="btn prin" href="#/clientes/${id}/pedido">Generar pedido</a></div>`;
+
+  v.querySelectorAll('.foto-in').forEach((inp) => inp.addEventListener('change', async (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    const caja = $('.perfil-foto', v);
+    caja.classList.add('subiendo');
+    try {
+      await datos.subirFotoCliente(id, await prepararFoto(archivo));
+      aviso('Foto guardada');
+      vistaCliente(v, id);
+    } catch (err) { caja.classList.remove('subiendo'); aviso(err.message, 'error'); }
+  }));
+  $('#quitar-foto', v)?.addEventListener('click', async () => {
+    if (!confirm('¿Quitar la foto de este cliente?')) return;
+    try { await datos.quitarFotoCliente(id); aviso('Foto quitada'); vistaCliente(v, id); }
+    catch (err) { aviso(err.message, 'error'); }
+  });
 }
 
 export async function vistaClienteForm(v, id) {

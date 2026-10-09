@@ -20,7 +20,8 @@ function chk({ data, error }) {
 function traducir(m) {
   if (/Invalid login credentials/i.test(m)) return 'Correo o contraseña incorrectos.';
   if (/Failed to fetch|NetworkError|network/i.test(m)) return 'Sin conexión a internet. Revisa la señal e intenta de nuevo.';
-  if (/sin permiso|permission|row-level security/i.test(m)) return 'Tu usuario no tiene permiso para esta acción.';
+  if (/sin permiso|permission|row-level security|Unauthorized/i.test(m)) return 'Tu usuario no tiene permiso para esta acción.';
+  if (/Payload too large|exceeded/i.test(m)) return 'La foto es demasiado pesada. Prueba con otra.';
   if (/duplicate key.*rutas_nombre/i.test(m)) return 'Ya existe una ruta con ese nombre.';
   if (/duplicate key.*productos_ref/i.test(m)) return 'Ya existe un producto con esa REF.';
   return m;
@@ -80,7 +81,7 @@ export async function guardarRuta(r) {
 }
 
 // ---------------- Clientes ----------------
-const CAMPOS_LISTA = 'id,nombre,razon_social,comuna,direccion,ruta_id,ruta_nombre,frecuencia_dias,atendido,ultima_compra,telefono,activo,orden_ruta';
+const CAMPOS_LISTA = 'id,imagen_url,nombre,razon_social,comuna,direccion,ruta_id,ruta_nombre,frecuencia_dias,atendido,ultima_compra,telefono,activo,orden_ruta';
 export async function clientes({ busqueda = '', rutaId = null } = {}) {
   if (modoDemo) return demo.clientes({ busqueda, rutaId });
   let q = sb.from('clientes_estado').select(CAMPOS_LISTA).eq('activo', true);
@@ -99,6 +100,18 @@ export async function guardarCliente(c) {
   return id
     ? chk(await sb.from('clientes').update(campos).eq('id', id).select().single())
     : chk(await sb.from('clientes').insert(campos).select().single());
+}
+export async function subirFotoCliente(clienteId, blob) {
+  if (modoDemo) return demo.fotoCliente(clienteId, URL.createObjectURL(blob));
+  const ruta = `${clienteId}/${Date.now()}.jpg`;
+  chk(await sb.storage.from('clientes').upload(ruta, blob, { contentType: 'image/jpeg', upsert: false }));
+  const url = sb.storage.from('clientes').getPublicUrl(ruta).data.publicUrl;
+  chk(await sb.rpc('foto_cliente', { p_id: Number(clienteId), p_url: url }));
+  return url;
+}
+export async function quitarFotoCliente(clienteId) {
+  if (modoDemo) return demo.fotoCliente(clienteId, null);
+  chk(await sb.rpc('foto_cliente', { p_id: Number(clienteId), p_url: null }));
 }
 export async function pedidosCliente(id) {
   if (modoDemo) return demo.pedidosCliente(id);
@@ -135,7 +148,7 @@ export async function guardarProducto(p) {
 export async function subirFotoProducto(productoId, blob) {
   if (modoDemo) return demo.fotoProducto(productoId, URL.createObjectURL(blob));
   const ruta = `${productoId}/${Date.now()}.jpg`;
-  chk(await sb.storage.from('productos').upload(ruta, blob, { contentType: 'image/jpeg', upsert: true }));
+  chk(await sb.storage.from('productos').upload(ruta, blob, { contentType: 'image/jpeg', upsert: false }));
   const url = sb.storage.from('productos').getPublicUrl(ruta).data.publicUrl;
   chk(await sb.from('productos').update({ imagen_url: url }).eq('id', productoId));
   return url;
