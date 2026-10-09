@@ -1,7 +1,12 @@
-// Pantalla de impresión animada: la nota "sale" de una ranura mientras la impresora imprime
-// (estilo terminales Point). La animación y la impresión real van sincronizadas.
-const VELOCIDAD = 110;           // px por segundo de la vista previa
-const MIN_MS = 2500, MAX_MS = 9000;
+// Pantalla de impresión animada (estilo terminales Point): la impresora está arriba de la
+// pantalla y la nota sube y desaparece por la ranura al mismo ritmo que sale el papel real.
+//
+// Sincronización: la duración se calcula con el largo real de la nota (mm) dividido por la
+// velocidad de la impresora (mm/s), más el tiempo que tarda en conectarse por Bluetooth.
+// La velocidad se puede calibrar (varía con batería y temperatura).
+
+export const VELOCIDAD_DEFECTO = 24;   // mm/s medidos con la RPP02N
+export const ESPERA_DEFECTO = 900;     // ms entre el toque y el primer papel (conexión Bluetooth)
 
 function crear(tag, clase, html) {
   const e = document.createElement(tag);
@@ -11,65 +16,71 @@ function crear(tag, clase, html) {
 }
 
 /**
- * Muestra la animación e imprime.
- * @param {HTMLCanvasElement} imagen  vista previa de la nota (dibujarNota)
- * @param {() => Promise<void>} imprimir  función que imprime de verdad
- * @returns {Promise<'listo'>} se resuelve cuando la persona presiona "Listo"
+ * @param {HTMLCanvasElement} imagen  vista de la nota
+ * @param {object} trabajo
+ * @param {number} trabajo.largoMm  largo del papel que se va a imprimir
+ * @param {() => Promise<void>} trabajo.imprimir  imprime de verdad
+ * @param {number} [trabajo.velocidad]  mm/s
+ * @param {number} [trabajo.espera]  ms antes de que empiece a salir papel
+ * @returns {Promise<'listo'>}
  */
-export function mostrarImpresion(imagen, imprimir) {
+export function mostrarImpresion(imagen, trabajo) {
+  const velocidad = trabajo.velocidad || VELOCIDAD_DEFECTO;
+  const espera = trabajo.espera ?? ESPERA_DEFECTO;
+
   return new Promise((resolver) => {
     const capa = crear('div', 'imp-capa');
     capa.setAttribute('role', 'dialog');
-    capa.setAttribute('aria-live', 'polite');
-    const titulo = crear('p', 'imp-titulo', 'Imprimiendo nota…');
+    const impresora = crear('div', 'imp-impresora', '<span class="imp-luz"></span><span class="imp-ranura"></span>');
     const escenario = crear('div', 'imp-escenario');
     const papel = crear('div', 'imp-papel');
     const img = crear('img');
     img.src = imagen.toDataURL();
     img.alt = 'Nota de venta';
     papel.appendChild(img);
-    escenario.appendChild(papel);
-    const impresora = crear('div', 'imp-impresora', '<span class="imp-ranura"></span><span class="imp-luz"></span>');
+    const hecho = crear('div', 'imp-hecho', '<span class="imp-check" aria-hidden="true">✓</span>');
+    escenario.append(papel, hecho);
     const pie = crear('div', 'imp-pie');
+    const titulo = crear('p', 'imp-titulo');
+    titulo.setAttribute('aria-live', 'polite');
     const msg = crear('p', 'imp-msg');
     const botones = crear('div', 'imp-botones');
-    const bListo = crear('button', 'imp-principal', 'Listo');
     const bOtra = crear('button', 'imp-secundario', 'Reimprimir');
+    const bListo = crear('button', 'imp-principal', 'Listo');
     botones.append(bOtra, bListo);
-    pie.append(msg, botones);
-    capa.append(titulo, escenario, impresora, pie);
+    pie.append(titulo, msg, botones);
+    capa.append(impresora, escenario, pie);
     document.body.appendChild(capa);
 
     const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let anim = null;
 
     async function ciclo() {
       capa.dataset.estado = 'imprimiendo';
       titulo.textContent = 'Imprimiendo nota…';
-      msg.textContent = '';
+      msg.textContent = 'No retires el papel hasta que termine.';
+      bOtra.textContent = 'Reimprimir';
       bListo.textContent = 'Listo';
-      escenario.scrollTop = 0;
+      if (anim) anim.cancel();
       await new Promise((r) => requestAnimationFrame(r));
-      const alto = papel.getBoundingClientRect().height;
-      const dur = reducido ? 1 : Math.min(MAX_MS, Math.max(MIN_MS, (alto / VELOCIDAD) * 1000));
-      const anim = papel.animate(
-        [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }],
-        { duration: dur, easing: 'cubic-bezier(.25,.1,.25,1)', fill: 'both' }
+      const duracion = reducido ? 1 : (trabajo.largoMm / velocidad) * 1000;
+      anim = papel.animate(
+        [{ transform: 'translateY(0)' }, { transform: 'translateY(-100%)' }],
+        { duration: duracion, delay: reducido ? 0 : espera, easing: 'linear', fill: 'both' }
       );
       try {
-        await Promise.all([anim.finished, imprimir()]);
+        await Promise.all([anim.finished, trabajo.imprimir()]);
         capa.dataset.estado = 'listo';
-        titulo.innerHTML = '<span aria-hidden="true">✓</span> Nota impresa';
+        titulo.textContent = 'Nota impresa';
         msg.textContent = 'Corta el papel y entrégala al cliente.';
       } catch (e) {
-        anim.pause();
+        if (anim) anim.pause();
         capa.dataset.estado = 'error';
         titulo.textContent = 'No se pudo imprimir';
         msg.textContent = (e && e.message) || String(e);
         bOtra.textContent = 'Reintentar';
         bListo.textContent = 'Cerrar';
-        return;
       }
-      bOtra.textContent = 'Reimprimir';
     }
 
     bOtra.addEventListener('click', () => { if (capa.dataset.estado !== 'imprimiendo') ciclo(); });

@@ -1,6 +1,6 @@
 import { dibujarNota, imagenAEscPos } from './render.js';
 import { notaTexto } from './escpos.js';
-import { mostrarImpresion } from './impresion-animada.js';
+import { mostrarImpresion, VELOCIDAD_DEFECTO } from './impresion-animada.js';
 
 const NEGOCIO = {
   nombre: 'COVECA',
@@ -66,20 +66,25 @@ async function imprimir() {
   if (address) guardar('impresora', address);
   const modo = $('modo').value;
   guardar('modo', modo);
+  const velocidad = Number($('velocidad').value) || VELOCIDAD_DEFECTO;
+  guardar('velocidad', String(velocidad));
   const nota = notaDePrueba();
-  const imagen = await dibujarNota(nota, NEGOCIO);   // vista previa en pantalla
-  const enviar = async () => {
-    if (!esApp) return new Promise((r) => setTimeout(r, 2000)); // demo sin impresora
-    const data = modo === 'imagen' ? imagenAEscPos(imagen) : await notaTexto(nota, NEGOCIO, 'pc850');
-    await Printer.print({ address, data });
+  const imagen = await dibujarNota(nota, NEGOCIO);   // lo que se ve en pantalla
+  const salida = modo === 'imagen' ? imagenAEscPos(imagen) : await notaTexto(nota, NEGOCIO, 'pc850');
+  const trabajo = {
+    largoMm: salida.largoMm,
+    velocidad,
+    imprimir: () => esApp
+      ? Printer.print({ address, data: salida.data })
+      : new Promise((r) => setTimeout(r, 1500)),     // demostración en navegador
   };
-  estado(esApp ? 'Imprimiendo…' : 'Demostración: sin impresora (navegador).');
-  await mostrarImpresion(imagen, enviar);
-  estado('Listo.', 'ok');
+  estado(`Nota de ${Math.round(salida.largoMm)} mm a ${velocidad} mm/s ≈ ${(salida.largoMm / velocidad).toFixed(1)} s.`);
+  await mostrarImpresion(imagen, trabajo);
 }
 
 $('buscar').addEventListener('click', buscar);
 $('imprimir').addEventListener('click', imprimir);
 $('impresora').addEventListener('change', (e) => guardar('impresora', e.target.value));
 if (leer('modo')) $('modo').value = leer('modo');
+$('velocidad').value = leer('velocidad') || VELOCIDAD_DEFECTO;
 if (esApp) buscar();

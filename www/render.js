@@ -154,7 +154,8 @@ export function imagenAEscPos(canvas, umbral = 190) {
     }
   }
   salida.push(0x1B, 0x64, 6); // papel en blanco al final para cortar
+  const largoMm = (height + 6 * 30) / 8;
   let bin = '';
   for (let i = 0; i < salida.length; i += 8192) bin += String.fromCharCode.apply(null, salida.slice(i, i + 8192));
-  return btoa(bin);
+  return { data: btoa(bin), largoMm };
 }

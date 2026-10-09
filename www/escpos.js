@@ -82,6 +82,23 @@ export class Ticket {
     }
     return this;
   }
+  // Largo estimado del papel en mm: líneas de texto (~30 puntos), doble alto (+24), imágenes y avance.
+  largoMm() {
+    const b = this.bytes;
+    let puntos = 0, doble = false;
+    for (let i = 0; i < b.length; i++) {
+      const c = b[i];
+      if (c === 0x1D && b[i + 1] === 0x76) {               // imagen GS v 0
+        const w = b[i + 4] + b[i + 5] * 256, h = b[i + 6] + b[i + 7] * 256;
+        puntos += h; i += 7 + w * h; continue;
+      }
+      if (c === 0x1D && b[i + 1] === 0x21) { doble = b[i + 2] !== 0; i += 2; continue; }
+      if (c === 0x1B && b[i + 1] === 0x64) { puntos += b[i + 2] * 30; i += 2; continue; }
+      if (c === 0x1B) { i += b[i + 1] === 0x40 ? 1 : 2; continue; }
+      if (c === 0x0A) puntos += doble ? 54 : 30;
+    }
+    return puntos / 8;
+  }
   base64() {
     let bin = '';
     for (let i = 0; i < this.bytes.length; i += 8192) bin += String.fromCharCode.apply(null, this.bytes.slice(i, i + 8192));
@@ -137,5 +154,6 @@ export async function notaTexto(nota, negocio, codigo = 'pc850', conPruebaAcento
       .usarTabla('cp1252').linea('B: áéíóú ñÑ ¿¡ Ñuble')
       .usarTabla(codigo);
   }
-  return t.avanzar().base64();
+  t.avanzar();
+  return { data: t.base64(), largoMm: t.largoMm() };
 }

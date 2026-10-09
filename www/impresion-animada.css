@@ -3,63 +3,71 @@
   position: fixed; inset: 0; z-index: 50;
   display: flex; flex-direction: column;
   background: var(--fondo);
-  padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
-.imp-titulo {
-  margin: 0; padding: 20px 16px 12px; text-align: center;
-  font-size: 22px; font-weight: 700; color: var(--texto);
-}
-.imp-capa[data-estado="listo"] .imp-titulo { color: var(--verde); }
-.imp-capa[data-estado="error"] .imp-titulo { color: var(--rojo-texto); }
 
-/* Zona donde aparece el papel: termina justo en la ranura. */
-.imp-escenario {
-  flex: 1; min-height: 0; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 0 16px;
-}
-.imp-capa[data-estado="listo"] .imp-escenario { overflow-y: auto; }
-.imp-papel {
-  margin-top: auto;           /* pegado abajo, pero se puede desplazar si es largo */
-  width: min(300px, 100%);
-  background: #fff;
-  border: 1px solid var(--borde); border-bottom: 0;
-  padding-top: 8px;
-  position: relative;
-  will-change: transform;
-}
-.imp-papel img { display: block; width: 100%; height: auto; }
-/* Borde superior dentado, como papel cortado. */
-.imp-papel::before {
-  content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 8px;
-  background:
-    linear-gradient(135deg, var(--fondo) 50%, transparent 50%) 0 0 / 16px 8px repeat-x,
-    linear-gradient(-135deg, var(--fondo) 50%, transparent 50%) 0 0 / 16px 8px repeat-x;
-}
-
-/* Impresora: barra con la ranura de salida. */
+/* Impresora arriba: la nota entra por la ranura de su borde inferior. */
 .imp-impresora {
-  position: relative; z-index: 1;
-  margin: 0 16px; height: 64px;
-  background: var(--azul); border-radius: 0 0 var(--radio) var(--radio);
+  position: relative; z-index: 2; flex: none;
+  height: calc(72px + env(safe-area-inset-top));
+  background: var(--azul);
+  border-radius: 0 0 var(--radio) var(--radio);
 }
 .imp-ranura {
-  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-  width: min(316px, calc(100% - 16px)); height: 6px;
-  background: var(--azul-oscuro); border-radius: 0 0 4px 4px;
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(316px, calc(100% - 32px)); height: 8px;
+  background: var(--azul-oscuro); border-radius: 4px 4px 0 0;
 }
 .imp-luz {
-  position: absolute; right: 16px; bottom: 16px;
+  position: absolute; right: 20px; top: calc(20px + env(safe-area-inset-top));
   width: 10px; height: 10px; border-radius: 50%; background: #fff; opacity: .5;
 }
-.imp-capa[data-estado="imprimiendo"] .imp-luz { animation: imp-parpadeo 0.8s steps(2) infinite; opacity: 1; }
+.imp-capa[data-estado="imprimiendo"] .imp-luz { animation: imp-parpadeo .8s steps(2) infinite; opacity: 1; }
 .imp-capa[data-estado="listo"] .imp-luz { background: #7BD88F; opacity: 1; }
 .imp-capa[data-estado="error"] .imp-luz { background: var(--rojo); opacity: 1; }
 @keyframes imp-parpadeo { 50% { opacity: .2; } }
 
-.imp-pie { padding: 12px 16px 16px; }
-.imp-msg { margin: 0 0 12px; min-height: 24px; text-align: center; color: var(--texto-suave); }
+/* La nota cuelga de la ranura; al subir queda oculta detrás de la impresora. */
+.imp-escenario {
+  position: relative; flex: 1; min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center;
+}
+.imp-papel {
+  position: relative;
+  width: min(300px, calc(100% - 48px));
+  background: #fff;
+  border: 1px solid var(--borde); border-top: 0;
+  padding-bottom: 8px;
+  will-change: transform;
+}
+.imp-papel img { display: block; width: 100%; height: auto; }
+/* Borde inferior dentado, como papel cortado. */
+.imp-papel::after {
+  content: ""; position: absolute; left: -1px; right: -1px; bottom: -1px; height: 8px;
+  background:
+    linear-gradient(45deg, var(--fondo) 50%, transparent 50%) 0 0 / 16px 8px repeat-x,
+    linear-gradient(-45deg, var(--fondo) 50%, transparent 50%) 0 0 / 16px 8px repeat-x;
+}
+
+/* Confirmación al terminar. */
+.imp-hecho {
+  position: absolute; inset: 0; display: none;
+  align-items: center; justify-content: center;
+}
+.imp-capa[data-estado="listo"] .imp-hecho { display: flex; }
+.imp-check {
+  width: 112px; height: 112px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--verde); color: #fff; font-size: 60px; font-weight: 700;
+  animation: imp-aparece .25s ease-out;
+}
+@keyframes imp-aparece { from { transform: scale(.6); opacity: 0; } }
+
+.imp-pie { flex: none; padding: 16px; }
+.imp-titulo { margin: 0; text-align: center; font-size: 22px; font-weight: 700; color: var(--texto); }
+.imp-capa[data-estado="listo"] .imp-titulo { color: var(--verde); }
+.imp-capa[data-estado="error"] .imp-titulo { color: var(--rojo-texto); }
+.imp-msg { margin: 8px 0 16px; min-height: 24px; text-align: center; color: var(--texto-suave); }
 .imp-capa[data-estado="error"] .imp-msg { color: var(--rojo-texto); }
 .imp-botones { display: flex; gap: 12px; }
 .imp-botones button {
@@ -71,5 +79,5 @@
 .imp-capa[data-estado="imprimiendo"] .imp-botones { visibility: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
-  .imp-capa[data-estado="imprimiendo"] .imp-luz { animation: none; }
+  .imp-capa[data-estado="imprimiendo"] .imp-luz, .imp-check { animation: none; }
 }
