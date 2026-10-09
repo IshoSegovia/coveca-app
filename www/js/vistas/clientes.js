@@ -48,6 +48,32 @@ const avatar = (c, cls = '') => c.imagen_url
   : `<span class="avatar ${cls}" aria-hidden="true">${esc(iniciales(c.nombre))}</span>`;
 const iniciales = (n) => n.split(/\s+/).filter((p) => /^[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(p)).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
+// Botones de foto (cámara / galería) + subida. Se usa en el perfil y en Editar cliente.
+const botonesFoto = (c) => `<div class="foto-acciones mt">
+      <label class="btn sec">${icono('camara')} ${c.imagen_url ? 'Nueva foto' : 'Tomar foto'}<input class="foto-in" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="btn sec">${icono('cuadricula')} Galería<input class="foto-in" type="file" accept="image/*" hidden></label>
+    </div>
+    ${c.imagen_url && datos.esAdmin() ? '<button type="button" id="quitar-foto" class="btn link quitar">Quitar foto</button>' : ''}`;
+
+function activarFoto(v, id, alTerminar) {
+  v.querySelectorAll('.foto-in').forEach((inp) => inp.addEventListener('change', async (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    const caja = $('.perfil-foto', v);
+    caja?.classList.add('subiendo');
+    try {
+      await datos.subirFotoCliente(id, await prepararFoto(archivo));
+      aviso('Foto guardada');
+      alTerminar();
+    } catch (err) { caja?.classList.remove('subiendo'); aviso(err.message, 'error'); }
+  }));
+  $('#quitar-foto', v)?.addEventListener('click', async () => {
+    if (!confirm('¿Quitar la foto de este cliente?')) return;
+    try { await datos.quitarFotoCliente(id); aviso('Foto quitada'); alTerminar(); }
+    catch (err) { aviso(err.message, 'error'); }
+  });
+}
+
 export async function vistaCliente(v, id) {
   const c = await datos.cliente(id);
   const peds = await datos.pedidosCliente(id);
@@ -59,17 +85,15 @@ export async function vistaCliente(v, id) {
   const faltan = ['rut', 'telefono', 'direccion', 'comuna'].filter((k) => !c[k]);
   v.innerHTML = `
     <div class="perfil-cab">
-      <div class="perfil-foto">${avatar(c, 'grande')}</div>
+      <label class="perfil-foto" aria-label="Agregar o cambiar foto del cliente">${avatar(c, 'grande')}
+        <span class="foto-insignia" aria-hidden="true">${icono('camara')}</span>
+        <input class="foto-in" type="file" accept="image/*" hidden></label>
       <div>
         ${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido este ciclo</span>` : '<span class="chip">Pendiente este ciclo</span>'}
         <p class="perfil-s">Visita cada ${c.frecuencia_dias} días${c.ultima_compra ? ' · Última compra ' + fecha(c.ultima_compra) : ''}</p>
       </div>
     </div>
-    <div class="foto-acciones mt">
-      <label class="btn sec">${icono('camara')} ${c.imagen_url ? 'Nueva foto' : 'Tomar foto'}<input class="foto-in" type="file" accept="image/*" capture="environment" hidden></label>
-      <label class="btn sec">${icono('cuadricula')} Galería<input class="foto-in" type="file" accept="image/*" hidden></label>
-    </div>
-    ${c.imagen_url && datos.esAdmin() ? '<button id="quitar-foto" class="btn link quitar">Quitar foto</button>' : ''}
+    ${botonesFoto(c)}
     ${tel ? `<div class="acciones-rap"><a class="btn sec" href="tel:${esc(tel)}">${icono('telefono')} Llamar</a>
       ${c.direccion || c.comuna ? `<a class="btn sec" href="https://maps.google.com/?q=${encodeURIComponent([c.direccion, c.comuna, 'Chile'].filter(Boolean).join(', '))}" target="_blank" rel="noopener">${icono('mapa')} Mapa</a>` : ''}</div>` : ''}
     ${faltan.length && datos.esAdmin() ? `<a class="nota-falta" href="#/clientes/${id}/editar">Faltan datos: ${faltan.map((k) => ({ rut: 'RUT', telefono: 'teléfono', direccion: 'dirección', comuna: 'comuna' }[k])).join(', ')}. Toca para completar.</a>` : ''}
@@ -98,22 +122,7 @@ export async function vistaCliente(v, id) {
       <p class="fila-s">Desde ${fecha(c.loyverse_primera_compra)} hasta ${fecha(c.loyverse_ultima_compra)}</p></div>` : ''}
     <div class="pie-fijo"><a class="btn prin" href="#/clientes/${id}/pedido">Generar pedido</a></div>`;
 
-  v.querySelectorAll('.foto-in').forEach((inp) => inp.addEventListener('change', async (e) => {
-    const archivo = e.target.files[0];
-    if (!archivo) return;
-    const caja = $('.perfil-foto', v);
-    caja.classList.add('subiendo');
-    try {
-      await datos.subirFotoCliente(id, await prepararFoto(archivo));
-      aviso('Foto guardada');
-      vistaCliente(v, id);
-    } catch (err) { caja.classList.remove('subiendo'); aviso(err.message, 'error'); }
-  }));
-  $('#quitar-foto', v)?.addEventListener('click', async () => {
-    if (!confirm('¿Quitar la foto de este cliente?')) return;
-    try { await datos.quitarFotoCliente(id); aviso('Foto quitada'); vistaCliente(v, id); }
-    catch (err) { aviso(err.message, 'error'); }
-  });
+  activarFoto(v, id, () => vistaCliente(v, id));
 }
 
 export async function vistaClienteForm(v, id) {
@@ -124,6 +133,10 @@ export async function vistaClienteForm(v, id) {
     <input name="${name}" value="${esc(c[name] ?? '')}" ${opt.tipo ? `type="${opt.tipo}"` : ''} ${opt.im ? `inputmode="${opt.im}"` : ''} ${opt.ph ? `placeholder="${opt.ph}"` : ''} ${opt.req ? 'required' : ''}></label>`;
   v.innerHTML = `
     <form id="f" class="form pad" novalidate>
+      ${id ? `<h2 class="sec-t">Foto del local</h2>
+      <div class="perfil-cab sin-borde"><div class="perfil-foto">${avatar(c, 'grande')}</div>
+        <p class="ayuda">Una foto del frente ayuda a reconocer el local en ruta.</p></div>
+      ${botonesFoto(c)}` : ''}
       <h2 class="sec-t">Identificación</h2>
       ${campo('nombre', 'Nombre del cliente o negocio', { req: true })}
       ${campo('razon_social', 'Razón social', { ph: 'Para facturar en el futuro' })}
@@ -154,6 +167,7 @@ export async function vistaClienteForm(v, id) {
       <p id="err" class="error" role="alert"></p>
       <div class="pie-fijo"><button class="btn prin" type="submit">${id ? 'Guardar cambios' : 'Crear cliente'}</button></div>
     </form>`;
+  if (id) activarFoto(v, id, () => vistaClienteForm(v, id));
   $('#f', v).addEventListener('submit', async (e) => {
     e.preventDefault();
     const d = leerForm(e.target);
