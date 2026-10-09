@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>COVECA – Prueba de impresión</title>
+  <style>
+    :root { --verde:#3f9b35; --texto:#1d2a1b; --suave:#5f6b5d; --fondo:#f4f6f3; --error:#b3261e; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, sans-serif; background:var(--fondo); color:var(--texto); }
+    header { background:var(--verde); color:#fff; padding:20px 16px; padding-top:calc(20px + env(safe-area-inset-top)); }
+    header h1 { margin:0; font-size:22px; letter-spacing:.08em; }
+    header p { margin:4px 0 0; opacity:.85; font-size:14px; }
+    main { padding:16px; max-width:480px; margin:0 auto; }
+    ol { padding-left:20px; color:var(--suave); line-height:1.5; font-size:15px; }
+    label { display:block; font-weight:600; margin:16px 0 6px; }
+    select, button { width:100%; font-size:17px; padding:14px; border-radius:10px; }
+    select { border:1px solid #c9d0c7; background:#fff; }
+    button { border:0; margin-top:12px; font-weight:600; }
+    #buscar { background:#fff; color:var(--verde); border:2px solid var(--verde); }
+    #imprimir { background:var(--verde); color:#fff; }
+    #estado { margin-top:16px; padding:12px; border-radius:10px; background:#fff; min-height:48px; font-size:15px; }
+    #estado.ok { color:var(--verde); } #estado.error { color:var(--error); }
+  </style>
+</head>
+<body>
+  <header><h1>COVECA</h1><p>Etapa 0 · Prueba de impresión</p></header>
+  <main>
+    <ol>
+      <li>Enciende la impresora RPP02N.</li>
+      <li>Verifica que esté vinculada en Ajustes &gt; Bluetooth.</li>
+      <li>Presiona <b>Buscar impresoras</b>, elígela y presiona <b>Imprimir nota de prueba</b>.</li>
+    </ol>
+    <label for="impresora">Impresora</label>
+    <select id="impresora"></select>
+    <button id="buscar">Buscar impresoras</button>
+    <button id="imprimir">Imprimir nota de prueba</button>
+    <div id="estado">Listo para probar.</div>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

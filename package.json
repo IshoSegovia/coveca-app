@@ -1,0 +1,16 @@
+{
+  "name": "coveca-app",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Sistema de preventa por rutas COVECA",
+  "scripts": {
+    "sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}
