@@ -7,7 +7,10 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 - `www/render.js` – nota de venta como imagen + conversión a ESC/POS raster (impresora RPP02N, 58 mm = 384 px).
 - `android/` – proyecto Capacitor. `BtPrinterPlugin.java` = impresión Bluetooth SPP.
 - `scripts/capturas.mjs` – capturas de pantalla automáticas en tamaño celular.
-- `.github/workflows/android.yml` – compila el APK y lo publica en Releases (`ultima`).
+- `.github/workflows/android.yml` – compila el APK (firma fija con secretos `ANDROID_KEYSTORE_*`) y lo publica en Releases (`ultima`).
+- `supabase/migrations/` – esquema de la base de datos. Cada archivo nuevo se aplica solo en Supabase vía `.github/workflows/base-de-datos.yml` (secreto `SUPABASE_DB_URL`). Nunca editar una migración ya aplicada: crear una nueva.
+- `supabase/pruebas/` – pruebas SQL. Correr en un PostgreSQL local: `simular_supabase.sql`, luego las migraciones, luego `prueba_pedidos.sql`.
+- `www/config.js` – URL y clave publishable de Supabase (públicas por diseño; la seguridad está en RLS).
 
 ## Reglas de negocio que no se rompen
 - Margen sobre precio de venta: `precio = costo / (1 - margen)`. Nunca `costo * (1 + margen)`.

@@ -1,0 +1,33 @@
+name: Base de datos
+
+# Aplica en Supabase las migraciones nuevas de supabase/migrations (en orden, una sola vez cada una).
+on:
+  push:
+    branches: [main]
+    paths: ['supabase/migrations/**']
+  workflow_dispatch:
+
+jobs:
+  migrar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Aplicar migraciones
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then
+            echo "::error::Falta el secreto SUPABASE_DB_URL en GitHub (Settings > Secrets > Actions)"; exit 1
+          fi
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -q -c "create table if not exists public._migraciones (archivo text primary key, aplicada_en timestamptz default now()); alter table public._migraciones enable row level security;"
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            nombre=$(basename "$f")
+            ya=$(psql "$DB_URL" -tAc "select 1 from public._migraciones where archivo = '$nombre'")
+            if [ "$ya" = "1" ]; then echo "✓ $nombre (ya aplicada)"; continue; fi
+            echo "→ aplicando $nombre"
+            psql "$DB_URL" -v ON_ERROR_STOP=1 -q --single-transaction \
+              -f "$f" -c "insert into public._migraciones (archivo) values ('$nombre')"
+            echo "✓ $nombre aplicada"
+          done

@@ -7,8 +7,9 @@ android {
         applicationId "cl.coveca.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // En GitHub cada compilación sube el número de versión.
+        versionCode (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+        versionName "0.1." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,7 +17,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Firma fija: si existe la llave de COVECA (secreto de GitHub), todas las versiones se firman igual
+    // y se pueden instalar encima de la anterior sin desinstalar.
+    def llave = file(System.getenv("COVECA_KEYSTORE") ?: "no-existe.jks")
+    signingConfigs {
+        coveca {
+            if (llave.exists()) {
+                storeFile llave
+                storePassword System.getenv("COVECA_KEYSTORE_PASS")
+                keyAlias "coveca"
+                keyPassword System.getenv("COVECA_KEYSTORE_PASS")
+            }
+        }
+    }
     buildTypes {
+        debug {
+            if (llave.exists()) signingConfig signingConfigs.coveca
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
