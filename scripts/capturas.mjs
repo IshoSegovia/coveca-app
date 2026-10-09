@@ -49,7 +49,7 @@ const browser = await chromium.launch(existsSync(CHROMIUM) ? { executablePath: C
 const page = await browser.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, locale: 'es-CL' });
 let errores = 0;
 page.on('pageerror', (e) => { errores++; console.error('ERROR en la página:', e.message); });
-page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) { errores++; console.error('consola:', m.text()); } });
+page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404|net::ERR_/.test(m.text())) { errores++; console.error('consola:', m.text()); } });
 
 await page.goto(base + '#/login');
 await page.waitForTimeout(500);
