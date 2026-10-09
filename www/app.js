@@ -1,10 +1,10 @@
-import { Ticket, clp } from './escpos.js';
+import { dibujarNota, imagenAEscPos } from './render.js';
 
 const NEGOCIO = {
   nombre: 'COVECA',
   eslogan: 'Su comercializadora de confianza',
   telefono: '+56 9 7587 0827',
-  leyenda: 'Este documento no representa una factura, solo es una nota de venta y guia de despacho.',
+  leyenda: 'Este documento no representa una factura, solo es una nota de venta y guía de despacho.',
 };
 
 const $ = (id) => document.getElementById(id);
@@ -43,34 +43,19 @@ async function buscar() {
 }
 
 function notaDePrueba() {
-  const items = [
-    { nombre: 'Super 8 Oblea Clasica x24', cant: 2, precio: 5990 },
-    { nombre: 'BigTime Menta x20', cant: 1, precio: 6690 },
-    { nombre: 'Alfajor Panchote', cant: 3, precio: 6000 },
-  ];
-  const t = new Ticket('pc850');
-  t.centro().grande().negrita().linea(NEGOCIO.nombre).grande(false).negrita(false)
-    .linea(NEGOCIO.eslogan).linea(NEGOCIO.telefono).linea()
-    .izquierda().linea('Vendedor: COVECA').linea('Terminal: Movil 1')
-    .linea('Cliente: Cliente de prueba').linea('Fecha: ' + new Date().toLocaleString('es-CL'))
-    .separador();
-  let total = 0;
-  for (const it of items) {
-    const sub = it.cant * it.precio;
-    total += sub;
-    t.linea(it.nombre).par(`  ${it.cant} x ${clp(it.precio)}`, clp(sub));
-  }
-  t.separador().negrita().grande().par('TOTAL', clp(total)).grande(false).negrita(false)
-    .par('Forma de pago', 'Efectivo').linea()
-    .centro().linea(NEGOCIO.leyenda).linea()
-    .separador('=')
-    .negrita().linea('PRUEBA DE ACENTOS').negrita(false)
-    .izquierda()
-    .linea('Opcion A:').usarTabla('pc850').linea('  áéíóú ñÑ ¿¡ Ñuble')
-    .linea('Opcion B:').usarTabla('cp1252').linea('  áéíóú ñÑ ¿¡ Ñuble')
-    .usarTabla('pc850')
-    .avanzar(4);
-  return t.base64();
+  return {
+    vendedor: 'COVECA',
+    terminal: 'Movil 1',
+    cliente: 'Cliente de prueba Ñuñoa',
+    fecha: new Date().toLocaleString('es-CL'),
+    pago: 'Efectivo',
+    items: [
+      { nombre: 'Super 8 Oblea Clásica x24', cant: 2, precio: 5990 },
+      { nombre: 'BigTime Menta x20', cant: 1, precio: 6690 },
+      { nombre: 'Bon Bon Bum Colombineta x24', cant: 1, precio: 1950 },
+      { nombre: 'Alfajor Panchote', cant: 3, precio: 6000 },
+    ],
+  };
 }
 
 async function imprimir() {
@@ -80,8 +65,10 @@ async function imprimir() {
   guardar('impresora', address);
   estado('Imprimiendo…');
   try {
-    await Printer.print({ address, data: notaDePrueba() });
-    estado('Listo. Revisa la nota impresa y anota qué opción de acentos se ve bien (A o B).', 'ok');
+    const imagen = await dibujarNota(notaDePrueba(), NEGOCIO);
+    $('vista').src = imagen.toDataURL();
+    await Printer.print({ address, data: imagenAEscPos(imagen) });
+    estado('Listo. Compara la nota impresa con la vista previa de abajo.', 'ok');
   } catch (e) {
     estado(e.message || String(e), 'error');
   }
