@@ -2,7 +2,8 @@
 \set ON_ERROR_STOP on
 insert into auth.users values ('11111111-1111-1111-1111-111111111111', 'jose@coveca.cl'),
                               ('22222222-2222-2222-2222-222222222222', 'intruso@x.cl');
-insert into public.vendedores (id, nombre, rol) values ('11111111-1111-1111-1111-111111111111', 'Jose Daniel', 'admin');
+-- (la migración 0002 los registra solos: el primero queda admin activo, el segundo inactivo)
+select nombre, rol, activo from public.vendedores order by rol;
 insert into public.rutas (nombre, dia_semana) values ('Retiro', 1);
 insert into public.clientes (nombre, ruta_id, frecuencia_dias) values ('Minimarket Ana', 1, 7), ('Almacén Luis', 1, 14);
 insert into public.productos (ref, nombre, costo, precio) values ('10058', 'Afeitadora Gillette 3 Blue x10', 8250, 9900),
