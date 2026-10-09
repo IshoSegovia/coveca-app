@@ -21,13 +21,28 @@ jobs:
           if [ -z "$DB_URL" ]; then
             echo "::error::Falta el secreto SUPABASE_DB_URL en GitHub (Settings > Secrets > Actions)"; exit 1
           fi
+          # Revisar el formato de la dirección sin mostrar la contraseña
+          case "$DB_URL" in
+            postgresql://postgres.*:*@*pooler.supabase.com:5432/postgres) echo "Formato de dirección OK" ;;
+            *) echo "::error::SUPABASE_DB_URL no tiene el formato esperado postgresql://postgres.<proyecto>:<contraseña>@aws-...pooler.supabase.com:5432/postgres" ;;
+          esac
+          if echo "$DB_URL" | grep -q '\[YOUR-PASSWORD\]\|\[\|\]'; then
+            echo "::error::La dirección todavía tiene corchetes o [YOUR-PASSWORD]: reemplázalo por la contraseña real"; exit 1
+          fi
+          if ! salida=$(psql "$DB_URL" -tAc "select 'conexion ok'" 2>&1); then
+            limpio=$(echo "$salida" | sed -E 's#postgresql://[^ ]*#<direccion>#g' | tr '\n' ' ')
+            echo "::error::No se pudo conectar a Supabase: $limpio"; exit 1
+          fi
+          echo "$salida"
           psql "$DB_URL" -v ON_ERROR_STOP=1 -q -c "create table if not exists public._migraciones (archivo text primary key, aplicada_en timestamptz default now()); alter table public._migraciones enable row level security;"
           for f in $(ls supabase/migrations/*.sql | sort); do
             nombre=$(basename "$f")
             ya=$(psql "$DB_URL" -tAc "select 1 from public._migraciones where archivo = '$nombre'")
             if [ "$ya" = "1" ]; then echo "✓ $nombre (ya aplicada)"; continue; fi
             echo "→ aplicando $nombre"
-            psql "$DB_URL" -v ON_ERROR_STOP=1 -q --single-transaction \
-              -f "$f" -c "insert into public._migraciones (archivo) values ('$nombre')"
+            if ! salida=$(psql "$DB_URL" -v ON_ERROR_STOP=1 -q --single-transaction \
+                -f "$f" -c "insert into public._migraciones (archivo) values ('$nombre')" 2>&1); then
+              echo "::error::Falló $nombre: $(echo "$salida" | tr '\n' ' ' | cut -c1-500)"; exit 1
+            fi
             echo "✓ $nombre aplicada"
           done
