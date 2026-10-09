@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>COVECA – Prueba de impresión</title>
   <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="impresion-animada.css">
   <style>
     * { box-sizing: border-box; }
     body { margin:0; font-family:var(--fuente); background:var(--fondo); color:var(--texto); font-size:16px; }
@@ -23,8 +24,6 @@
     #imprimir:active { background:var(--azul-oscuro); }
     #estado { margin-top:16px; padding:12px; border-radius:var(--radio); background:var(--superficie); border:1px solid var(--borde); min-height:48px; }
     #estado.ok { color:var(--verde); } #estado.error { color:var(--rojo-texto); }
-    #vista { width:100%; margin-top:16px; background:#fff; border-radius:var(--radio); border:1px solid var(--borde); }
-    #vista:not([src]) { display:none; }
   </style>
 </head>
 <body>
@@ -46,7 +45,6 @@
     </select>
     <button id="imprimir">Imprimir nota de prueba</button>
     <div id="estado">Listo para probar.</div>
-    <img id="vista" alt="Vista previa de la nota">
   </main>
   <script type="module" src="app.js"></script>
 </body>

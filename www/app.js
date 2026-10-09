@@ -1,5 +1,6 @@
 import { dibujarNota, imagenAEscPos } from './render.js';
 import { notaTexto } from './escpos.js';
+import { mostrarImpresion } from './impresion-animada.js';
 
 const NEGOCIO = {
   nombre: 'COVECA',
@@ -60,30 +61,21 @@ function notaDePrueba() {
 }
 
 async function imprimir() {
-  if (!esApp) return estado('Abre esto desde la app instalada en el celular.', 'error');
   const address = $('impresora').value;
-  if (!address) return estado('Primero busca y elige la impresora.', 'error');
-  guardar('impresora', address);
-  estado('Imprimiendo…');
-  try {
-    const modo = $('modo').value;
-    guardar('modo', modo);
-    let data;
-    if (modo === 'imagen') {
-      const imagen = await dibujarNota(notaDePrueba(), NEGOCIO);
-      $('vista').src = imagen.toDataURL();
-      data = imagenAEscPos(imagen);
-    } else {
-      $('vista').removeAttribute('src');
-      data = await notaTexto(notaDePrueba(), NEGOCIO, 'pc850', true);
-    }
+  if (esApp && !address) return estado('Primero busca y elige la impresora.', 'error');
+  if (address) guardar('impresora', address);
+  const modo = $('modo').value;
+  guardar('modo', modo);
+  const nota = notaDePrueba();
+  const imagen = await dibujarNota(nota, NEGOCIO);   // vista previa en pantalla
+  const enviar = async () => {
+    if (!esApp) return new Promise((r) => setTimeout(r, 2000)); // demo sin impresora
+    const data = modo === 'imagen' ? imagenAEscPos(imagen) : await notaTexto(nota, NEGOCIO, 'pc850');
     await Printer.print({ address, data });
-    estado(modo === 'imagen'
-      ? 'Listo. Compara la nota impresa con la vista previa de abajo.'
-      : 'Listo. Al final de la nota, revisa qué línea muestra bien los acentos: A o B.', 'ok');
-  } catch (e) {
-    estado(e.message || String(e), 'error');
-  }
+  };
+  estado(esApp ? 'Imprimiendo…' : 'Demostración: sin impresora (navegador).');
+  await mostrarImpresion(imagen, enviar);
+  estado('Listo.', 'ok');
 }
 
 $('buscar').addEventListener('click', buscar);
