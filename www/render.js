@@ -131,13 +131,13 @@ export async function dibujarNota(nota, negocio) {
 }
 
 // Convierte la imagen a blanco/negro y la empaqueta como ESC/POS (GS v 0) en franjas.
-export function imagenAEscPos(canvas, umbral = 160) {
+export function imagenAEscPos(canvas, umbral = 190) {
   const ctx = canvas.getContext('2d');
   const { width, height } = canvas;
   const px = ctx.getImageData(0, 0, width, height).data;
   const bytesFila = width / 8;
   const salida = [0x1B, 0x40]; // reiniciar
-  const FRANJA = 128;
+  const FRANJA = 255;
   for (let y0 = 0; y0 < height; y0 += FRANJA) {
     const h = Math.min(FRANJA, height - y0);
     salida.push(0x1D, 0x76, 0x30, 0x00, bytesFila & 0xFF, bytesFila >> 8, h & 0xFF, h >> 8);

@@ -1,0 +1,17 @@
+/* Variables de diseño COVECA. Ver DESIGN.md. */
+:root {
+  --azul: #3E4095;
+  --azul-oscuro: #2C2E73;
+  --rojo: #EC3237;
+  --rojo-texto: #C42127;
+  --verde: #1B5E20;
+  --ambar: #8A5300;
+  --texto: #1D1F2B;
+  --texto-suave: #5B6070;
+  --fondo: #F5F6FA;
+  --superficie: #FFFFFF;
+  --borde: #D9DCE5;
+  --radio: 10px;
+  --toque: 48px;
+  --fuente: system-ui, Roboto, "Noto Sans", Arial, sans-serif;
+}

@@ -4,28 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>COVECA – Prueba de impresión</title>
+  <link rel="stylesheet" href="tokens.css">
   <style>
-    :root { --verde:#3f9b35; --texto:#1d2a1b; --suave:#5f6b5d; --fondo:#f4f6f3; --error:#b3261e; }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, sans-serif; background:var(--fondo); color:var(--texto); }
-    header { background:var(--verde); color:#fff; padding:20px 16px; padding-top:calc(20px + env(safe-area-inset-top)); }
-    header h1 { margin:0; font-size:22px; letter-spacing:.08em; }
-    header p { margin:4px 0 0; opacity:.85; font-size:14px; }
+    body { margin:0; font-family:var(--fuente); background:var(--fondo); color:var(--texto); font-size:16px; }
+    header { background:var(--azul); color:#fff; padding:16px; padding-top:calc(16px + env(safe-area-inset-top)); }
+    header h1 { margin:0; font-size:22px; font-weight:700; }
+    header p { margin:4px 0 0; font-size:14px; opacity:.9; }
     main { padding:16px; max-width:480px; margin:0 auto; }
-    ol { padding-left:20px; color:var(--suave); line-height:1.5; font-size:15px; }
-    label { display:block; font-weight:600; margin:16px 0 6px; }
-    select, button { width:100%; font-size:17px; padding:14px; border-radius:10px; }
-    select { border:1px solid #c9d0c7; background:#fff; }
-    button { border:0; margin-top:12px; font-weight:600; }
-    #buscar { background:#fff; color:var(--verde); border:2px solid var(--verde); }
-    #imprimir { background:var(--verde); color:#fff; }
-    #estado { margin-top:16px; padding:12px; border-radius:10px; background:#fff; min-height:48px; font-size:15px; }
-    #estado.ok { color:var(--verde); } #estado.error { color:var(--error); }
+    .logo { display:block; width:220px; margin:8px auto 16px; }
+    ol { padding-left:20px; color:var(--texto-suave); line-height:1.5; margin:0; }
+    label { display:block; font-weight:600; margin:24px 0 8px; }
+    select, button { width:100%; font:inherit; font-size:17px; min-height:52px; padding:12px; border-radius:var(--radio); }
+    select { border:1px solid var(--borde); background:var(--superficie); color:var(--texto); }
+    button { border:0; margin-top:12px; font-weight:600; cursor:pointer; }
+    #buscar { background:var(--superficie); color:var(--azul); border:2px solid var(--azul); }
+    #imprimir { background:var(--azul); color:#fff; }
+    #imprimir:active { background:var(--azul-oscuro); }
+    #estado { margin-top:16px; padding:12px; border-radius:var(--radio); background:var(--superficie); border:1px solid var(--borde); min-height:48px; }
+    #estado.ok { color:var(--verde); } #estado.error { color:var(--rojo-texto); }
+    #vista { width:100%; margin-top:16px; background:#fff; border-radius:var(--radio); border:1px solid var(--borde); }
+    #vista:not([src]) { display:none; }
   </style>
 </head>
 <body>
-  <header><h1>COVECA</h1><p>Etapa 0 · Prueba de impresión</p></header>
+  <header><h1>Prueba de impresión</h1><p>Etapa 0</p></header>
   <main>
+    <img class="logo" src="logo-color.png" alt="COVECA">
     <ol>
       <li>Enciende la impresora RPP02N.</li>
       <li>Verifica que esté vinculada en Ajustes &gt; Bluetooth.</li>
@@ -36,7 +41,7 @@
     <button id="buscar">Buscar impresoras</button>
     <button id="imprimir">Imprimir nota de prueba</button>
     <div id="estado">Listo para probar.</div>
-    <img id="vista" alt="" style="width:100%;margin-top:16px;background:#fff;border-radius:10px">
+    <img id="vista" alt="Vista previa de la nota">
   </main>
   <script type="module" src="app.js"></script>
 </body>
