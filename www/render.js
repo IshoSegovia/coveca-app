@@ -104,6 +104,15 @@ export async function dibujarNota(nota, negocio) {
   }
   separador();
 
+  // Subtotal y descuento (si hay)
+  if (nota.descuento) {
+    texto('Subtotal', { size: 20 });
+    ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText(clp(total), ANCHO - M, y);
+    texto('Descuento', { size: 20 });
+    ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText('-' + clp(nota.descuento), ANCHO - M, y);
+    total = Math.max(0, total - nota.descuento);
+  }
+
   // Total
   ctx.font = `bold 34px ${FUENTE}`; ctx.textAlign = 'left'; y += 40;
   ctx.fillText('Total', M, y);

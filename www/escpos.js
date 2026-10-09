@@ -138,8 +138,12 @@ export async function notaTexto(nota, negocio, codigo = 'pc850', conPruebaAcento
     total += sub;
     t.par(it.nombre, clp(sub)).linea(`  ${it.cant} x ${clp(it.precio)}`);
   }
-  t.separador()
-    .negrita().alto().par('TOTAL', clp(total)).alto(false).negrita(false)
+  t.separador();
+  if (nota.descuento) {
+    t.par('Subtotal', clp(total)).par('Descuento', '-' + clp(nota.descuento));
+    total = Math.max(0, total - nota.descuento);
+  }
+  t.negrita().alto().par('TOTAL', clp(total)).alto(false).negrita(false)
     .par(nota.pago, clp(total))
     .separador()
     .centro().parrafo(negocio.leyenda);

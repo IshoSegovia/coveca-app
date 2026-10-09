@@ -12,6 +12,7 @@ export function textoNota(nota, negocio) {
     total += sub;
     lineas.push(`${it.cant} x ${it.nombre}: ${clp(sub)}`);
   }
+  if (nota.descuento) { lineas.push('', `Subtotal ${clp(total)}`, `Descuento -${clp(nota.descuento)}`); total = Math.max(0, total - nota.descuento); }
   lineas.push('', `TOTAL ${clp(total)} (${nota.pago})`);
   return lineas.join('\n');
 }

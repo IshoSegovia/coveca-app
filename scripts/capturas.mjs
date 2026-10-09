@@ -11,8 +11,11 @@ const TIPOS = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 
 // Pantallas a capturar: ruta dentro de www/ y nombre del archivo.
 const PANTALLAS = [
-  { ruta: 'index.html', nombre: 'inicio' },
-];
+  ['#/rutas', '01-rutas'], ['#/rutas/1', '02-ruta-detalle'], ['#/rutas/sin-ruta', '03-sin-ruta'], ['#/rutas/nueva', '04-ruta-nueva'],
+  ['#/clientes', '05-clientes'], ['#/clientes/1', '06-cliente-perfil'], ['#/clientes/1/editar', '07-cliente-editar'],
+  ['#/inventario', '08-inventario'], ['#/productos/1', '09-producto'], ['#/productos/nuevo', '10-producto-nuevo'],
+  ['#/pedido/1', '11-pedido'], ['#/mas', '12-mas'], ['#/mas/impresora', '13-impresora'], ['#/ingreso', '14-ingreso'],
+].map(([ruta, nombre]) => ({ ruta: 'index.html' + ruta, nombre }));
 
 const server = createServer(async (req, res) => {
   try {
@@ -29,10 +32,17 @@ await mkdir('capturas', { recursive: true });
 const CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 const browser = await chromium.launch(existsSync(CHROMIUM) ? { executablePath: CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, locale: 'es-CL' });
+page.on('pageerror', (e) => console.error('ERROR en la página:', e.message));
+await page.goto(`http://localhost:${puerto}/index.html`);
 for (const p of PANTALLAS) {
-  await page.goto(`http://localhost:${puerto}/${p.ruta}`);
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: `capturas/${p.nombre}.png`, fullPage: true });
+  await page.evaluate((h) => { location.hash = h; }, p.ruta.split('#')[1] || '');
+  await page.waitForTimeout(400);
+  // En el pedido, agregar productos de ejemplo para ver el estado con carrito
+  if (p.nombre === '11-pedido') {
+    await page.click('.fila-producto[data-id="9"] .paso-mas'); await page.click('.fila-producto[data-id="9"] .paso-mas');
+    await page.click('.fila-producto[data-id="7"] .paso-mas'); await page.waitForTimeout(200);
+  }
+  await page.screenshot({ path: `capturas/${p.nombre}.png` });
   console.log(`capturas/${p.nombre}.png`);
 }
 await browser.close();

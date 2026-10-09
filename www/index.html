@@ -3,58 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>COVECA – Prueba de impresión</title>
+  <meta name="theme-color" content="#3E4095">
+  <title>COVECA</title>
   <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="impresion-animada.css">
-  <style>
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:var(--fuente); background:var(--fondo); color:var(--texto); font-size:16px; }
-    header { background:var(--azul); color:#fff; padding:16px; padding-top:calc(16px + env(safe-area-inset-top)); }
-    header h1 { margin:0; font-size:22px; font-weight:700; }
-    header p { margin:4px 0 0; font-size:14px; opacity:.9; }
-    main { padding:16px; max-width:480px; margin:0 auto; }
-    .logo { display:block; width:220px; margin:8px auto 16px; }
-    ol { padding-left:20px; color:var(--texto-suave); line-height:1.5; margin:0; }
-    label { display:block; font-weight:600; margin:24px 0 8px; }
-    .ayuda { margin:8px 0 0; font-size:14px; color:var(--texto-suave); }
-    input { width:100%; font:inherit; font-size:17px; min-height:52px; padding:12px; border-radius:var(--radio); border:1px solid var(--borde); background:var(--superficie); color:var(--texto); }
-    select, button { width:100%; font:inherit; font-size:17px; min-height:52px; padding:12px; border-radius:var(--radio); }
-    select { border:1px solid var(--borde); background:var(--superficie); color:var(--texto); }
-    button { border:0; margin-top:12px; font-weight:600; cursor:pointer; }
-    #buscar { background:var(--superficie); color:var(--azul); border:2px solid var(--azul); }
-    #imprimir { background:var(--azul); color:#fff; }
-    #imprimir:active { background:var(--azul-oscuro); }
-    #estado { margin-top:16px; padding:12px; border-radius:var(--radio); background:var(--superficie); border:1px solid var(--borde); min-height:48px; }
-    #estado.ok { color:var(--verde); } #estado.error { color:var(--rojo-texto); }
-  </style>
 </head>
 <body>
-  <header><h1>Prueba de impresión</h1><p>Etapa 0</p></header>
-  <main>
-    <img class="logo" src="logo-color.png" alt="COVECA">
-    <ol>
-      <li>Enciende la impresora RPP02N.</li>
-      <li>Verifica que esté vinculada en Ajustes &gt; Bluetooth.</li>
-      <li>Presiona <b>Buscar impresoras</b>, elígela y presiona <b>Imprimir nota de prueba</b>.</li>
-    </ol>
-    <label for="impresora">Impresora</label>
-    <select id="impresora"></select>
-    <button id="buscar">Buscar impresoras</button>
-    <label for="modo">Modo de impresión</label>
-    <select id="modo">
-      <option value="texto">Texto + logo (rápido)</option>
-      <option value="imagen">Imagen completa (como Loyverse)</option>
-    </select>
-    <label for="velocidad">Velocidad de la impresora (mm/s)</label>
-    <input id="velocidad" type="number" inputmode="numeric" min="5" max="100" step="1">
-    <p class="ayuda">Si la animación termina antes que el papel, baja este número; si termina después, súbelo.</p>
-    <label for="telefono">WhatsApp del cliente (opcional, para la prueba)</label>
-    <input id="telefono" type="tel" inputmode="tel" placeholder="9 1234 5678">
-    <p class="ayuda">Si lo dejas vacío, WhatsApp te pedirá elegir el contacto.</p>
-    <button id="imprimir">Imprimir nota de prueba</button>
-    <div id="estado">Listo para probar.</div>
-  </main>
+  <header id="cabecera" class="cabecera"></header>
+  <main id="vista" class="vista"></main>
+  <div id="pie-accion" class="pie-accion" hidden></div>
+  <nav id="navegacion" class="navegacion" aria-label="Secciones">
+    <a href="#/rutas" data-tab="rutas"></a>
+    <a href="#/clientes" data-tab="clientes"></a>
+    <a href="#/inventario" data-tab="inventario"></a>
+    <a href="#/mas" data-tab="mas"></a>
+  </nav>
   <script src="vendor/qrcode.js"></script>
-  <script type="module" src="app.js"></script>
+  <script type="module">
+    import { ICONOS } from './nucleo.js';
+    const nombres = { rutas: 'Rutas', clientes: 'Clientes', inventario: 'Inventario', mas: 'Más' };
+    document.querySelectorAll('#navegacion a').forEach((a) => {
+      a.innerHTML = `${ICONOS[a.dataset.tab]}<span>${nombres[a.dataset.tab]}</span>`;
+    });
+  </script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>

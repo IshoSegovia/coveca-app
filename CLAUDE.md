@@ -3,7 +3,10 @@
 Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo: documento `contexto-coveca.md` del proyecto en claude.ai. Francisco no es programador: explica en lenguaje claro y entrega pasos verificables.
 
 ## Estructura
-- `www/` – interfaz (HTML/JS/CSS). `www/tokens.css` = variables de diseño.
+- `www/` – interfaz (HTML/JS/CSS sin compilación). `www/tokens.css` = variables de diseño, `www/app.css` = estilos.
+  - `main.js` entrada · `nucleo.js` utilidades, navegación por `#/ruta`, `pantalla()` · `datos.js` capa de datos (hoy datos de ejemplo; misma interfaz que tendrá Supabase).
+  - `pantallas/` – rutas, clientes, inventario, pedido, más, ingreso. `comunes.js` = piezas compartidas.
+  - `impresora.js` – imprime una nota (animación + Bluetooth + QR + WhatsApp).
 - `www/render.js` – nota de venta como imagen + conversión a ESC/POS raster (impresora RPP02N, 58 mm = 384 px).
 - `android/` – proyecto Capacitor. `BtPrinterPlugin.java` = impresión Bluetooth SPP.
 - `scripts/capturas.mjs` – capturas de pantalla automáticas en tamaño celular.
@@ -20,7 +23,7 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 
 ## Diseño
 Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
-1. Generar capturas: `node scripts/capturas.mjs` (salen en `capturas/`).
+1. Generar capturas: `node scripts/capturas.mjs` (salen en `capturas/`; agregar la pantalla nueva a la lista `PANTALLAS`).
 2. Mirar cada captura y pasar la lista de chequeo.
 3. Corregir y repetir hasta que todo cumpla. Mostrar las capturas a Francisco al cerrar la tarea.
 
