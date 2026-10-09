@@ -1,0 +1,26 @@
+name: Verificar datos
+
+# Revisión de solo lectura del estado de la base de datos (conteos), visible como anotación.
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Contar registros
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          r=$(psql "$DB_URL" -tA -F ' | ' -c "
+            select 'productos=' || (select count(*) from productos),
+                   'clientes=' || (select count(*) from clientes),
+                   'clientes_sin_ruta=' || (select count(*) from clientes where ruta_id is null),
+                   'rutas=' || (select count(*) from rutas),
+                   'categorias=' || (select count(*) from categorias),
+                   'stock_negativo=' || (select count(*) from productos where stock < 0),
+                   'pedidos=' || (select count(*) from pedidos),
+                   'vendedores=' || (select string_agg(nombre || ':' || rol || ':' || activo, ',') from vendedores)")
+          echo "::notice::$r"
+          psql "$DB_URL" -tA -c "select '::notice::ruta ' || coalesce(r.nombre,'(sin ruta)') || ' = ' || count(c.id) from clientes c left join rutas r on r.id = c.ruta_id group by r.nombre order by 1"
