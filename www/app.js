@@ -1,6 +1,7 @@
 import { dibujarNota, imagenAEscPos } from './render.js';
 import { notaTexto } from './escpos.js';
 import { mostrarImpresion, VELOCIDAD_DEFECTO } from './impresion-animada.js';
+import { textoNota, qrSvg } from './nota-qr.js';
 
 const NEGOCIO = {
   nombre: 'COVECA',
@@ -73,6 +74,7 @@ async function imprimir() {
   const salida = modo === 'imagen' ? imagenAEscPos(imagen) : await notaTexto(nota, NEGOCIO, 'pc850');
   const trabajo = {
     largoMm: salida.largoMm,
+    qrSvg: qrSvg(textoNota(nota, NEGOCIO)),
     velocidad,
     imprimir: () => esApp
       ? Printer.print({ address, data: salida.data })

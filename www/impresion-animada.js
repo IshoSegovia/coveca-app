@@ -22,6 +22,7 @@ function crear(tag, clase, html) {
  * @param {() => Promise<void>} trabajo.imprimir  imprime de verdad
  * @param {number} [trabajo.velocidad]  mm/s
  * @param {number} [trabajo.espera]  ms antes de que empiece a salir papel
+ * @param {string} [trabajo.qrSvg]  QR con la nota, se muestra al terminar
  * @returns {Promise<'listo'>}
  */
 export function mostrarImpresion(imagen, trabajo) {
@@ -38,7 +39,14 @@ export function mostrarImpresion(imagen, trabajo) {
     img.src = imagen.toDataURL();
     img.alt = 'Nota de venta';
     papel.appendChild(img);
-    const hecho = crear('div', 'imp-hecho', '<span class="imp-check" aria-hidden="true">✓</span>');
+    const hecho = crear('div', 'imp-hecho');
+    if (trabajo.qrSvg) {
+      hecho.innerHTML = `<div class="imp-qr">${trabajo.qrSvg}</div>
+        <p class="imp-qr-texto">El cliente puede escanear este código con la cámara para guardar la nota en su teléfono.</p>`;
+      hecho.classList.add('con-qr');
+    } else {
+      hecho.innerHTML = '<span class="imp-check" aria-hidden="true">✓</span>';
+    }
     escenario.append(papel, hecho);
     const pie = crear('div', 'imp-pie');
     const titulo = crear('p', 'imp-titulo');
@@ -71,7 +79,7 @@ export function mostrarImpresion(imagen, trabajo) {
       try {
         await Promise.all([anim.finished, trabajo.imprimir()]);
         capa.dataset.estado = 'listo';
-        titulo.textContent = 'Nota impresa';
+        titulo.innerHTML = '<span aria-hidden="true">✓</span> Nota impresa';
         msg.textContent = 'Corta el papel y entrégala al cliente.';
       } catch (e) {
         if (anim) anim.pause();
