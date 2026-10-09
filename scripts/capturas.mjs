@@ -15,6 +15,7 @@ const PANTALLAS = [
   ['#/rutas', '01-rutas'],
   ['#/rutas/1', '02-ruta-detalle'],
   ['#/rutas/sin', '03-sin-ruta'],
+  ['#/rutas/1/recorrido', '03b-recorrido'],
   ['#/rutas/nueva', '04-ruta-nueva'],
   ['#/clientes', '05-clientes'],
   ['#/clientes/1', '06-cliente-perfil'],

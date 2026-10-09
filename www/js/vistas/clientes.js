@@ -1,6 +1,8 @@
 import { $, esc, barra, icono, vacio, leerForm, aviso, ir, clp, fecha, selectorVista, activarSelector } from '../ui.js';
 import * as datos from '../datos.js';
 import { prepararFoto } from '../fotos.js';
+import { ubicacionHtml, activarUbicacion } from './ubicacion.js';
+import { tieneGps, urlPunto } from '../gps.js';
 
 let ultimaBusqueda = '';
 
@@ -82,7 +84,7 @@ export async function vistaCliente(v, id) {
     accion: datos.esAdmin() ? { href: `#/clientes/${id}/editar`, icono: 'editar', etiqueta: 'Editar cliente' } : null });
   const dato = (et, val, extra = '') => (val ? `<div class="dato"><dt>${et}</dt><dd>${val}${extra}</dd></div>` : '');
   const tel = (c.telefono || '').replace(/[^\d+]/g, '');
-  const faltan = ['rut', 'telefono', 'direccion', 'comuna'].filter((k) => !c[k]);
+  const faltan = ['rut', 'telefono', 'direccion', 'comuna'].filter((k) => !c[k]).concat(tieneGps(c) ? [] : ['gps']);
   v.innerHTML = `
     <div class="perfil-cab">
       <label class="perfil-foto" aria-label="Agregar o cambiar foto del cliente">${avatar(c, 'grande')}
@@ -95,8 +97,11 @@ export async function vistaCliente(v, id) {
     </div>
     ${botonesFoto(c)}
     ${tel ? `<div class="acciones-rap"><a class="btn sec" href="tel:${esc(tel)}">${icono('telefono')} Llamar</a>
-      ${c.direccion || c.comuna ? `<a class="btn sec" href="https://maps.google.com/?q=${encodeURIComponent([c.direccion, c.comuna, 'Chile'].filter(Boolean).join(', '))}" target="_blank" rel="noopener">${icono('mapa')} Mapa</a>` : ''}</div>` : ''}
-    ${faltan.length && datos.esAdmin() ? `<a class="nota-falta" href="#/clientes/${id}/editar">Faltan datos: ${faltan.map((k) => ({ rut: 'RUT', telefono: 'teléfono', direccion: 'dirección', comuna: 'comuna' }[k])).join(', ')}. Toca para completar.</a>` : ''}
+      ${tieneGps(c) || c.direccion || c.comuna ? `<a class="btn sec" data-externo href="${tieneGps(c) ? urlPunto(c) : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([c.direccion, c.comuna, 'Chile'].filter(Boolean).join(', '))}">${icono('mapa')} Mapa</a>` : ''}</div>` : ''}
+    ${faltan.length && datos.esAdmin() ? `<a class="nota-falta" href="#/clientes/${id}/editar">Faltan datos: ${faltan.map((k) => ({ rut: 'RUT', telefono: 'teléfono', direccion: 'dirección', comuna: 'comuna', gps: 'ubicación GPS' }[k])).join(', ')}. Toca para completar.</a>` : ''}
+
+    <h2 class="sec-t">Ubicación</h2>
+    ${ubicacionHtml(c)}
 
     <h2 class="sec-t">Datos</h2>
     <dl class="datos">
@@ -123,6 +128,7 @@ export async function vistaCliente(v, id) {
     <div class="pie-fijo"><a class="btn prin" href="#/clientes/${id}/pedido">Generar pedido</a></div>`;
 
   activarFoto(v, id, () => vistaCliente(v, id));
+  activarUbicacion(v, c, () => vistaCliente(v, id));
 }
 
 export async function vistaClienteForm(v, id) {
@@ -148,6 +154,7 @@ export async function vistaClienteForm(v, id) {
       <h2 class="sec-t">Ubicación</h2>
       ${campo('direccion', 'Dirección')}
       ${campo('comuna', 'Comuna o localidad')}
+      ${id ? `<h2 class="sec-t">Ubicación GPS</h2>${ubicacionHtml(c)}` : ''}
       <h2 class="sec-t">Ruta y visitas</h2>
       <label class="campo"><span>Ruta</span>
         <select name="ruta_id" data-num><option value="">Sin ruta</option>
@@ -167,7 +174,7 @@ export async function vistaClienteForm(v, id) {
       <p id="err" class="error" role="alert"></p>
       <div class="pie-fijo"><button class="btn prin" type="submit">${id ? 'Guardar cambios' : 'Crear cliente'}</button></div>
     </form>`;
-  if (id) activarFoto(v, id, () => vistaClienteForm(v, id));
+  if (id) { activarFoto(v, id, () => vistaClienteForm(v, id)); activarUbicacion(v, c, () => vistaClienteForm(v, id)); }
   $('#f', v).addEventListener('submit', async (e) => {
     e.preventDefault();
     const d = leerForm(e.target);

@@ -8,12 +8,15 @@ import { vistaPedido } from './vistas/pedido.js';
 import { vistaInventario, vistaProductoForm } from './vistas/inventario.js';
 import { vistaAjustes } from './vistas/ajustes.js';
 import { revisarActualizacion } from './actualizacion.js';
+import { vistaRecorrido } from './vistas/recorrido.js';
+import './externo.js';
 
 const RUTAS = [
   [/^\/login$/, vistaLogin, null],
   [/^\/rutas$/, vistaRutas, 'rutas'],
   [/^\/rutas\/nueva$/, (p) => vistaRutaForm(p, null), 'rutas'],
   [/^\/rutas\/(\w+)\/editar$/, (p, id) => vistaRutaForm(p, id), 'rutas'],
+  [/^\/rutas\/(\w+)\/recorrido$/, vistaRecorrido, 'rutas'],
   [/^\/rutas\/(\w+)$/, vistaRuta, 'rutas'],
   [/^\/clientes$/, vistaClientes, 'clientes'],
   [/^\/clientes\/nuevo$/, (p) => vistaClienteForm(p, null), 'clientes'],

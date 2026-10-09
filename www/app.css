@@ -311,3 +311,23 @@ a.fila:active { background: var(--fondo); }
 .foto-insignia .ico { width: 18px; height: 18px; }
 .perfil-cab.sin-borde { background: none; border: 0; padding: 0; }
 .form .foto-acciones { margin: 0; }
+
+/* ---------- Ubicación GPS y recorrido ---------- */
+.ubic { margin: 0; background: var(--superficie); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); padding: 12px 16px; }
+.form .ubic { border: 1px solid var(--borde); border-radius: var(--radio); }
+.ubic-estado { display: flex; align-items: center; gap: 12px; }
+.ubic-estado > .ico { color: var(--verde); }
+.ubic.falta .ubic-estado > .ico { color: var(--ambar); }
+.ubic-estado > div { flex: 1; min-width: 0; }
+.ubic-estado .btn.link { padding: 0 8px; min-height: 48px; }
+.ubic-acc { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+.ubic-acc .btn.link { min-height: 48px; }
+.ubic-pegar { display: flex; flex-direction: column; gap: 8px; }
+.sin-gps { flex: none; color: var(--ambar); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ambar-suave); }
+.gps-cuenta { display: flex; align-items: center; gap: 6px; margin-top: 16px; }
+.parada {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--azul); color: #fff; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.tramo-acc { margin: 12px 0 4px; }
+.check.pad { padding: 0 16px; }

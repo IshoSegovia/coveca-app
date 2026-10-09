@@ -8,12 +8,12 @@ let rutas = [
 ];
 const hoy = new Date(); const dias = (n) => new Date(hoy - n * 864e5).toISOString().slice(0, 10);
 let clientes = [
-  { id: 1, nombre: 'Minimarket El Ejemplo', razon_social: 'Comercial Ejemplo SpA', rut: '76.123.456-0', comuna: 'Cauquenes', direccion: 'Av. Principal 123', telefono: '+56 9 1111 1111', correo: 'ejemplo@correo.cl', ruta_id: 1, frecuencia_dias: 7, limite_credito: 100000, loyverse_compras: 53, loyverse_total: 1739225, loyverse_primera_compra: '2025-08-26', loyverse_ultima_compra: dias(2), notas: 'Atiende la dueña en la mañana.' },
-  { id: 2, nombre: 'Almacén Doña Prueba', comuna: 'Cauquenes', direccion: 'Pasaje Los Aromos 45', ruta_id: 1, frecuencia_dias: 7, loyverse_compras: 50, loyverse_total: 2522990, loyverse_ultima_compra: dias(9) },
-  { id: 3, nombre: 'Botillería La Muestra', comuna: 'Cauquenes', ruta_id: 1, frecuencia_dias: 14, loyverse_compras: 12, loyverse_total: 340000, loyverse_ultima_compra: dias(20) },
-  { id: 4, nombre: 'Distribuidora Demo Retiro', comuna: 'Retiro', ruta_id: 2, frecuencia_dias: 7, loyverse_compras: 49, loyverse_total: 1429110, loyverse_ultima_compra: dias(1) },
+  { id: 1, lat: -35.9671, lng: -72.3225, nombre: 'Minimarket El Ejemplo', razon_social: 'Comercial Ejemplo SpA', rut: '76.123.456-0', comuna: 'Cauquenes', direccion: 'Av. Principal 123', telefono: '+56 9 1111 1111', correo: 'ejemplo@correo.cl', ruta_id: 1, frecuencia_dias: 7, limite_credito: 100000, loyverse_compras: 53, loyverse_total: 1739225, loyverse_primera_compra: '2025-08-26', loyverse_ultima_compra: dias(2), notas: 'Atiende la dueña en la mañana.' },
+  { id: 2, lat: -35.9612, lng: -72.3301, nombre: 'Almacén Doña Prueba', comuna: 'Cauquenes', direccion: 'Pasaje Los Aromos 45', ruta_id: 1, frecuencia_dias: 7, loyverse_compras: 50, loyverse_total: 2522990, loyverse_ultima_compra: dias(9) },
+  { id: 3, lat: -35.9738, lng: -72.3159, nombre: 'Botillería La Muestra', comuna: 'Cauquenes', ruta_id: 1, frecuencia_dias: 14, loyverse_compras: 12, loyverse_total: 340000, loyverse_ultima_compra: dias(20) },
+  { id: 4, lat: -36.0472, lng: -71.7578, nombre: 'Distribuidora Demo Retiro', comuna: 'Retiro', ruta_id: 2, frecuencia_dias: 7, loyverse_compras: 49, loyverse_total: 1429110, loyverse_ultima_compra: dias(1) },
   { id: 5, nombre: 'Kiosco Central', comuna: 'Retiro', ruta_id: 2, frecuencia_dias: 7, loyverse_compras: 8, loyverse_total: 120000, loyverse_ultima_compra: dias(15) },
-  { id: 6, nombre: 'Minimarket San Carlos Demo', comuna: 'San Carlos', ruta_id: 3, frecuencia_dias: 7, loyverse_compras: 37, loyverse_total: 1152575, loyverse_ultima_compra: dias(4) },
+  { id: 6, lat: -36.4246, lng: -71.958, nombre: 'Minimarket San Carlos Demo', comuna: 'San Carlos', ruta_id: 3, frecuencia_dias: 7, loyverse_compras: 37, loyverse_total: 1152575, loyverse_ultima_compra: dias(4) },
   { id: 7, nombre: 'Almacén Parral Ejemplo', comuna: 'Parral', ruta_id: 4, frecuencia_dias: 14, loyverse_compras: 31, loyverse_total: 1230970, loyverse_ultima_compra: dias(35) },
   { id: 8, nombre: 'Cliente sin ruta de ejemplo', ruta_id: null, frecuencia_dias: 7, loyverse_compras: 3, loyverse_total: 45000, loyverse_ultima_compra: dias(60) },
 ];
@@ -53,7 +53,7 @@ export const demo = {
   },
   clientes({ busqueda, rutaId }) {
     return clientes.map(enriquecer).filter((c) => (rutaId === 'sin' ? !c.ruta_id : rutaId ? c.ruta_id == rutaId : true)
-      && (!busqueda || norm(c.nombre + ' ' + (c.comuna || '')).includes(norm(busqueda)))).sort((a, b) => a.nombre.localeCompare(b.nombre));
+      && (!busqueda || norm(c.nombre + ' ' + (c.comuna || '')).includes(norm(busqueda)))).sort((a, b) => (a.orden_ruta || 0) - (b.orden_ruta || 0) || a.nombre.localeCompare(b.nombre));
   },
   cliente: (id) => enriquecer(clientes.find((c) => c.id == id)),
   guardarCliente(c) {
@@ -70,6 +70,8 @@ export const demo = {
     if (p.id) { productos = productos.map((x) => (x.id == p.id ? { ...x, ...campos } : x)); return productos.find((x) => x.id == p.id); }
     const n = { ...campos, stock: stock_inicial || 0, id: Math.max(0, ...productos.map((x) => x.id)) + 1 }; productos.push(n); return n;
   },
+  ubicacion(id, lat, lng) { const c = clientes.find((x) => x.id == id); c.lat = lat; c.lng = lng; c.ubicacion_actualizada_en = lat == null ? null : new Date().toISOString(); },
+  ordenar(ids) { ids.forEach((id, i) => { clientes.find((x) => x.id == id).orden_ruta = i + 1; }); },
   fotoCliente(id, url) { clientes.find((x) => x.id == id).imagen_url = url; return url; },
   fotoProducto(id, url) { productos.find((x) => x.id == id).imagen_url = url; return url; },
   ajustarStock(id, cant) { const p = productos.find((x) => x.id == id); p.stock += cant; },

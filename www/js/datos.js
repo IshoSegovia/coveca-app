@@ -21,6 +21,7 @@ function traducir(m) {
   if (/Invalid login credentials/i.test(m)) return 'Correo o contraseña incorrectos.';
   if (/Failed to fetch|NetworkError|network/i.test(m)) return 'Sin conexión a internet. Revisa la señal e intenta de nuevo.';
   if (/sin permiso|permission|row-level security|Unauthorized/i.test(m)) return 'Tu usuario no tiene permiso para esta acción.';
+  if (/no está en Chile/i.test(m)) return m;
   if (/Payload too large|exceeded/i.test(m)) return 'La foto es demasiado pesada. Prueba con otra.';
   if (/duplicate key.*rutas_nombre/i.test(m)) return 'Ya existe una ruta con ese nombre.';
   if (/duplicate key.*productos_ref/i.test(m)) return 'Ya existe un producto con esa REF.';
@@ -81,7 +82,7 @@ export async function guardarRuta(r) {
 }
 
 // ---------------- Clientes ----------------
-const CAMPOS_LISTA = 'id,imagen_url,nombre,razon_social,comuna,direccion,ruta_id,ruta_nombre,frecuencia_dias,atendido,ultima_compra,telefono,activo,orden_ruta';
+const CAMPOS_LISTA = 'id,imagen_url,lat,lng,nombre,razon_social,comuna,direccion,ruta_id,ruta_nombre,frecuencia_dias,atendido,ultima_compra,telefono,activo,orden_ruta';
 export async function clientes({ busqueda = '', rutaId = null } = {}) {
   if (modoDemo) return demo.clientes({ busqueda, rutaId });
   let q = sb.from('clientes_estado').select(CAMPOS_LISTA).eq('activo', true);
@@ -112,6 +113,14 @@ export async function subirFotoCliente(clienteId, blob) {
 export async function quitarFotoCliente(clienteId) {
   if (modoDemo) return demo.fotoCliente(clienteId, null);
   chk(await sb.rpc('foto_cliente', { p_id: Number(clienteId), p_url: null }));
+}
+export async function guardarUbicacion(clienteId, lat, lng) {
+  if (modoDemo) return demo.ubicacion(clienteId, lat, lng);
+  chk(await sb.rpc('ubicacion_cliente', { p_id: Number(clienteId), p_lat: lat, p_lng: lng }));
+}
+export async function ordenarRuta(ids) {
+  if (modoDemo) return demo.ordenar(ids);
+  chk(await sb.rpc('ordenar_ruta', { p_ids: ids }));
 }
 export async function pedidosCliente(id) {
   if (modoDemo) return demo.pedidosCliente(id);

@@ -1,5 +1,6 @@
 import { $, esc, barra, icono, vacio, leerForm, aviso, ir, DIAS, fecha } from '../ui.js';
 import * as datos from '../datos.js';
+import { tieneGps } from '../gps.js';
 
 const hoyDia = ((new Date().getDay() + 6) % 7) + 1; // 1 = lunes
 
@@ -41,8 +42,10 @@ export async function vistaRuta(v, id) {
   const fila = (c) => `<a class="fila" href="#/clientes/${c.id}">
       <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p>
         <p class="fila-s">${esc([c.direccion, c.comuna].filter(Boolean).join(', ') || 'Sin dirección')}</p></div>
+      ${tieneGps(c) ? '' : `<span class="sin-gps" title="Sin ubicación GPS" aria-label="Sin ubicación GPS">${icono('mapa', 'ico-s')}</span>`}
       ${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido</span>` : `<span class="chip">Pendiente</span>`}
       ${icono('derecha', 'ico-chev')}</a>`;
+  const conGps = cs.filter(tieneGps).length;
   v.innerHTML = cs.length ? `
     <div class="resumen">
       <div><p class="resumen-n">${pend.length}</p><p>Pendientes</p></div>
@@ -50,7 +53,9 @@ export async function vistaRuta(v, id) {
       <div><p class="resumen-n">${cs.length}</p><p>Clientes</p></div>
     </div>
     ${pend.length ? `<h2 class="sec-t">Pendientes</h2><div class="lista">${pend.map(fila).join('')}</div>` : ''}
-    ${hechos.length ? `<h2 class="sec-t">Atendidos</h2><div class="lista">${hechos.map(fila).join('')}</div>` : ''}`
+    ${hechos.length ? `<h2 class="sec-t">Atendidos</h2><div class="lista">${hechos.map(fila).join('')}</div>` : ''}
+    ${r.especial ? '' : `<p class="ayuda pad gps-cuenta">${icono('mapa', 'ico-s')} ${conGps} de ${cs.length} clientes con ubicación GPS${conGps < cs.length ? ' · los que no tienen no entran en el recorrido' : ''}</p>
+    <div class="pie-fijo"><a class="btn prin" href="#/rutas/${id}/recorrido">${icono('rutas')} Planificar recorrido</a></div>`}`
     : vacio('Esta ruta no tiene clientes', 'Asígnale clientes desde el perfil de cada cliente (Editar → Ruta).');
 }
 
