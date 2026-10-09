@@ -112,7 +112,7 @@ export async function categorias() {
 }
 export async function productos({ busqueda = '', soloActivos = true } = {}) {
   if (modoDemo) return demo.productos({ busqueda });
-  let q = sb.from('productos').select('id,ref,nombre,costo,precio,stock,stock_minimo,activo,categoria_id,categorias(nombre)');
+  let q = sb.from('productos').select('id,ref,nombre,costo,precio,stock,stock_minimo,activo,imagen_url,categoria_id,categorias(nombre)');
   if (soloActivos) q = q.eq('activo', true);
   if (busqueda) q = q.or(`nombre.ilike.%${busqueda}%,ref.ilike.%${busqueda}%`);
   return chk(await q.order('nombre')).map((p) => ({ ...p, categoria: p.categorias?.nombre || null }));
@@ -131,6 +131,20 @@ export async function guardarProducto(p) {
   if (!id && stock_inicial) await ajustarStock(r.id, stock_inicial, 'inicial');
   return r;
 }
+// Foto de producto: se sube a Storage (carpeta "productos") y se guarda el enlace público.
+export async function subirFotoProducto(productoId, blob) {
+  if (modoDemo) return demo.fotoProducto(productoId, URL.createObjectURL(blob));
+  const ruta = `${productoId}/${Date.now()}.jpg`;
+  chk(await sb.storage.from('productos').upload(ruta, blob, { contentType: 'image/jpeg', upsert: true }));
+  const url = sb.storage.from('productos').getPublicUrl(ruta).data.publicUrl;
+  chk(await sb.from('productos').update({ imagen_url: url }).eq('id', productoId));
+  return url;
+}
+export async function quitarFotoProducto(productoId) {
+  if (modoDemo) return demo.fotoProducto(productoId, null);
+  chk(await sb.from('productos').update({ imagen_url: null }).eq('id', productoId));
+}
+
 export async function ajustarStock(productoId, cantidad, motivo = 'ajuste') {
   if (modoDemo) return demo.ajustarStock(productoId, cantidad);
   return chk(await sb.from('movimientos_stock').insert({ producto_id: productoId, cantidad, motivo }));

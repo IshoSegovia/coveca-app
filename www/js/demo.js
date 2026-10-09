@@ -70,6 +70,7 @@ export const demo = {
     if (p.id) { productos = productos.map((x) => (x.id == p.id ? { ...x, ...campos } : x)); return productos.find((x) => x.id == p.id); }
     const n = { ...campos, stock: stock_inicial || 0, id: Math.max(0, ...productos.map((x) => x.id)) + 1 }; productos.push(n); return n;
   },
+  fotoProducto(id, url) { productos.find((x) => x.id == id).imagen_url = url; return url; },
   ajustarStock(id, cant) { const p = productos.find((x) => x.id == id); p.stock += cant; },
   crearPedido(p) {
     const items = p.items.map((i) => { const pr = productos.find((x) => x.id == i.producto_id); pr.stock -= i.cantidad; return { ...i, precio: i.precio ?? pr.precio }; });

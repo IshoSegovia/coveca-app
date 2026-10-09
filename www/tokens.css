@@ -11,6 +11,11 @@
   --fondo: #F5F6FA;
   --superficie: #FFFFFF;
   --borde: #D9DCE5;
+  /* Fondos suaves para etiquetas de estado y destacados (texto encima: color fuerte del mismo tono) */
+  --azul-suave: #E7E8F4;
+  --verde-suave: #E8F2E9;
+  --ambar-suave: #FBF0E0;
+  --rojo-suave: #FBE9EA;
   --radio: 10px;
   --toque: 48px;
   --fuente: system-ui, Roboto, "Noto Sans", Arial, sans-serif;
