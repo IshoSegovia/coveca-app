@@ -108,14 +108,17 @@ public class BtPrinterPlugin extends Plugin {
                 socket.connect();
                 OutputStream out = socket.getOutputStream();
                 byte[] bytes = Base64.decode(data, Base64.DEFAULT);
-                // Envío en bloques para no saturar el buffer de impresoras baratas.
-                int chunk = 512;
+                // Envío en bloques pequeños y pausados: la impresora imprime más lento
+                // de lo que recibe por Bluetooth y su memoria es chica.
+                int chunk = 256;
                 for (int i = 0; i < bytes.length; i += chunk) {
                     out.write(bytes, i, Math.min(chunk, bytes.length - i));
                     out.flush();
-                    Thread.sleep(20);
+                    Thread.sleep(35);
                 }
-                Thread.sleep(300);
+                // Esperar a que termine de imprimir antes de cerrar la conexión
+                // (cerrar antes corta la nota). ~1 s por cada 8 KB, mínimo 1,5 s.
+                Thread.sleep(Math.max(1500, bytes.length / 8));
                 call.resolve();
             } catch (Exception e) {
                 call.reject("No se pudo imprimir: revisa que la impresora esté encendida y cerca. (" + e.getMessage() + ")");
