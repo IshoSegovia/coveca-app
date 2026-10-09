@@ -68,3 +68,19 @@ export function leerForm(form) {
   }
   return o;
 }
+
+// Selector Lista / Íconos (recuerda la elección por pantalla).
+export const vistaGuardada = (clave, def = 'iconos') => { try { return localStorage.getItem('vista-' + clave) || def; } catch (_) { return def; } };
+export const guardarVistaElegida = (clave, x) => { try { localStorage.setItem('vista-' + clave, x); } catch (_) {} };
+export const selectorVista = () => `<div class="segmento" role="radiogroup" aria-label="Forma de ver">
+  <button type="button" data-v="lista" role="radio" aria-label="Lista">${icono('lista')}</button>
+  <button type="button" data-v="iconos" role="radio" aria-label="Íconos">${icono('cuadricula')}</button></div>`;
+export function activarSelector(raiz, clave, alCambiar) {
+  let actual = vistaGuardada(clave);
+  const marcar = () => raiz.querySelectorAll('.segmento button').forEach((b) => b.setAttribute('aria-checked', b.dataset.v === actual));
+  raiz.querySelectorAll('.segmento button').forEach((b) => b.addEventListener('click', () => {
+    actual = b.dataset.v; guardarVistaElegida(clave, actual); marcar(); alCambiar(actual);
+  }));
+  marcar();
+  return () => actual;
+}

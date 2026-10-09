@@ -1,4 +1,4 @@
-import { $, esc, barra, icono, vacio, leerForm, aviso, ir, clp, fecha } from '../ui.js';
+import { $, esc, barra, icono, vacio, leerForm, aviso, ir, clp, fecha, selectorVista, activarSelector } from '../ui.js';
 import * as datos from '../datos.js';
 
 let ultimaBusqueda = '';
@@ -6,20 +6,37 @@ let ultimaBusqueda = '';
 export async function vistaClientes(v) {
   barra({ titulo: 'Clientes', accion: datos.esAdmin() ? { href: '#/clientes/nuevo', icono: 'mas', etiqueta: 'Nuevo cliente' } : null });
   v.innerHTML = `
-    <div class="buscador">${icono('buscar')}<input id="q" type="search" placeholder="Buscar por nombre, RUT o comuna" value="${esc(ultimaBusqueda)}" aria-label="Buscar cliente"></div>
+    <div class="inv-cab">
+      <div class="buscador">${icono('buscar')}<input id="q" type="search" placeholder="Nombre, RUT o comuna" value="${esc(ultimaBusqueda)}" aria-label="Buscar cliente"></div>
+      ${selectorVista()}
+    </div>
     <p id="cuenta" class="cuenta"></p>
-    <div id="lista" class="lista"></div>`;
+    <div id="lista"></div>`;
   const pintar = async () => {
     const cs = await datos.clientes({ busqueda: ultimaBusqueda });
     $('#cuenta', v).textContent = `${cs.length} cliente${cs.length === 1 ? '' : 's'}`;
-    $('#lista', v).innerHTML = cs.length ? cs.map((c) => `
-      <a class="fila" href="#/clientes/${c.id}">
-        <span class="avatar" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
-        <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p>
-          <p class="fila-s">${esc(c.ruta_nombre || 'Sin ruta')}${c.comuna && c.comuna !== c.ruta_nombre ? ' · ' + esc(c.comuna) : ''}</p></div>
-        ${icono('derecha', 'ico-chev')}</a>`).join('')
-      : vacio('No hay clientes con esa búsqueda');
+    const cont = $('#lista', v);
+    const lugar = (c) => esc(c.ruta_nombre || 'Sin ruta') + (c.comuna && c.comuna !== c.ruta_nombre ? ' · ' + esc(c.comuna) : '');
+    const estado = (c) => (c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido</span>` : '<span class="chip">Pendiente</span>');
+    if (!cs.length) { cont.className = ''; cont.innerHTML = vacio('No hay clientes con esa búsqueda'); return; }
+    if (vista() === 'iconos') {
+      cont.className = 'grilla';
+      cont.innerHTML = cs.map((c) => `
+        <a class="tarjeta cliente" href="#/clientes/${c.id}">
+          <span class="avatar grande" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+          <p class="tarjeta-t">${esc(c.nombre)}</p>
+          <p class="tarjeta-s">${lugar(c)}</p>
+          ${estado(c)}</a>`).join('');
+    } else {
+      cont.className = 'lista';
+      cont.innerHTML = cs.map((c) => `
+        <a class="fila" href="#/clientes/${c.id}">
+          <span class="avatar" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${lugar(c)}</p></div>
+          ${icono('derecha', 'ico-chev')}</a>`).join('');
+    }
   };
+  const vista = activarSelector(v, 'clientes', pintar);
   let t;
   $('#q', v).addEventListener('input', (e) => { ultimaBusqueda = e.target.value.trim(); clearTimeout(t); t = setTimeout(pintar, 250); });
   await pintar();

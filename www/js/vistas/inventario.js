@@ -1,4 +1,4 @@
-import { $, $$, esc, barra, icono, vacio, leerForm, aviso, ir, clp, pct, margen, precioConMargen } from '../ui.js';
+import { $, $$, esc, barra, icono, vacio, leerForm, aviso, ir, clp, pct, margen, precioConMargen, selectorVista, activarSelector } from '../ui.js';
 import * as datos from '../datos.js';
 import { prepararFoto } from '../fotos.js';
 
@@ -8,8 +8,6 @@ const FILTROS = [
 let estado = { filtro: 'todos', q: '' };
 const clase = (p) => (p.stock < 0 ? 'negativo' : p.stock === 0 ? 'sin' : p.stock_minimo && p.stock <= p.stock_minimo ? 'bajo' : 'disponible');
 
-const leerVista = () => { try { return localStorage.getItem('inventario-vista') || 'iconos'; } catch (_) { return 'iconos'; } };
-const guardarVista = (x) => { try { localStorage.setItem('inventario-vista', x); } catch (_) {} };
 const iniciales = (n) => n.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9 ]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 const ETIQ = { disponible: (p) => `${p.stock} disp.`, bajo: (p) => `${p.stock} · bajo`, sin: () => 'Sin stock', negativo: (p) => `${p.stock} · revisar` };
 
@@ -21,14 +19,10 @@ export const miniatura = (p, cls = '') => p.imagen_url
 export async function vistaInventario(v) {
   barra({ titulo: 'Inventario', accion: datos.esAdmin() ? { href: '#/inventario/nuevo', icono: 'mas', etiqueta: 'Nuevo producto' } : null });
   const todos = await datos.productos({ soloActivos: false });
-  let vista = leerVista();
   v.innerHTML = `
     <div class="inv-cab">
       <div class="buscador">${icono('buscar')}<input id="q" type="search" placeholder="Buscar producto o REF" value="${esc(estado.q)}" aria-label="Buscar producto"></div>
-      <div class="segmento" role="radiogroup" aria-label="Forma de ver">
-        <button data-v="lista" role="radio" aria-label="Lista">${icono('lista')}</button>
-        <button data-v="iconos" role="radio" aria-label="Íconos">${icono('cuadricula')}</button>
-      </div>
+      ${selectorVista()}
     </div>
     <div class="filtros" role="tablist">${FILTROS.map(([k, t]) => `<button class="filtro" data-f="${k}" role="tab">${t} <span class="n"></span></button>`).join('')}</div>
     <div id="lista"></div>`;
@@ -40,11 +34,10 @@ export async function vistaInventario(v) {
       b.querySelector('.n').textContent = k === 'todos' ? buscados.length : buscados.filter((p) => clase(p) === k).length;
       b.setAttribute('aria-selected', estado.filtro === k);
     });
-    v.querySelectorAll('.segmento button').forEach((b) => b.setAttribute('aria-checked', b.dataset.v === vista));
     const vis = buscados.filter((p) => estado.filtro === 'todos' || clase(p) === estado.filtro);
     const cont = $('#lista', v);
     if (!vis.length) { cont.className = ''; cont.innerHTML = vacio('No hay productos en este filtro'); return; }
-    if (vista === 'iconos') {
+    if (vista() === 'iconos') {
       cont.className = 'grilla';
       cont.innerHTML = vis.map((p) => {
         const k = clase(p);
@@ -66,7 +59,7 @@ export async function vistaInventario(v) {
   };
   $('#q', v).addEventListener('input', (e) => { estado.q = e.target.value.trim(); pintar(); });
   v.querySelectorAll('.filtro').forEach((b) => b.addEventListener('click', () => { estado.filtro = b.dataset.f; pintar(); }));
-  v.querySelectorAll('.segmento button').forEach((b) => b.addEventListener('click', () => { vista = b.dataset.v; guardarVista(vista); pintar(); }));
+  const vista = activarSelector(v, 'inventario', pintar);
   pintar();
 }
 

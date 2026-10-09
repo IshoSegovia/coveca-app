@@ -15,19 +15,20 @@ export async function vistaRutas(v) {
   const resto = rs.filter((r) => r.dia_semana !== hoyDia);
   const tarjeta = (r) => {
     const pend = r.clientes - r.atendidos;
-    return `<a class="fila" href="#/rutas/${r.id}">
-      <div class="fila-txt">
-        <p class="fila-t">${esc(r.nombre)}</p>
-        <p class="fila-s">${r.especial ? 'Clientes por asignar' : (DIAS[r.dia_semana] || 'Sin día')} · ${r.clientes} cliente${r.clientes === 1 ? '' : 's'}</p>
-      </div>
-      ${r.clientes ? `<span class="chip ${pend ? '' : 'ok'}">${pend ? `${pend} pendiente${pend === 1 ? '' : 's'}` : `${icono('check', 'ico-s')} Completa`}</span>` : ''}
-      ${icono('derecha', 'ico-chev')}
+    const avance = r.clientes ? Math.round((r.atendidos / r.clientes) * 100) : 0;
+    return `<a class="tarjeta ruta ${r.especial ? 'especial' : ''} ${r.activa === false ? 'inactivo' : ''}" href="#/rutas/${r.id}">
+      <span class="ruta-ico" aria-hidden="true">${icono(r.especial ? 'clientes' : 'rutas')}</span>
+      <p class="tarjeta-t">${esc(r.nombre)}</p>
+      <p class="tarjeta-s">${r.especial ? 'Por asignar' : (DIAS[r.dia_semana] || 'Sin día fijo')}</p>
+      <p class="ruta-n"><span class="monto">${r.clientes}</span> cliente${r.clientes === 1 ? '' : 's'}</p>
+      ${r.clientes ? `<div class="barra-avance" role="progressbar" aria-valuenow="${avance}" aria-valuemin="0" aria-valuemax="100" aria-label="Avance del ciclo"><span style="width:${avance}%"></span></div>
+      <p class="ruta-estado">${pend ? `${pend} pendiente${pend === 1 ? '' : 's'}` : `${icono('check', 'ico-s')} Completa`}</p>` : '<p class="ruta-estado">Sin clientes</p>'}
     </a>`;
   };
   v.innerHTML = `
-    ${deHoy.length ? `<h2 class="sec-t">Hoy</h2><div class="lista">${deHoy.map(tarjeta).join('')}</div>` : ''}
+    ${deHoy.length ? `<h2 class="sec-t">Hoy</h2><div class="grilla">${deHoy.map(tarjeta).join('')}</div>` : ''}
     <h2 class="sec-t">${deHoy.length ? 'Otras rutas' : 'Todas las rutas'}</h2>
-    <div class="lista">${resto.map(tarjeta).join('')}</div>`;
+    <div class="grilla">${resto.map(tarjeta).join('')}</div>`;
 }
 
 export async function vistaRuta(v, id) {
