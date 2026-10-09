@@ -16,7 +16,8 @@ export function textoNota(nota, negocio) {
     total += sub;
     lineas.push(`${it.cant} x ${it.nombre} (${clp(it.precio)}) = ${clp(sub)}`);
   }
-  lineas.push('', `TOTAL: ${clp(total)} - ${nota.pago}`, '', `${negocio.eslogan}`, negocio.telefono);
+  // Sin números de teléfono: las cámaras los detectan y muestran solo "Llamar", ocultando la nota.
+  lineas.push('', `TOTAL: ${clp(total)} - ${nota.pago}`, '', negocio.eslogan);
   lineas.push('No es factura: nota de venta y guía de despacho.');
   return lineas.join('\n');
 }
