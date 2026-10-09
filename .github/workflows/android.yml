@@ -50,7 +50,13 @@ jobs:
           COVECA_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          set -o pipefail
+          if ! ./gradlew assembleDebug --no-daemon 2>&1 | tee gradle.log; then
+            # Deja el motivo del error como anotación visible en GitHub.
+            grep -A6 "What went wrong" gradle.log | head -12 | tr '\n' ' ' | sed 's/^/::error::/'; echo
+            grep -m3 "error:" gradle.log | sed 's/^/::error::/'
+            exit 1
+          fi
 
       - name: Publicar APK
         uses: actions/upload-artifact@v4
