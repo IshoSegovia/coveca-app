@@ -10,23 +10,17 @@
   <link rel="stylesheet" href="impresion-animada.css">
 </head>
 <body>
-  <header id="cabecera" class="cabecera"></header>
+  <header id="barra" class="barra"></header>
+  <div class="cinta-demo" aria-hidden="true">Modo demostración · datos de ejemplo</div>
   <main id="vista" class="vista"></main>
-  <div id="pie-accion" class="pie-accion" hidden></div>
-  <nav id="navegacion" class="navegacion" aria-label="Secciones">
-    <a href="#/rutas" data-tab="rutas"></a>
-    <a href="#/clientes" data-tab="clientes"></a>
-    <a href="#/inventario" data-tab="inventario"></a>
-    <a href="#/mas" data-tab="mas"></a>
+  <nav id="tabs" class="tabs" aria-label="Secciones">
+    <a href="#/rutas" data-tab="rutas"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 20l-5.4-2.7A1 1 0 0 1 3 16.4V4.6a1 1 0 0 1 1.4-.9L9 6m0 14 6-3m-6 3V6m6 11 4.6 2.3a1 1 0 0 0 1.4-.9V7.6a1 1 0 0 0-.6-.9L15 4m0 13V4m0 0L9 6"/></svg><span>Rutas</span></a>
+    <a href="#/clientes" data-tab="clientes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Clientes</span></a>
+    <a href="#/inventario" data-tab="inventario"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3.3 7.6 12 12.5l8.7-4.9M12 22V12.5"/></svg><span>Inventario</span></a>
+    <a href="#/ajustes" data-tab="ajustes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Ajustes</span></a>
   </nav>
   <script src="vendor/qrcode.js"></script>
-  <script type="module">
-    import { ICONOS } from './nucleo.js';
-    const nombres = { rutas: 'Rutas', clientes: 'Clientes', inventario: 'Inventario', mas: 'Más' };
-    document.querySelectorAll('#navegacion a').forEach((a) => {
-      a.innerHTML = `${ICONOS[a.dataset.tab]}<span>${nombres[a.dataset.tab]}</span>`;
-    });
-  </script>
-  <script type="module" src="main.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

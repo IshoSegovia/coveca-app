@@ -1,4 +1,4 @@
-// Saca capturas de las pantallas de la app en tamaño de celular (Motorola Edge 60).
+// Saca capturas de todas las pantallas en tamaño de celular (Motorola Edge 60), en modo demostración.
 // Uso: node scripts/capturas.mjs   → imágenes en capturas/
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
@@ -9,13 +9,28 @@ import { extname, join } from 'node:path';
 const RAIZ = new URL('../www/', import.meta.url).pathname;
 const TIPOS = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
-// Pantallas a capturar: ruta dentro de www/ y nombre del archivo.
+// [ruta, archivo, acción opcional antes de la captura]
 const PANTALLAS = [
-  ['#/rutas', '01-rutas'], ['#/rutas/1', '02-ruta-detalle'], ['#/rutas/sin-ruta', '03-sin-ruta'], ['#/rutas/nueva', '04-ruta-nueva'],
-  ['#/clientes', '05-clientes'], ['#/clientes/1', '06-cliente-perfil'], ['#/clientes/1/editar', '07-cliente-editar'],
-  ['#/inventario', '08-inventario'], ['#/productos/1', '09-producto'], ['#/productos/nuevo', '10-producto-nuevo'],
-  ['#/pedido/1', '11-pedido'], ['#/mas', '12-mas'], ['#/mas/impresora', '13-impresora'], ['#/ingreso', '14-ingreso'],
-].map(([ruta, nombre]) => ({ ruta: 'index.html' + ruta, nombre }));
+  ['#/login', '00-ingreso'],
+  ['#/rutas', '01-rutas'],
+  ['#/rutas/1', '02-ruta-detalle'],
+  ['#/rutas/sin', '03-sin-ruta'],
+  ['#/rutas/nueva', '04-ruta-nueva'],
+  ['#/clientes', '05-clientes'],
+  ['#/clientes/1', '06-cliente-perfil'],
+  ['#/clientes/1/editar', '07-cliente-editar'],
+  ['#/inventario', '08-inventario'],
+  ['#/inventario/1', '09-producto'],
+  ['#/inventario/nuevo', '10-producto-nuevo'],
+  ['#/clientes/1/pedido', '11-pedido', async (p) => {
+    for (const id of [12, 12, 4]) await p.click(`.fila.prod[data-id="${id}"] [data-d="1"]`);
+  }],
+  ['#/clientes/1/pedido', '12-pedido-revisar', async (p) => {
+    for (const id of [12, 12, 4]) await p.click(`.fila.prod[data-id="${id}"] [data-d="1"]`);
+    await p.click('#sig');
+  }],
+  ['#/ajustes', '13-ajustes'],
+];
 
 const server = createServer(async (req, res) => {
   try {
@@ -25,25 +40,30 @@ const server = createServer(async (req, res) => {
     res.end(datos);
   } catch { res.writeHead(404); res.end(); }
 }).listen(0);
-const puerto = server.address().port;
+const base = `http://localhost:${server.address().port}/index.html`;
 
 await mkdir('capturas', { recursive: true });
 // En el entorno de Claude el Chromium ya viene instalado aquí; en otro equipo usa el de Playwright.
 const CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 const browser = await chromium.launch(existsSync(CHROMIUM) ? { executablePath: CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, locale: 'es-CL' });
-page.on('pageerror', (e) => console.error('ERROR en la página:', e.message));
-await page.goto(`http://localhost:${puerto}/index.html`);
-for (const p of PANTALLAS) {
-  await page.evaluate((h) => { location.hash = h; }, p.ruta.split('#')[1] || '');
-  await page.waitForTimeout(400);
-  // En el pedido, agregar productos de ejemplo para ver el estado con carrito
-  if (p.nombre === '11-pedido') {
-    await page.click('.fila-producto[data-id="9"] .paso-mas'); await page.click('.fila-producto[data-id="9"] .paso-mas');
-    await page.click('.fila-producto[data-id="7"] .paso-mas'); await page.waitForTimeout(200);
-  }
-  await page.screenshot({ path: `capturas/${p.nombre}.png` });
-  console.log(`capturas/${p.nombre}.png`);
+let errores = 0;
+page.on('pageerror', (e) => { errores++; console.error('ERROR en la página:', e.message); });
+page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) { errores++; console.error('consola:', m.text()); } });
+
+await page.goto(base + '#/login');
+await page.waitForTimeout(500);
+await page.screenshot({ path: 'capturas/00-ingreso.png' });
+await page.click('#demo');
+await page.waitForTimeout(400);
+for (const [ruta, nombre, accion] of PANTALLAS.slice(1)) {
+  await page.goto('about:blank');
+  await page.goto(base + ruta);
+  await page.waitForTimeout(500);
+  if (accion) { await accion(page); await page.waitForTimeout(300); }
+  await page.screenshot({ path: `capturas/${nombre}.png` });
+  console.log(`capturas/${nombre}.png`);
 }
 await browser.close();
 server.close();
+if (errores) { console.error(`${errores} error(es) en la página`); process.exit(1); }
