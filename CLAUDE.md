@@ -45,5 +45,10 @@ Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 - Revisar cambios a la nota con la vista previa (imagen) antes de publicar.
 - El envío Bluetooth va en bloques continuos y espera antes de cerrar el socket; cerrar antes corta la nota.
 
+## Versiones y actualización obligatoria
+- Cada compilación en GitHub = versión `0.1.<número de compilación>` (versionCode igual). Se escribe en `www/version.js` (en el repo queda `codigo: 0` = desarrollo, sin revisión).
+- Se publica como release `v0.1.N` y en `ultima`; luego se registra en Supabase (`configuracion.app_version`, leída con `version_app()`).
+- Al abrir o volver a la app, `js/actualizacion.js` compara versiones y bloquea con "Descargar e instalar" si hay una más nueva. Sin señal no bloquea.
+
 ## Publicar
 Cada push a `main` genera el APK en `https://github.com/IshoSegovia/coveca-app/releases/latest/download/coveca.apk`. Verificar que la compilación termine bien antes de avisar a Francisco.

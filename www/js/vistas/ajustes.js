@@ -1,6 +1,7 @@
 import { $, esc, barra, aviso } from '../ui.js';
 import * as datos from '../datos.js';
 import { config, buscarImpresoras, imprimirNota, esApp } from '../impresora.js';
+import { versionLocal, revisarActualizacion } from '../actualizacion.js';
 
 export async function vistaAjustes(v) {
   barra({ titulo: 'Ajustes' });
@@ -24,8 +25,18 @@ export async function vistaAjustes(v) {
       <p class="ayuda">Si la animación termina antes que el papel, baja este número; si termina después, súbelo.</p>
       <button id="prueba" type="button" class="btn sec">Imprimir nota de prueba</button>
     </form>
-    <div class="pad"><button id="salir" class="btn peligro">Cerrar sesión</button></div>
-    <p class="version">COVECA · versión ${esc(window.COVECA_VERSION || 'desarrollo')}</p>`;
+    <h2 class="sec-t">Versión</h2>
+    <dl class="datos">
+      <div class="dato"><dt>Instalada</dt><dd>${esc(versionLocal().nombre)}</dd></div>
+      <div class="dato"><dt>Vigente</dt><dd id="v-vigente">Revisando…</dd></div>
+    </dl>
+    <p class="version">COVECA${versionLocal().commit ? ' · ' + esc(versionLocal().commit) : ''}</p>
+    <div class="pad"><button id="salir" class="btn peligro">Cerrar sesión</button></div>`;
+  datos.versionVigente().then((vv) => {
+    const local = versionLocal();
+    $('#v-vigente', v).textContent = vv?.nombre ? `${vv.nombre}${vv.codigo > local.codigo && local.codigo ? ' (hay que actualizar)' : local.codigo ? ' ✓ al día' : ''}` : '—';
+    revisarActualizacion();
+  }).catch(() => { $('#v-vigente', v).textContent = 'Sin conexión para revisar'; });
 
   const sel = $('#impresora', v);
   const llenar = (lista) => {

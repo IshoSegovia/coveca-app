@@ -174,3 +174,10 @@ export async function configuracion() {
   const filas = chk(await sb.from('configuracion').select('*').eq('clave', 'negocio'));
   return filas[0]?.valor || demo.negocio;
 }
+
+// Versión vigente publicada (la escribe GitHub al compilar). Funciona sin sesión.
+export async function versionVigente() {
+  const { data, error } = await sb.rpc('version_app');
+  if (error) throw new Error(error.message);
+  return data;
+}

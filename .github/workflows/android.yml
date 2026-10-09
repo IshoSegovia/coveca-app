@@ -29,6 +29,14 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Escribir número de versión en la app
+        run: |
+          NOMBRE="0.1.${GITHUB_RUN_NUMBER}"
+          echo "NOMBRE_VERSION=$NOMBRE" >> "$GITHUB_ENV"
+          echo "NOTAS_VERSION=$(git log -1 --format=%s | tr -d '\"')" >> "$GITHUB_ENV"
+          echo "window.COVECA_VERSION = { codigo: ${GITHUB_RUN_NUMBER}, nombre: '${NOMBRE}', commit: '${GITHUB_SHA::7}' };" > www/version.js
+          cat www/version.js
+
       - name: Copiar la app web al proyecto Android
         run: npx cap sync android
 
@@ -65,13 +73,30 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
 
-      - name: Publicar en Releases (enlace fijo para descargar desde el celular)
+      - name: Publicar versión (v0.1.N) y "ultima" en Releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk coveca.apk
+          gh release create "v${NOMBRE_VERSION}" coveca.apk \
+            --title "COVECA ${NOMBRE_VERSION}" \
+            --notes "${NOTAS_VERSION} (commit ${GITHUB_SHA::7})" --latest=false
           gh release delete ultima --yes --cleanup-tag || true
           gh release create ultima coveca.apk \
-            --title "COVECA – última versión" \
-            --notes "Versión generada desde el commit ${GITHUB_SHA::7}. Descarga coveca.apk e instálalo en el celular." \
+            --title "COVECA – última versión (${NOMBRE_VERSION})" \
+            --notes "Versión ${NOMBRE_VERSION}: ${NOTAS_VERSION}. Descarga coveca.apk e instálalo en el celular." \
             --latest
+
+      - name: Registrar versión vigente en Supabase (obliga a actualizar)
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then echo "::warning::Sin SUPABASE_DB_URL: no se registró la versión vigente"; exit 0; fi
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -q \
+            -v codigo="${GITHUB_RUN_NUMBER}" -v nombre="${NOMBRE_VERSION}" -v notas="${NOTAS_VERSION}" \
+            -v url="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${NOMBRE_VERSION}/coveca.apk" <<'SQL'
+          insert into public.configuracion (clave, valor)
+          values ('app_version', jsonb_build_object('codigo', :'codigo'::int, 'nombre', :'nombre', 'notas', :'notas', 'url', :'url', 'fecha', now()))
+          on conflict (clave) do update set valor = excluded.valor;
+          SQL
+          echo "::notice::Versión vigente: ${NOMBRE_VERSION}"

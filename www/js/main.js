@@ -7,6 +7,7 @@ import { vistaClientes, vistaCliente, vistaClienteForm } from './vistas/clientes
 import { vistaPedido } from './vistas/pedido.js';
 import { vistaInventario, vistaProductoForm } from './vistas/inventario.js';
 import { vistaAjustes } from './vistas/ajustes.js';
+import { revisarActualizacion } from './actualizacion.js';
 
 const RUTAS = [
   [/^\/login$/, vistaLogin, null],
@@ -56,4 +57,9 @@ window.addEventListener('coveca:sesion', (e) => { sesion = e.detail; ir(sesion ?
   try { sesion = await datos.iniciar(); } catch (e) { sesion = false; }
   document.body.classList.toggle('demo', datos.enDemo());
   mostrar();
+  revisarActualizacion();
 })();
+
+// Al volver a la app (estaba en segundo plano) o al recuperar señal, revisar de nuevo.
+document.addEventListener('visibilitychange', () => { if (!document.hidden) revisarActualizacion(); });
+window.addEventListener('online', revisarActualizacion);

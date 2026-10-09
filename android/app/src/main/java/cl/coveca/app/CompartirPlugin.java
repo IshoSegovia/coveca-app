@@ -23,6 +23,21 @@ import java.io.FileOutputStream;
 @CapacitorPlugin(name = "Compartir")
 public class CompartirPlugin extends Plugin {
 
+    /** Abre un enlace en el navegador del celular (ej. descargar la actualización). */
+    @PluginMethod
+    public void abrirUrl(PluginCall call) {
+        String url = call.getString("url");
+        if (url == null) { call.reject("Falta el enlace."); return; }
+        try {
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("No se pudo abrir el enlace: " + e.getMessage());
+        }
+    }
+
     @PluginMethod
     public void whatsapp(PluginCall call) {
         String imagen = call.getString("imagen");   // PNG en base64 (sin "data:")
