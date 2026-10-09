@@ -63,7 +63,7 @@
 }
 .imp-hecho.con-qr { flex-direction: column; gap: 12px; padding: 16px 24px; }
 .imp-qr {
-  width: min(260px, 70vw, 42vh); aspect-ratio: 1;
+  width: min(300px, 78vw, 44vh); aspect-ratio: 1;
   background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
   animation: imp-aparece .25s ease-out;
 }
