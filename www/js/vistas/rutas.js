@@ -1,6 +1,6 @@
 import { $, esc, barra, icono, vacio, leerForm, aviso, ir, DIAS, fecha } from '../ui.js';
 import * as datos from '../datos.js';
-import { tieneGps } from '../gps.js';
+import { tieneGps, miUbicacion, leerCoordenadas, coordTxt } from '../gps.js';
 
 const hoyDia = ((new Date().getDay() + 6) % 7) + 1; // 1 = lunes
 
@@ -74,14 +74,32 @@ export async function vistaRutaForm(v, id) {
       <label class="campo"><span>Orden en la lista</span>
         <input name="orden" type="number" inputmode="numeric" value="${r.orden ?? ''}" placeholder="1, 2, 3…"></label>
       <label class="check"><input name="activa" type="checkbox" ${r.activa !== false ? 'checked' : ''}> Ruta activa</label>
+      <h2 class="sec-t">Base de partida</h2>
+      <p class="ayuda">Punto desde donde sale el recorrido (bodega, casa, etc.). Sirve para planificar sin estar en terreno.</p>
+      <label class="campo"><span>Nombre de la base</span>
+        <input name="base_nombre" value="${esc(r.base_nombre || '')}" placeholder="Ej.: Bodega COVECA"></label>
+      <label class="campo"><span>Ubicación (enlace de Google Maps o "latitud, longitud")</span>
+        <input id="base-coord" type="text" inputmode="url" value="${r.base_lat != null ? coordTxt({ lat: r.base_lat, lng: r.base_lng }) : ''}" placeholder="-35.97, -72.32"></label>
+      <button type="button" id="base-aqui" class="btn sec">Usar mi ubicación actual</button>
       <p id="err" class="error" role="alert"></p>
       <div class="pie-fijo"><button class="btn prin" type="submit">${id ? 'Guardar cambios' : 'Crear ruta'}</button></div>
     </form>`;
+  $('#base-aqui', v).addEventListener('click', async (e) => {
+    const b = e.currentTarget; b.disabled = true; b.textContent = 'Obteniendo ubicación…';
+    try { const u = await miUbicacion(); $('#base-coord', v).value = coordTxt(u); aviso(`Ubicación tomada (±${u.precision} m). Guarda para confirmar.`); }
+    catch (err) { aviso(err.message, 'error'); }
+    b.disabled = false; b.textContent = 'Usar mi ubicación actual';
+  });
   $('#f', v).addEventListener('submit', async (e) => {
     e.preventDefault();
     const d = leerForm(e.target);
     if (!d.nombre) { $('#err', v).textContent = 'Escribe un nombre para la ruta.'; return; }
     d.orden = d.orden ?? 0;
+    const txt = $('#base-coord', v).value.trim();
+    try {
+      const b = txt ? leerCoordenadas(txt) : { lat: null, lng: null };
+      d.base_lat = b.lat; d.base_lng = b.lng;
+    } catch (err) { $('#err', v).textContent = err.message; return; }
     try {
       const g = await datos.guardarRuta(id ? { ...d, id: Number(id) } : d);
       aviso(id ? 'Ruta guardada' : 'Ruta creada');

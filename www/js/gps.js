@@ -85,10 +85,12 @@ export function tramos(ruta) {
   for (let i = 0; i < ruta.length; i += PARADAS_POR_TRAMO) t.push(ruta.slice(i, i + PARADAS_POR_TRAMO));
   return t;
 }
-export function urlTramo(tramo) {
+// origen: punto de partida (base o parada anterior). Sin origen, Google Maps parte desde tu ubicación actual.
+export function urlTramo(tramo, origen = null) {
   const destino = tramo[tramo.length - 1];
   const intermedios = tramo.slice(0, -1).map(coordTxt).join('|');
   const p = new URLSearchParams({ api: '1', destination: coordTxt(destino), travelmode: 'driving', dir_action: 'navigate' });
+  if (origen) p.set('origin', coordTxt(origen));
   if (intermedios) p.set('waypoints', intermedios);
   return 'https://www.google.com/maps/dir/?' + p.toString().replace(/%2C/g, ',').replace(/%7C/g, '|');
 }

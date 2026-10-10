@@ -1,7 +1,7 @@
 // Datos de ejemplo para ver y probar la app sin conexión ni usuario (modo demostración).
 // Los clientes son ficticios; los productos son una muestra del catálogo.
 let rutas = [
-  { id: 1, nombre: 'Cauquenes', dia_semana: 1, orden: 1, activa: true },
+  { id: 1, nombre: 'Cauquenes', dia_semana: 1, orden: 1, activa: true, base_nombre: 'Bodega de ejemplo', base_lat: -35.9515, base_lng: -72.198 },
   { id: 2, nombre: 'Retiro', dia_semana: 2, orden: 2, activa: true },
   { id: 3, nombre: 'San Carlos', dia_semana: 3, orden: 3, activa: true },
   { id: 4, nombre: 'Parral', dia_semana: 4, orden: 4, activa: true },
