@@ -59,6 +59,23 @@ export async function nuevoReporte({ titulo, subtitulo }) {
       y += h + 8;
     },
 
+    /** Dos bloques lado a lado (ej. "Para" y "De"): [{ titulo, lineas: [texto, ...] }] */
+    bloques(items) {
+      const gap = 6, w = (W - 2 * M - gap * (items.length - 1)) / items.length;
+      const alto = Math.max(...items.map((b) => b.lineas.filter(Boolean).length)) * 5 + 12;
+      items.forEach((b, i) => {
+        const x = M + i * (w + gap);
+        doc.setDrawColor(...BORDE); doc.setFillColor(255, 255, 255); doc.roundedRect(x, y, w, alto, 2, 2, 'FD');
+        doc.setTextColor(...AZUL); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+        doc.text(b.titulo.toUpperCase(), x + 4, y + 6);
+        b.lineas.filter(Boolean).forEach((l, j) => {
+          doc.setTextColor(...(j === 0 ? TEXTO : SUAVE)); doc.setFont('helvetica', j === 0 ? 'bold' : 'normal'); doc.setFontSize(j === 0 ? 11 : 9);
+          doc.text(String(l), x + 4, y + 12 + j * 5);
+        });
+      });
+      y += alto + 8;
+    },
+
     /** Título de sección con línea de acento. */
     seccion(texto, nota) {
       if (y > 260) { doc.addPage(); y = 20; }

@@ -374,3 +374,11 @@ a.fila:active { background: var(--fondo); }
 .filtro-prov { margin-bottom: 8px; }
 .caja-inline { display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px dashed var(--azul); border-radius: var(--radio); background: var(--azul-suave); }
 .cuenta.mt { margin-top: 16px; }
+
+/* ---------- Reporte por proveedor ---------- */
+.filtro-rep { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.prov-dest { display: flex; align-items: center; gap: 12px; margin: 16px 16px 0; padding: 12px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); }
+.envio { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.envio .btn:disabled { background: var(--borde); color: var(--texto-suave); border-color: var(--borde); }
+.mt { margin-top: 12px; }
+.envio .foto-acciones { margin: 0; }
