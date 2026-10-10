@@ -50,7 +50,9 @@ export function vistaAvanzado(v) {
     const yo = datos.usuario();
     try {
       await imprimirNota({ numero: 0, vendedor: yo.nombre, terminal: yo.terminal, cliente: 'Cliente de prueba Ñuñoa', fecha: new Date().toLocaleString('es-CL'), pago: 'Efectivo',
-        items: [{ nombre: 'Super 8 Oblea Clásica x24', cant: 2, precio: 5990 }, { nombre: 'BigTime Menta x20', cant: 1, precio: 6690 }] }, await datos.configuracion());
+        items: [{ nombre: 'Super 8 Oblea Clásica x24', cant: 2, precio: 5990 }, { nombre: 'BigTime Menta x20', cant: 1, precio: 6690 }],
+        descuentoLealtad: 373, lealtad: { nivel: 'Oro', lineas: ['Cliente Oro · Ahorró $373', 'Le faltan $85.000 y 1 semana con compra para Platino'] } },
+      await datos.configuracion());
     } catch (e) { aviso(e.message, 'error'); }
   });
   v.querySelectorAll('input[name="tema"]').forEach((r) => r.addEventListener('change', () => {

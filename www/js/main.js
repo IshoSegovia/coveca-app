@@ -8,6 +8,7 @@ import { vistaPedido } from './vistas/pedido.js';
 import { vistaInventario, vistaProductoForm } from './vistas/inventario.js';
 import { vistaAjustes } from './vistas/ajustes.js';
 import { vistaAvanzado } from './vistas/avanzado.js';
+import { vistaProgramaLealtad, vistaReporteLealtad } from './vistas/lealtad.js';
 import { revisarActualizacion } from './actualizacion.js';
 import { vistaRecorrido } from './vistas/recorrido.js';
 import { vistaReportes, vistaStockBajo, vistaVentasSemana } from './vistas/reportes.js';
@@ -38,6 +39,8 @@ const RUTAS = [
   [/^\/proveedores\/(\d+)$/, vistaProveedor, 'ajustes'],
   [/^\/ajustes$/, vistaAjustes, 'ajustes'],
   [/^\/ajustes\/avanzado$/, vistaAvanzado, 'ajustes'],
+  [/^\/lealtad$/, vistaProgramaLealtad, 'ajustes'],
+  [/^\/reportes\/lealtad$/, vistaReporteLealtad, 'reportes'],
 ];
 
 let sesion = false;

@@ -105,12 +105,18 @@ export async function dibujarNota(nota, negocio) {
   separador();
 
   // Subtotal y descuento (si hay)
-  if (nota.descuento) {
+  if (nota.descuento || nota.descuentoLealtad) {
     texto('Subtotal', { size: 20 });
     ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText(clp(total), ANCHO - M, y);
-    texto('Descuento', { size: 20 });
-    ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText('-' + clp(nota.descuento), ANCHO - M, y);
-    total = Math.max(0, total - nota.descuento);
+    if (nota.descuentoLealtad) {
+      texto(`Desc. cliente ${nota.lealtad?.nivel || ''}`.trim(), { size: 20 });
+      ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText('-' + clp(nota.descuentoLealtad), ANCHO - M, y);
+    }
+    if (nota.descuento) {
+      texto('Descuento', { size: 20 });
+      ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText('-' + clp(nota.descuento), ANCHO - M, y);
+    }
+    total = Math.max(0, total - (nota.descuentoLealtad || 0) - (nota.descuento || 0));
   }
 
   // Total
@@ -120,6 +126,14 @@ export async function dibujarNota(nota, negocio) {
   texto(nota.pago, { size: 20 });
   ctx.font = `20px ${FUENTE}`; ctx.textAlign = 'right'; ctx.fillText(clp(total), ANCHO - M, y);
   separador();
+
+  // Programa de lealtad
+  if (nota.lealtad) {
+    y += 4;
+    parrafo(nota.lealtad.lineas[0], { size: 22, bold: true, align: 'center' });
+    if (nota.lealtad.lineas[1]) parrafo(nota.lealtad.lineas[1], { size: 19, align: 'center' });
+    separador();
+  }
 
   // Pie
   y += 4;

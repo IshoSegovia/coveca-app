@@ -38,6 +38,14 @@ const PANTALLAS = [
   ['#/proveedores/1/editar', '18b-proveedor-editar'],
   ['#/ajustes', '13-ajustes'],
   ['#/ajustes/avanzado', '19-avanzado'],
+  ['#/clientes/1', '25-cliente-lealtad', async (p) => { await p.evaluate(() => document.querySelector('.lealtad')?.scrollIntoView({ block: 'center' })); }],
+  ['#/clientes/1/pedido', '26-pedido-lealtad', async (p) => {
+    for (const id of [12, 12, 1, 4]) await p.click(`.fila.prod[data-id="${id}"] [data-d="1"]`);
+    await p.click('#sig');
+    await p.evaluate(() => document.querySelector('.totales')?.scrollIntoView({ block: 'center' }));
+  }],
+  ['#/reportes/lealtad', '27-reporte-lealtad'],
+  ['#/lealtad', '28-programa-lealtad'],
 ];
 
 const server = createServer(async (req, res) => {

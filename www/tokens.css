@@ -26,6 +26,11 @@
   --aviso-fondo: #1D1F2B;
   --papel: #FFFFFF;         /* nota impresa, QR y fondo del logo: siempre blanco */
   --luz-lista: #7BD88F;
+  /* Niveles del programa de lealtad (texto fuerte sobre fondo suave; siempre van con su nombre) */
+  --nivel-0: #8A4B1C; --nivel-0-suave: #F6E9DD;
+  --nivel-1: #4F5566; --nivel-1-suave: #E9ECF1;
+  --nivel-2: #7A5A00; --nivel-2-suave: #FAF0CF;
+  --nivel-3: #3E4095; --nivel-3-suave: #E4E5F6;
   --radio: 10px;
   --toque: 48px;
   --fuente: system-ui, Roboto, "Noto Sans", Arial, sans-serif;
@@ -47,5 +52,9 @@
   --ambar-suave: #3B2B12;
   --rojo-suave: #40201F;
   --aviso-fondo: #3A3D4F;
+  --nivel-0: #E9A877; --nivel-0-suave: #3A2516;
+  --nivel-1: #C9CEDA; --nivel-1-suave: #2C303B;
+  --nivel-2: #F2CD5C; --nivel-2-suave: #3A3010;
+  --nivel-3: #B4B7FA; --nivel-3-suave: #262A55;
   color-scheme: dark;
 }

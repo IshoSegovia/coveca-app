@@ -1,3 +1,4 @@
+import { PROGRAMA_DEFECTO } from './lealtad.js';
 // Datos de ejemplo para ver y probar la app sin conexión ni usuario (modo demostración).
 // Los clientes son ficticios; los productos son una muestra del catálogo.
 let rutas = [
@@ -49,6 +50,27 @@ let numero = 0;
   }
 }
 
+// Historial de las semanas anteriores (solo para ver el programa de lealtad en modo demostración):
+// "Minimarket El Ejemplo" queda en Oro y "Almacén Doña Prueba" cerca de Plata.
+{
+  const hist = [[1, [9, 16, 23, 30, 37, 44, 51, 58, 72], 52000], [2, [10, 24, 38], 41000], [4, [12, 40, 66, 80], 48000]];
+  for (const [cliente, dias, monto] of hist) for (const d of dias) {
+    const f = new Date(hoy - d * 864e5); f.setHours(11, 0, 0, 0);
+    pedidos.push({ id: `hist-${cliente}-${d}`, numero: 0, cliente_id: cliente, fecha: f.toISOString(), subtotal: monto, descuento: 0, descuento_lealtad: 0,
+      total: monto, estado: 'generado', forma_pago: 'efectivo', items: [], historial: true });
+  }
+}
+let programa = JSON.parse(JSON.stringify(PROGRAMA_DEFECTO));
+const semana = (f) => { const d = new Date(f); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getTime(); };
+function comprasDe(id) {
+  const desde = hoy - programa.dias * 864e5, corte = hoy - (programa.dias - 30) * 864e5;
+  const ps = pedidos.filter((p) => p.cliente_id == id && p.estado !== 'anulado' && new Date(p.fecha) >= desde);
+  const sem = (lista) => new Set(lista.map((p) => semana(p.fecha))).size;
+  const en30 = ps.filter((p) => new Date(p.fecha) >= corte);
+  return { cliente_id: Number(id), monto: ps.reduce((s, p) => s + p.total, 0), semanas: sem(ps), compras: ps.length,
+    monto_en_30: en30.reduce((s, p) => s + p.total, 0), semanas_en_30: sem(en30), compro_esta_semana: ps.some((p) => semana(p.fecha) === semana(hoy)) };
+}
+
 const atendido = (c) => pedidos.some((p) => p.cliente_id === c.id && (hoy - new Date(p.fecha)) / 864e5 < c.frecuencia_dias);
 const enriquecer = (c) => ({ ...c, activo: true, ruta_nombre: rutas.find((r) => r.id === c.ruta_id)?.nombre || null,
   atendido: atendido(c), ultima_compra: pedidos.filter((p) => p.cliente_id === c.id).map((p) => p.fecha.slice(0, 10)).sort().pop() || c.loyverse_ultima_compra });
@@ -79,7 +101,7 @@ export const demo = {
     if (c.id) { clientes = clientes.map((x) => (x.id == c.id ? { ...x, ...c } : x)); return clientes.find((x) => x.id == c.id); }
     const n = { ...c, id: Math.max(0, ...clientes.map((x) => x.id)) + 1 }; clientes.push(n); return n;
   },
-  pedidosCliente: (id) => pedidos.filter((p) => p.cliente_id == id).slice().reverse(),
+  pedidosCliente: (id) => pedidos.filter((p) => p.cliente_id == id && !p.historial).slice().reverse(),
   categorias: () => cats,
   productos: ({ busqueda }) => productos.filter((p) => !busqueda || norm(p.nombre + ' ' + p.ref).includes(norm(busqueda)))
     .map((p) => ({ ...p, categoria: cats.find((c) => c.id === p.categoria_id)?.nombre, proveedor: proveedores.find((x) => x.id === p.proveedor_id)?.nombre || null })).sort((a, b) => a.nombre.localeCompare(b.nombre)),
@@ -102,14 +124,18 @@ export const demo = {
   fotoProducto(id, url) { productos.find((x) => x.id == id).imagen_url = url; return url; },
   ajustarStock(id, cant) { const p = productos.find((x) => x.id == id); p.stock += cant; },
   ventas(desde, hasta) {
-    return pedidos.filter((p) => new Date(p.fecha) >= desde && new Date(p.fecha) < hasta)
+    return pedidos.filter((p) => !p.historial && new Date(p.fecha) >= desde && new Date(p.fecha) < hasta)
       .map((p) => ({ ...p, cliente: clientes.find((c) => c.id === p.cliente_id)?.nombre || '—' }))
       .sort((a, b) => a.fecha.localeCompare(b.fecha));
   },
+  programaLealtad: () => programa,
+  guardarProgramaLealtad(cfg) { programa = cfg; return cfg; },
+  comprasLealtad: (id) => (id ? comprasDe(id) : new Map(clientes.map((c) => [c.id, comprasDe(c.id)]))),
   crearPedido(p) {
     const items = p.items.map((i) => { const pr = productos.find((x) => x.id == i.producto_id); pr.stock -= i.cantidad; return { ...i, precio: i.precio ?? pr.precio }; });
     const sub = items.reduce((s, i) => s + i.cantidad * i.precio, 0);
-    const ped = { id: p.id, numero: ++numero, cliente_id: p.cliente_id, fecha: new Date().toISOString(), total: Math.max(0, sub - (p.descuento || 0)), subtotal: sub, descuento: p.descuento || 0, estado: 'generado', forma_pago: p.forma_pago,
+    const leal = Math.max(0, p.descuento_lealtad || 0);
+    const ped = { id: p.id, numero: ++numero, cliente_id: p.cliente_id, fecha: new Date().toISOString(), total: Math.max(0, sub - leal - (p.descuento || 0)), subtotal: sub, descuento: p.descuento || 0, descuento_lealtad: leal, nivel: p.nivel || null, estado: 'generado', forma_pago: p.forma_pago,
       items: items.map((i) => { const pr = productos.find((x) => x.id == i.producto_id); return { producto_id: pr.id, nombre: pr.nombre, cantidad: i.cantidad, precio: i.precio, costo: pr.costo, subtotal: i.cantidad * i.precio }; }) };
     pedidos.push(ped); return ped;
   },

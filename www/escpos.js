@@ -5,8 +5,8 @@ export const COLUMNAS = 32; // caracteres por línea con la fuente normal
 const AVANCE_FINAL = 6;     // líneas en blanco al final para poder cortar
 
 // Página de códigos para acentos y ñ. PC850 = 2, Windows-1252 = 16.
-const PC850 = { 'á':0xA0,'é':0x82,'í':0xA1,'ó':0xA2,'ú':0xA3,'ñ':0xA4,'Ñ':0xA5,'Á':0xB5,'É':0x90,'Í':0xD6,'Ó':0xE0,'Ú':0xE9,'ü':0x81,'Ü':0x9A,'¿':0xA8,'¡':0xAD,'°':0xF8 };
-const CP1252 = { 'á':0xE1,'é':0xE9,'í':0xED,'ó':0xF3,'ú':0xFA,'ñ':0xF1,'Ñ':0xD1,'Á':0xC1,'É':0xC9,'Í':0xCD,'Ó':0xD3,'Ú':0xDA,'ü':0xFC,'Ü':0xDC,'¿':0xBF,'¡':0xA1,'°':0xB0 };
+const PC850 = { 'á':0xA0,'é':0x82,'í':0xA1,'ó':0xA2,'ú':0xA3,'ñ':0xA4,'Ñ':0xA5,'Á':0xB5,'É':0x90,'Í':0xD6,'Ó':0xE0,'Ú':0xE9,'ü':0x81,'Ü':0x9A,'¿':0xA8,'¡':0xAD,'°':0xF8,'·':0xFA };
+const CP1252 = { 'á':0xE1,'é':0xE9,'í':0xED,'ó':0xF3,'ú':0xFA,'ñ':0xF1,'Ñ':0xD1,'Á':0xC1,'É':0xC9,'Í':0xCD,'Ó':0xD3,'Ú':0xDA,'ü':0xFC,'Ü':0xDC,'¿':0xBF,'¡':0xA1,'°':0xB0,'·':0xB7 };
 export const TABLAS = { pc850: { n: 2, mapa: PC850 }, cp1252: { n: 16, mapa: CP1252 } };
 
 export const clp = (n) => '$' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -139,14 +139,22 @@ export async function notaTexto(nota, negocio, codigo = 'pc850', conPruebaAcento
     t.par(it.nombre, clp(sub)).linea(`  ${it.cant} x ${clp(it.precio)}`);
   }
   t.separador();
-  if (nota.descuento) {
-    t.par('Subtotal', clp(total)).par('Descuento', '-' + clp(nota.descuento));
-    total = Math.max(0, total - nota.descuento);
+  if (nota.descuento || nota.descuentoLealtad) {
+    t.par('Subtotal', clp(total));
+    if (nota.descuentoLealtad) t.par(`Desc. cliente ${nota.lealtad?.nivel || ''}`.trim(), '-' + clp(nota.descuentoLealtad));
+    if (nota.descuento) t.par('Descuento', '-' + clp(nota.descuento));
+    total = Math.max(0, total - (nota.descuentoLealtad || 0) - (nota.descuento || 0));
   }
   t.negrita().alto().par('TOTAL', clp(total)).alto(false).negrita(false)
     .par(nota.pago, clp(total))
-    .separador()
-    .centro().parrafo(negocio.leyenda);
+    .separador();
+  // Programa de lealtad: nivel, ahorro y cuánto le falta para el siguiente
+  if (nota.lealtad) {
+    t.centro().negrita().parrafo(nota.lealtad.lineas[0]).negrita(false);
+    if (nota.lealtad.lineas[1]) t.parrafo(nota.lealtad.lineas[1]);
+    t.separador();
+  }
+  t.centro().parrafo(negocio.leyenda);
   if (negocio.transferencia) {
     t.linea().linea('Datos para transferencia:');
     for (const l of negocio.transferencia) t.linea(l);

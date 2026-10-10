@@ -6,7 +6,7 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 - `www/` – interfaz (HTML/JS/CSS sin compilación). `tokens.css` = variables de diseño, `app.css` = estilos de la app.
   - `js/main.js` entrada y enrutador (`#/rutas`, `#/clientes/:id`, `#/inventario/:id`, `#/ajustes`…).
   - `js/datos.js` capa de datos: Supabase con sesión; `js/demo.js` datos de ejemplo ("Ver con datos de ejemplo" en el ingreso).
-  - `js/vistas/` pantallas: login, rutas (+ recorrido), clientes (+ ubicación), pedido, inventario, proveedores, reportes, ajustes. `js/ui.js` utilidades (clp, margen, íconos, barra, selector lista/íconos).
+  - `js/vistas/` pantallas: login, rutas (+ recorrido), clientes (+ ubicación), pedido, inventario, proveedores, reportes, lealtad, ajustes (+ avanzado). `js/ui.js` utilidades (clp, margen, íconos, barra, selector lista/íconos).
   - `js/gps.js` ubicación, orden del recorrido (vecino más cercano + 2-opt) y enlaces de Google Maps por tramos (base de partida opcional por ruta).
   - `js/pdf.js` reportes PDF de marca (jsPDF + autotable en `vendor/`); en Android se guardan en Descargas/COVECA con `Compartir.guardarArchivo`.
   - `js/fotos.js` recorte/reducción de fotos antes de subir a Storage (carpetas `productos` y `clientes`).
@@ -51,6 +51,11 @@ Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 - Stock bajo: negativo / sin stock / bajo mínimo (mínimo general editable para productos sin mínimo propio). Filtro por proveedor: con un proveedor elegido se arma la solicitud de pedido (cantidad sugerida = hasta el doble del mínimo, editable) para enviar por WhatsApp, correo o PDF sin stock ni costos.
 - Ventas de la semana (lunes a domingo): filtro por proveedor según el proveedor actual de cada producto; con filtro, montos por producto sin descuentos de la nota.
 - Salida: PDF de marca y WhatsApp como texto (no se imprimen en la térmica).
+
+## Lealtad
+- 4 niveles por compras de 90 días: monto **y** semanas con compra (vista `lealtad_clientes`; reglas en `configuracion.lealtad`). Toda la lógica en `www/js/lealtad.js`; pantallas en `js/vistas/lealtad.js` (programa en `#/lealtad`, reporte en `#/reportes/lealtad`).
+- Descuento de nivel por producto con tope de margen mínimo (10 %): nunca bajo costo ÷ (1 − margen mínimo). Se guarda aparte del descuento puntual (`pedidos.descuento_lealtad`, `pedidos.nivel`); `crear_pedido` lo topa al % del nivel más alto.
+- Prueba SQL: `supabase/pruebas/prueba_lealtad.sql`.
 
 ## Impresión
 - Revisar cambios a la nota con la vista previa (imagen) antes de publicar.

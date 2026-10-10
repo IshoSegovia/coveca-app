@@ -1,6 +1,7 @@
 // Capa de datos: Supabase cuando hay sesión; datos de ejemplo (modo demostración) si no.
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js';
 import { demo } from './demo.js';
+import { PROGRAMA_DEFECTO } from './lealtad.js';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'coveca-sesion' },
@@ -216,6 +217,35 @@ export async function configuracion() {
   if (modoDemo) return demo.negocio;
   const filas = chk(await sb.from('configuracion').select('*').eq('clave', 'negocio'));
   return filas[0]?.valor || demo.negocio;
+}
+
+// ---------------- Lealtad ----------------
+// Reglas del programa (niveles, montos, semanas, % y beneficios). Se guardan en el celular para usarlas sin señal.
+export async function programaLealtad() {
+  if (modoDemo) return demo.programaLealtad();
+  try {
+    const filas = chk(await sb.from('configuracion').select('valor').eq('clave', 'lealtad'));
+    const cfg = filas[0]?.valor || { ...PROGRAMA_DEFECTO, activo: false };
+    try { localStorage.setItem('coveca-lealtad', JSON.stringify(cfg)); } catch { /* sin espacio: se usa lo leído */ }
+    return cfg;
+  } catch (e) {
+    try { const c = JSON.parse(localStorage.getItem('coveca-lealtad')); if (c) return c; } catch { /* nada guardado */ }
+    throw e;
+  }
+}
+export async function guardarProgramaLealtad(cfg) {
+  if (modoDemo) return demo.guardarProgramaLealtad(cfg);
+  chk(await sb.from('configuracion').upsert({ clave: 'lealtad', valor: cfg }));
+  try { localStorage.setItem('coveca-lealtad', JSON.stringify(cfg)); } catch { /* ignorar */ }
+  return cfg;
+}
+// Compras de los últimos 90 días: de un cliente o de todos (Map cliente_id → datos).
+export async function comprasLealtad(clienteId = null) {
+  if (modoDemo) return demo.comprasLealtad(clienteId);
+  let q = sb.from('lealtad_clientes').select('*');
+  if (clienteId) q = q.eq('cliente_id', clienteId);
+  const filas = chk(await q);
+  return clienteId ? (filas[0] || null) : new Map(filas.map((f) => [f.cliente_id, f]));
 }
 
 // Versión vigente publicada (la escribe GitHub al compilar). Funciona sin sesión.

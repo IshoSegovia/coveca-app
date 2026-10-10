@@ -3,6 +3,7 @@ import * as datos from '../datos.js';
 import { prepararFoto } from '../fotos.js';
 import { ubicacionHtml, activarUbicacion } from './ubicacion.js';
 import { tieneGps, urlPunto } from '../gps.js';
+import * as lealtad from '../lealtad.js';
 
 let ultimaBusqueda = '';
 
@@ -76,9 +77,32 @@ function activarFoto(v, id, alTerminar) {
   });
 }
 
+// Bloque "Programa de lealtad" de la ficha: nivel, beneficio, avance al siguiente y aviso si está por bajar.
+function lealtadHtml(e) {
+  const pct = e.nivel.descuento;
+  return `<h2 class="sec-t">Programa de lealtad</h2>
+    <div class="lealtad nv-${e.i}">
+      <div class="lealtad-cab">
+        <span class="medalla" aria-hidden="true">${icono('medalla')}</span>
+        <div><p class="lealtad-n">Nivel ${esc(e.nivel.nombre)}</p>
+          <p class="lealtad-s">${pct ? `${String(pct).replace('.', ',')} % de descuento en cada nota` : 'Sin descuento en este nivel'}</p></div>
+      </div>
+      <p class="lealtad-benef">Últimos 90 días: <span class="monto">${clp(e.stats.monto)}</span> en ${e.stats.semanas} semana${e.stats.semanas === 1 ? '' : 's'} con compra</p>
+      ${e.nivel.beneficios ? `<p class="lealtad-benef">${esc(e.nivel.beneficios)}</p>` : ''}
+      <div class="lealtad-prog">
+        ${e.siguiente ? `<div class="barra-avance" role="progressbar" aria-valuenow="${Math.round(e.avance * 100)}" aria-valuemin="0" aria-valuemax="100" aria-label="Avance a ${esc(e.siguiente.nombre)}"><span style="width:${Math.round(e.avance * 100)}%"></span></div>` : ''}
+        <p>${esc(lealtad.textoFalta(e))}</p>
+      </div>
+      ${e.bajaA ? `<p class="nota-falta">Si no compra en los próximos 30 días, baja a ${esc(e.bajaA.nombre)}.</p>` : ''}
+    </div>`;
+}
+
 export async function vistaCliente(v, id) {
   const c = await datos.cliente(id);
   const peds = await datos.pedidosCliente(id);
+  // Lealtad: si falla (sin señal), la ficha se muestra igual sin ese bloque
+  const le = await Promise.all([datos.programaLealtad(), datos.comprasLealtad(id)])
+    .then(([cfg, compras]) => (cfg.activo ? { cfg, e: lealtad.estado(compras, cfg) } : null)).catch(() => null);
   const volver = c.ruta_id ? `#/rutas/${c.ruta_id}` : '#/clientes';
   barra({ titulo: c.nombre, sub: c.ruta_nombre || 'Sin ruta', atras: volver,
     accion: datos.esAdmin() ? { href: `#/clientes/${id}/editar`, icono: 'editar', etiqueta: 'Editar cliente' } : null });
@@ -91,7 +115,8 @@ export async function vistaCliente(v, id) {
         <span class="foto-insignia" aria-hidden="true">${icono('camara')}</span>
         <input class="foto-in" type="file" accept="image/*" hidden></label>
       <div>
-        ${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido este ciclo</span>` : '<span class="chip">Pendiente este ciclo</span>'}
+        <div class="perfil-chips">${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido este ciclo</span>` : '<span class="chip">Pendiente este ciclo</span>'}
+          ${le ? `<span class="chip nivel nv-${le.e.i}">${icono('medalla', 'ico-s')} ${esc(le.e.nivel.nombre)}</span>` : ''}</div>
         <p class="perfil-s">Visita cada ${c.frecuencia_dias} días${c.ultima_compra ? ' · Última compra ' + fecha(c.ultima_compra) : ''}</p>
       </div>
     </div>
@@ -99,6 +124,8 @@ export async function vistaCliente(v, id) {
     ${tel ? `<div class="acciones-rap"><a class="btn sec" href="tel:${esc(tel)}">${icono('telefono')} Llamar</a>
       ${tieneGps(c) || c.direccion || c.comuna ? `<a class="btn sec" data-externo href="${tieneGps(c) ? urlPunto(c) : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([c.direccion, c.comuna, 'Chile'].filter(Boolean).join(', '))}">${icono('mapa')} Mapa</a>` : ''}</div>` : ''}
     ${faltan.length && datos.esAdmin() ? `<a class="nota-falta" href="#/clientes/${id}/editar">Faltan datos: ${faltan.map((k) => ({ rut: 'RUT', telefono: 'teléfono', direccion: 'dirección', comuna: 'comuna', gps: 'ubicación GPS' }[k])).join(', ')}. Toca para completar.</a>` : ''}
+
+    ${le ? lealtadHtml(le.e) : ''}
 
     <h2 class="sec-t">Ubicación</h2>
     ${ubicacionHtml(c)}

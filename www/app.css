@@ -385,6 +385,38 @@ a.fila:active { background: var(--fondo); }
 .mt { margin-top: 12px; }
 .envio .foto-acciones { margin: 0; }
 
+/* ---------- Programa de lealtad ---------- */
+.nivel { color: var(--nc); background: var(--ncs); border-color: var(--ncs); }
+.nivel .ico { width: 16px; height: 16px; }
+.nv-0 { --nc: var(--nivel-0); --ncs: var(--nivel-0-suave); }
+.nv-1 { --nc: var(--nivel-1); --ncs: var(--nivel-1-suave); }
+.nv-2 { --nc: var(--nivel-2); --ncs: var(--nivel-2-suave); }
+.nv-3 { --nc: var(--nivel-3); --ncs: var(--nivel-3-suave); }
+.perfil-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lealtad { margin: 0; padding: 14px 16px; background: var(--superficie); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+.lealtad-cab { display: flex; align-items: center; gap: 12px; }
+.medalla { width: 48px; height: 48px; flex: none; border-radius: 50%; display: grid; place-items: center; color: var(--nc); background: var(--ncs); }
+.medalla .ico { width: 26px; height: 26px; }
+.lealtad-cab > div { flex: 1; min-width: 0; }
+.lealtad-n { margin: 0; font-size: 20px; font-weight: 700; color: var(--nc); }
+.lealtad-s { margin: 2px 0 0; font-size: 14px; color: var(--texto-suave); }
+.lealtad-desc { flex: none; text-align: right; }
+.lealtad-desc b { display: block; font-size: 20px; color: var(--texto); font-variant-numeric: tabular-nums; }
+.lealtad-desc span { font-size: 14px; color: var(--texto-suave); }
+.lealtad-benef { margin: 12px 0 0; font-size: 15px; }
+.lealtad-prog { margin-top: 12px; }
+.lealtad-prog p { margin: 6px 0 0; font-size: 15px; font-weight: 600; }
+.lealtad-prog .barra-avance span { background: var(--nc); }
+.lealtad .nota-falta { margin: 12px 0 0; }
+.lealtad-off { color: var(--texto-suave); font-size: 15px; }
+.totales .leal dt { color: var(--texto); }
+.ruta-ico.medalla-ico { color: var(--nc); background: var(--ncs); }
+.resumen > [class*="nv-"] .resumen-n { color: var(--nc); }
+.nivel-form { margin-top: 8px; padding: 12px; border: 1px solid var(--borde); border-left: 4px solid var(--nc); border-radius: var(--radio); background: var(--superficie); display: flex; flex-direction: column; gap: 10px; }
+.nivel-form h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 17px; color: var(--nc); }
+.campo-pre { display: flex; align-items: center; gap: 8px; }
+.campo-pre input { flex: 1; min-width: 0; }
+
 /* =====================================================================
    Animaciones sutiles (≈0,2 s). Se desactivan si el celular pide "reducir movimiento".
    ===================================================================== */

@@ -23,16 +23,21 @@ export function vistaReportes(v) {
         <p class="tarjeta-t">Ventas de la semana</p>
         <p class="tarjeta-s">Qué se vendió, a quién y cuánto</p>
       </a>
+      <a class="tarjeta reporte" href="#/reportes/lealtad">
+        <span class="ruta-ico nv-2 medalla-ico" aria-hidden="true">${icono('medalla')}</span>
+        <p class="tarjeta-t">Clientes por nivel</p>
+        <p class="tarjeta-s">Programa de lealtad: quién sube y quién baja</p>
+      </a>
     </div>`;
 }
 
 // Botones de salida comunes a ambos reportes.
-const accionesHtml = () => `<div class="foto-acciones mt reporte-acc">
+export const accionesHtml = () => `<div class="foto-acciones mt reporte-acc">
     <button type="button" class="btn sec" data-acc="pdf">${icono('descargar')} Guardar PDF</button>
     <button type="button" class="btn sec" data-acc="whatsapp">${icono('whatsapp')} WhatsApp</button>
   </div>`;
 
-function activarAcciones(v, { pdf, nombre, texto }) {
+export function activarAcciones(v, { pdf, nombre, texto }) {
   v.querySelector('[data-acc="pdf"]').addEventListener('click', async (e) => {
     const b = e.currentTarget, html = b.innerHTML;
     b.disabled = true; b.textContent = 'Generando…';
