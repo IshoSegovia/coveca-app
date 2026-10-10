@@ -382,3 +382,64 @@ a.fila:active { background: var(--fondo); }
 .envio .btn:disabled { background: var(--borde); color: var(--texto-suave); border-color: var(--borde); }
 .mt { margin-top: 12px; }
 .envio .foto-acciones { margin: 0; }
+
+/* =====================================================================
+   Animaciones sutiles (≈0,2 s). Se desactivan si el celular pide "reducir movimiento".
+   ===================================================================== */
+:root { --anim: 220ms; --suave: cubic-bezier(.2, .7, .2, 1); }
+
+/* Cambio de pantalla */
+@keyframes entra-adelante { from { opacity: 0; transform: translateX(28px); } }
+@keyframes entra-atras    { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes entra-suave    { from { opacity: 0; transform: translateY(8px); } }
+.vista.anim-adelante > * { animation: entra-adelante var(--anim) var(--suave) both; }
+.vista.anim-atras > *    { animation: entra-atras var(--anim) var(--suave) both; }
+.vista.anim-tab > *, .vista.anim-inicio > * { animation: entra-suave var(--anim) var(--suave) both; }
+.vista .pie-fijo { animation: none !important; }
+.barra-titulo { animation: entra-suave 180ms var(--suave) both; }
+
+/* Listas y tarjetas aparecen escalonadas solo al entrar a la pantalla */
+@keyframes aparece { from { opacity: 0; transform: translateY(10px); } }
+.vista.animando .lista > *, .vista.animando .grilla > * { animation: aparece 260ms var(--suave) both; }
+.vista.animando .lista > :nth-child(2), .vista.animando .grilla > :nth-child(2) { animation-delay: 30ms; }
+.vista.animando .lista > :nth-child(3), .vista.animando .grilla > :nth-child(3) { animation-delay: 60ms; }
+.vista.animando .lista > :nth-child(4), .vista.animando .grilla > :nth-child(4) { animation-delay: 90ms; }
+.vista.animando .lista > :nth-child(5), .vista.animando .grilla > :nth-child(5) { animation-delay: 120ms; }
+.vista.animando .lista > :nth-child(6), .vista.animando .grilla > :nth-child(6) { animation-delay: 150ms; }
+.vista.animando .lista > :nth-child(n+7), .vista.animando .grilla > :nth-child(n+7) { animation-delay: 180ms; }
+.vista.animando .resumen > div { animation: aparece 260ms var(--suave) both; }
+.vista.animando .resumen > div:nth-child(2) { animation-delay: 40ms; }
+.vista.animando .resumen > div:nth-child(3) { animation-delay: 80ms; }
+
+/* Respuesta al tocar */
+.btn, .fila, .tarjeta, .filtro, .cant-btn, .segmento button, .barra-btn, .tabs a, .opcion {
+  transition: transform 120ms var(--suave), background-color 160ms, border-color 160ms, color 160ms, box-shadow 160ms;
+}
+.btn:active:not(:disabled), .cant-btn:active:not(:disabled), .filtro:active, .segmento button:active { transform: scale(.97); }
+.tarjeta:active { transform: scale(.98); }
+a.fila:active { transform: scale(.99); }
+.tabs a .ico { transition: transform 200ms var(--suave); }
+.tabs a[aria-current="page"] .ico { transform: translateY(-2px); }
+
+/* Cantidades: el número "late" al cambiar y la fila se destaca suave */
+.fila.prod { transition: background-color 200ms, box-shadow 200ms; }
+@keyframes late { 50% { transform: scale(1.12); } }
+.fila.prod.sel .cant-n { animation: late 180ms var(--suave); }
+
+/* Cajas que se despliegan (nuevo proveedor, pegar ubicación, etc.) */
+@keyframes despliega { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+.caja-inline:not([hidden]), .ubic-pegar:not([hidden]), .nota-falta { animation: despliega 220ms var(--suave) both; }
+
+/* Avisos: suben desde abajo con ícono */
+.aviso { display: flex; align-items: center; gap: 10px; animation: aviso-entra 240ms var(--suave) both; }
+.aviso-ico { flex: none; width: 20px; height: 20px; }
+@keyframes aviso-entra { from { opacity: 0; transform: translateY(16px) scale(.98); } }
+
+/* Etiquetas de estado y recuadros cambian de color con suavidad */
+.chip, .barra-avance span, .dia-barra span { transition: background-color 200ms, color 200ms, width 400ms var(--suave); }
+@keyframes crece { from { transform: scaleX(0); } }
+.vista.animando .barra-avance span, .vista.animando .dia-barra span { transform-origin: left; animation: crece 500ms var(--suave) 120ms both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
+}

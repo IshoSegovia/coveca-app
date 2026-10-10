@@ -39,6 +39,22 @@ const RUTAS = [
 ];
 
 let sesion = false;
+let rutaAnterior = null, tabAnterior = null;
+
+// Dirección de la animación al cambiar de pantalla: más profunda = adelante, menos = atrás, otra pestaña = suave.
+function direccion(ruta, tab) {
+  if (rutaAnterior === null) return 'inicio';
+  if (tab !== tabAnterior) return 'tab';
+  const prof = (r) => r.split('/').filter(Boolean).length;
+  return prof(ruta) > prof(rutaAnterior) ? 'adelante' : prof(ruta) < prof(rutaAnterior) ? 'atras' : 'tab';
+}
+function animar(vista, dir) {
+  vista.classList.remove('anim-adelante', 'anim-atras', 'anim-tab', 'anim-inicio', 'animando');
+  void vista.offsetWidth;                      // reinicia la animación
+  vista.classList.add('anim-' + dir, 'animando');
+  clearTimeout(vista._anim);
+  vista._anim = setTimeout(() => vista.classList.remove('animando'), 700); // las listas solo se escalonan al entrar
+}
 
 async function mostrar() {
   const ruta = (location.hash || '#/rutas').slice(1).split('?')[0];
@@ -52,8 +68,11 @@ async function mostrar() {
   const vista = $('#vista');
   vista.innerHTML = '<div class="cargando" aria-label="Cargando"></div>';
   vista.scrollTop = 0;
+  const dir = direccion(ruta, tab);
+  rutaAnterior = ruta; tabAnterior = tab;
   try {
     await fn(vista, ...params);
+    animar(vista, dir);
   } catch (e) {
     console.error(e);
     barra({ titulo: 'Algo salió mal', atras: '#/rutas' });
