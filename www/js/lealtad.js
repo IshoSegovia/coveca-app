@@ -1,5 +1,6 @@
 // Programa de lealtad COVECA: 4 niveles según lo comprado en los últimos 90 días.
 // Un cliente alcanza un nivel si cumple las DOS metas: monto comprado y semanas con compra (volumen + frecuencia).
+// Quien nunca ha comprado (ni en Loyverse ni en la app) es "Cliente nuevo": sin rango ni marco. Con su primera compra pasa al primer nivel.
 // Toda la regla vive aquí (la base de datos solo suma compras y semanas: vista lealtad_clientes).
 import { clp } from './ui.js';
 
@@ -13,7 +14,8 @@ export const PROGRAMA_DEFECTO = {
   ],
 };
 
-const SIN_COMPRAS = { monto: 0, semanas: 0, compras: 0, monto_en_30: 0, semanas_en_30: 0, compro_esta_semana: false };
+const SIN_COMPRAS = { monto: 0, semanas: 0, compras: 0, monto_en_30: 0, semanas_en_30: 0, compro_esta_semana: false, alguna_compra: false };
+export const NUEVO = 'Cliente nuevo';
 
 /** Índice del nivel más alto cuyas dos metas se cumplen. */
 export function indiceNivel(monto, semanas, cfg) {
@@ -25,11 +27,13 @@ export function indiceNivel(monto, semanas, cfg) {
 /** Estado completo de un cliente: nivel, siguiente, cuánto falta y si está por bajar. */
 export function estado(stats, cfg) {
   const s = { ...SIN_COMPRAS, ...(stats || {}) };
+  const nuevo = !s.alguna_compra && !s.compras;
   const i = indiceNivel(s.monto, s.semanas, cfg);
   const sig = cfg.niveles[i + 1] || null;
   const en30 = indiceNivel(s.monto_en_30, s.semanas_en_30, cfg);
   return {
-    activo: !!cfg.activo, stats: s, i, nivel: cfg.niveles[i], siguiente: sig,
+    activo: !!cfg.activo, stats: s, i, nivel: cfg.niveles[i], siguiente: sig, nuevo, primero: cfg.niveles[0],
+    nombre: nuevo ? NUEVO : cfg.niveles[i].nombre,
     falta: sig ? { monto: Math.max(0, sig.monto - s.monto), semanas: Math.max(0, sig.semanas - s.semanas) } : null,
     // Si no vuelve a comprar, dentro de 30 días salen de la cuenta sus compras más antiguas
     bajaA: en30 < i ? cfg.niveles[en30] : null,
@@ -40,6 +44,7 @@ export function estado(stats, cfg) {
 
 /** "Le faltan $85.000 y 2 semanas con compra para Oro" */
 export function textoFalta(e) {
+  if (e.nuevo) return `Con su primera compra pasa a ${e.primero.nombre}`;
   if (!e.siguiente) return `Nivel máximo: ${e.nivel.nombre}`;
   const partes = [];
   if (e.falta.monto > 0) partes.push(clp(e.falta.monto));
@@ -50,7 +55,7 @@ export function textoFalta(e) {
 /** Compras del cliente sumando la nota que se está generando. */
 export function trasCompra(stats, total) {
   const s = { ...SIN_COMPRAS, ...(stats || {}) };
-  return { ...s, monto: s.monto + total, semanas: s.semanas + (s.compro_esta_semana ? 0 : 1), compras: s.compras + 1,
+  return { ...s, alguna_compra: true, monto: s.monto + total, semanas: s.semanas + (s.compro_esta_semana ? 0 : 1), compras: s.compras + 1,
     monto_en_30: s.monto_en_30 + total, semanas_en_30: s.semanas_en_30 + (s.compro_esta_semana ? 0 : 1), compro_esta_semana: true };
 }
 
@@ -75,12 +80,13 @@ export function descuentoNota(items, pct, margenMinimo) {
 
 /** Bloque para la nota impresa y el QR. */
 export function paraNota(e, ahorro, despues) {
-  const subio = despues.i > e.i;
+  const subio = despues.i > e.i || (e.nuevo && !despues.nuevo);
   return {
-    nivel: e.nivel.nombre,
+    nivel: e.nuevo ? 'Nuevo' : e.nivel.nombre,
     ahorro,
     lineas: [
-      subio ? `¡Subió a nivel ${despues.nivel.nombre}!` : `Cliente ${e.nivel.nombre}${ahorro ? ` · Ahorró ${clp(ahorro)}` : ''}`,
+      e.nuevo ? `¡Bienvenido! Ya es cliente ${despues.nivel.nombre}`
+        : subio ? `¡Subió a nivel ${despues.nivel.nombre}!` : `Cliente ${e.nivel.nombre}${ahorro ? ` · Ahorró ${clp(ahorro)}` : ''}`,
       subio && ahorro ? `Ahorró ${clp(ahorro)} en esta compra` : textoFalta(despues),
     ],
   };

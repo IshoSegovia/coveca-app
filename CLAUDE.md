@@ -55,6 +55,8 @@ Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 ## Lealtad
 - 4 niveles por compras de 90 días: monto **y** semanas con compra (vista `lealtad_clientes`; reglas en `configuracion.lealtad`). Toda la lógica en `www/js/lealtad.js`; pantallas en `js/vistas/lealtad.js` (programa en `#/lealtad`, reporte en `#/reportes/lealtad`).
 - Descuento de nivel por producto con tope de margen mínimo (10 %): nunca bajo costo ÷ (1 − margen mínimo). Se guarda aparte del descuento puntual (`pedidos.descuento_lealtad`, `pedidos.nivel`); `crear_pedido` lo topa al % del nivel más alto.
+- **Cliente nuevo** (nunca compró: sin `loyverse_compras` ni notas de la app; columna `alguna_compra` de la vista, migración 0014) = sin rango ni marco, placa "Cliente nuevo". Con al menos una compra (Loyverse o app) queda como mínimo en el primer nivel (Bronce).
+- Marcos de nivel en Clientes (`conRango` en `js/vistas/clientes.js`): anillo + adornos por nivel, tamaño reducido 17 % (lista 50 px, íconos 93 px, ficha 98 px).
 - Prueba SQL: `supabase/pruebas/prueba_lealtad.sql`.
 
 ## Impresión

@@ -40,7 +40,7 @@ export async function vistaClientes(v) {
       cont.innerHTML = cs.map((c) => `
         <a class="fila" href="#/clientes/${c.id}">
           ${conRango(avatar(c), nivelDe(c), 'lista')}
-          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${(() => { const e = nivelDe(c); return e ? `<b class="nivel-txt nv-${e.i}">${esc(e.nivel.nombre)}</b> · ` : ''; })()}${lugar(c)}</p></div>
+          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${(() => { const e = nivelDe(c); return e ? `<b class="nivel-txt ${e.nuevo ? 'nv-nuevo' : `nv-${e.i}`}">${esc(e.nombre)}</b> · ` : ''; })()}${lugar(c)}</p></div>
           ${icono('derecha', 'ico-chev')}</a>`).join('');
     }
   };
@@ -51,7 +51,8 @@ export async function vistaClientes(v) {
 }
 
 // Marco de nivel alrededor del avatar (inspirado en los emblemas de rango de los videojuegos):
-// cada nivel suma adornos. Todos los clientes parten con el marco Bronce. El nombre del nivel siempre va escrito al lado.
+// cada nivel suma adornos. Cliente nuevo (nunca ha comprado) = sin marco, solo la placa "Cliente nuevo".
+// El nombre del nivel siempre va escrito al lado.
 const PLUMAS = ['M37 -6 52 -12 45 4Z', 'M34 -19 50 -31 44 -12Z', 'M36 8 49 9 40 19Z'];
 const ala = (n) => PLUMAS.slice(0, n).map((d) => `<path d="M${d.slice(1)}"/><path d="M${d.slice(1)}" transform="scale(-1 1)"/>`).join('');
 const ADORNOS = [
@@ -64,7 +65,8 @@ const marco = (i) => `<svg class="rango-marco" viewBox="-52 -52 104 104" aria-hi
 // e: estado de lealtad del cliente (o null). tam: 'lista' | 'grilla' | 'perfil'
 const conRango = (avatarHtml, e, tam) => {
   const r = e || null;
-  return `<span class="rango rango-${tam} ${r ? `nv-${r.i} con-marco` : ''}">${avatarHtml}${r ? marco(r.i) : ''}${r && tam === 'grilla' ? `<span class="rango-placa">${esc(r.nivel.nombre)}</span>` : ''}</span>`;
+  const clase = !r ? '' : r.nuevo ? 'nv-nuevo' : `nv-${r.i} con-marco`;
+  return `<span class="rango rango-${tam} ${clase}">${avatarHtml}${r && !r.nuevo ? marco(r.i) : ''}${r && tam === 'grilla' ? `<span class="rango-placa">${esc(r.nombre)}</span>` : ''}</span>`;
 };
 
 const avatar = (c, cls = '') => c.imagen_url
@@ -101,6 +103,14 @@ function activarFoto(v, id, alTerminar) {
 // Bloque "Programa de lealtad" de la ficha: nivel, beneficio, avance al siguiente y aviso si está por bajar.
 function lealtadHtml(e) {
   const pct = e.nivel.descuento;
+  if (e.nuevo) return `<h2 class="sec-t">Programa de lealtad</h2>
+    <div class="lealtad nv-nuevo">
+      <div class="lealtad-cab">
+        <span class="medalla" aria-hidden="true">${icono('medalla')}</span>
+        <div><p class="lealtad-n">Cliente nuevo</p><p class="lealtad-s">Aún no tiene compras registradas</p></div>
+      </div>
+      <div class="lealtad-prog"><p>${esc(lealtad.textoFalta(e))}</p></div>
+    </div>`;
   return `<h2 class="sec-t">Programa de lealtad</h2>
     <div class="lealtad nv-${e.i}">
       <div class="lealtad-cab">
@@ -137,7 +147,7 @@ export async function vistaCliente(v, id) {
         <input class="foto-in" type="file" accept="image/*" hidden></label>
       <div>
         <div class="perfil-chips">${c.atendido ? `<span class="chip ok">${icono('check', 'ico-s')} Atendido este ciclo</span>` : '<span class="chip">Pendiente este ciclo</span>'}
-          ${le ? `<span class="chip nivel nv-${le.e.i}">${icono('medalla', 'ico-s')} ${esc(le.e.nivel.nombre)}</span>` : ''}</div>
+          ${le ? `<span class="chip nivel ${le.e.nuevo ? 'nv-nuevo' : `nv-${le.e.i}`}">${icono('medalla', 'ico-s')} ${esc(le.e.nombre)}</span>` : ''}</div>
         <p class="perfil-s">Visita cada ${c.frecuencia_dias} días${c.ultima_compra ? ' · Última compra ' + fecha(c.ultima_compra) : ''}</p>
       </div>
     </div>

@@ -84,7 +84,9 @@ export async function vistaReporteLealtad(v) {
       datos.esAdmin() ? '<a class="btn prin" href="#/lealtad">Ir al programa</a>' : '');
     return;
   }
-  const filas = clientes.map((c) => ({ c, e: lealtad.estado(compras.get(c.id), cfg) }));
+  const todas = clientes.map((c) => ({ c, e: lealtad.estado(compras.get(c.id), cfg) }));
+  const nuevos = todas.filter((f) => f.e.nuevo).length;
+  const filas = todas.filter((f) => !f.e.nuevo);
   const porNivel = cfg.niveles.map((n, i) => filas.filter((f) => f.e.i === i).sort((a, b) => b.e.stats.monto - a.e.stats.monto));
   // Por subir: le falta poco (≤ 25 % del monto del siguiente nivel y como máximo 1 semana con compra)
   const porSubir = filas.filter(({ e }) => e.siguiente && e.stats.compras && e.falta.monto <= e.siguiente.monto * 0.25 && e.falta.semanas <= 1)
@@ -100,7 +102,7 @@ export async function vistaReporteLealtad(v) {
   v.innerHTML = `
     <div class="resumen">${cfg.niveles.map((n, i) => `<div class="nv-${i}"><p class="resumen-n">${porNivel[i].length}</p><p>${esc(n.nombre)}</p></div>`).join('')}</div>
     ${accionesHtml()}
-    <p class="ayuda pad">Según lo comprado en los últimos ${cfg.dias} días. ${sinCompras} cliente${sinCompras === 1 ? '' : 's'} sin compras en ese periodo (quedan en ${esc(cfg.niveles[0].nombre)}).</p>
+    <p class="ayuda pad">Según lo comprado en los últimos ${cfg.dias} días. ${sinCompras} cliente${sinCompras === 1 ? '' : 's'} en ${esc(cfg.niveles[0].nombre)} sin compras en ese periodo. <b>${nuevos} cliente${nuevos === 1 ? '' : 's'} nuevo${nuevos === 1 ? '' : 's'}</b> (nunca han comprado; pasan a ${esc(cfg.niveles[0].nombre)} con su primera compra).</p>
     <h2 class="sec-t">Por subir · ${porSubir.length}</h2>
     ${porSubir.length ? `<div class="lista">${porSubir.map((f) => fila(f, esc(lealtad.textoFalta(f.e)))).join('')}</div>` : '<p class="ayuda pad">Nadie está cerca del siguiente nivel por ahora.</p>'}
     <h2 class="sec-t">Por bajar en 30 días · ${porBajar.length}</h2>

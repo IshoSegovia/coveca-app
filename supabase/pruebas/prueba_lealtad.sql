@@ -47,3 +47,10 @@ update public.configuracion set valor = jsonb_set(valor, '{activo}', 'false') wh
 set role authenticated;
 select descuento_lealtad, total from public.crear_pedido('{"id":"bbbbbbbb-0000-0000-0000-000000000004","cliente_id":3,
   "descuento_lealtad":2000,"items":[{"producto_id":1,"cantidad":1}]}');
+
+-- 0014: cliente nuevo / alguna compra (historial de Loyverse o notas de la app)
+reset role;
+update public.clientes set loyverse_compras = 4 where id = 5;
+set role authenticated;
+select cliente_id, compras, alguna_compra from public.lealtad_clientes where cliente_id in (1, 2, 4, 5) order by cliente_id;
+-- Esperado: 1 t (app) · 2 t (app, aunque fuera de 90 días cuenta igual) · 4 f (nunca compró) · 5 t (solo Loyverse)

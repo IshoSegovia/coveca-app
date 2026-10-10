@@ -16,7 +16,7 @@ let clientes = [
   { id: 5, nombre: 'Kiosco Central', comuna: 'Retiro', ruta_id: 2, frecuencia_dias: 7, loyverse_compras: 8, loyverse_total: 120000, loyverse_ultima_compra: dias(15) },
   { id: 6, lat: -36.4246, lng: -71.958, nombre: 'Minimarket San Carlos Demo', comuna: 'San Carlos', ruta_id: 3, frecuencia_dias: 7, loyverse_compras: 37, loyverse_total: 1152575, loyverse_ultima_compra: dias(4) },
   { id: 7, nombre: 'Almacén Parral Ejemplo', comuna: 'Parral', ruta_id: 4, frecuencia_dias: 14, loyverse_compras: 31, loyverse_total: 1230970, loyverse_ultima_compra: dias(35) },
-  { id: 8, nombre: 'Cliente sin ruta de ejemplo', ruta_id: null, frecuencia_dias: 7, loyverse_compras: 3, loyverse_total: 45000, loyverse_ultima_compra: dias(60) },
+  { id: 8, nombre: 'Cliente sin ruta de ejemplo', ruta_id: null, frecuencia_dias: 7 },  // cliente nuevo: nunca ha comprado
 ];
 const cats = [{ id: 1, nombre: 'Aseo' }, { id: 2, nombre: 'Chicles' }, { id: 3, nombre: 'Chocolates' }, { id: 4, nombre: 'Colombina' }, { id: 5, nombre: 'Mondelez' }];
 let productos = [
@@ -69,7 +69,8 @@ function comprasDe(id) {
   const ps = pedidos.filter((p) => p.cliente_id == id && p.estado !== 'anulado' && new Date(p.fecha) >= desde);
   const sem = (lista) => new Set(lista.map((p) => semana(p.fecha))).size;
   const en30 = ps.filter((p) => new Date(p.fecha) >= corte);
-  return { cliente_id: Number(id), monto: ps.reduce((s, p) => s + p.total, 0), semanas: sem(ps), compras: ps.length,
+  const c = clientes.find((x) => x.id == id);
+  return { alguna_compra: (c?.loyverse_compras || 0) > 0 || pedidos.some((p) => p.cliente_id == id && p.estado !== 'anulado'), cliente_id: Number(id), monto: ps.reduce((s, p) => s + p.total, 0), semanas: sem(ps), compras: ps.length,
     monto_en_30: en30.reduce((s, p) => s + p.total, 0), semanas_en_30: sem(en30), compro_esta_semana: ps.some((p) => semana(p.fecha) === semana(hoy)) };
 }
 

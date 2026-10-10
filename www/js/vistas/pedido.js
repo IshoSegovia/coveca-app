@@ -88,8 +88,8 @@ export async function vistaPedido(v, clienteId) {
         <label class="campo"><span>Descuento ($)</span>
           <input id="desc" type="number" inputmode="numeric" min="0" value="${descuento || ''}" placeholder="0"></label>
       </div>
-      ${le ? `<div class="prov-dest nv-${le.e.i}"><span class="medalla" aria-hidden="true">${icono('medalla')}</span>
-        <div class="fila-txt"><p class="fila-t">Cliente ${esc(le.e.nivel.nombre)}${le.e.nivel.descuento ? ` · ${pct} % de descuento` : ''}</p>
+      ${le ? `<div class="prov-dest ${le.e.nuevo ? 'nv-nuevo' : `nv-${le.e.i}`}"><span class="medalla" aria-hidden="true">${icono('medalla')}</span>
+        <div class="fila-txt"><p class="fila-t">${le.e.nuevo ? 'Cliente nuevo' : `Cliente ${esc(le.e.nivel.nombre)}`}${le.e.nivel.descuento ? ` · ${pct} % de descuento` : ''}</p>
           <p class="fila-s">${le.e.nivel.descuento ? (leal.limitado ? `Algunos productos llevan menos descuento para no bajar del margen mínimo (${Math.round(le.cfg.margen_minimo * 100)} %).` : 'Se aplica solo en esta nota.') : esc(lealtad.textoFalta(le.e))}</p></div></div>` : ''}
       <dl class="totales">
         <div><dt>Subtotal</dt><dd class="monto">${clp(total())}</dd></div>
@@ -118,7 +118,7 @@ export async function vistaPedido(v, clienteId) {
       const leal = descLealtad().monto;
       const ped = await datos.crearPedido({
         id: crypto.randomUUID(), cliente_id: Number(clienteId), ruta_id: c.ruta_id, forma_pago: forma, descuento,
-        descuento_lealtad: leal, nivel: le ? le.e.nivel.nombre : null,
+        descuento_lealtad: leal, nivel: le ? (le.e.nuevo ? 'Nuevo' : le.e.nivel.nombre) : null,
         terminal: yo.terminal, items: [...carro].map(([id, n]) => ({ producto_id: id, cantidad: n })),
       });
       const negocio = await datos.configuracion();

@@ -47,6 +47,7 @@ const PANTALLAS = [
   ['#/reportes/lealtad', '27-reporte-lealtad'],
   ['#/clientes', '29-clientes-lista', async (p) => { await p.click('[data-v="lista"]'); await p.waitForTimeout(400); }],
   ['#/clientes/6', '30-cliente-platino'],
+  ['#/clientes/8', '31-cliente-nuevo', async (p) => { await p.evaluate(() => document.querySelector('.lealtad')?.scrollIntoView({ block: 'center' })); }],
   ['#/lealtad', '28-programa-lealtad'],
 ];
 

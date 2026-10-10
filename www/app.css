@@ -392,6 +392,7 @@ a.fila:active { background: var(--fondo); }
 .nv-1 { --nc: var(--nivel-1); --ncs: var(--nivel-1-suave); }
 .nv-2 { --nc: var(--nivel-2); --ncs: var(--nivel-2-suave); }
 .nv-3 { --nc: var(--nivel-3); --ncs: var(--nivel-3-suave); }
+.nv-nuevo { --nc: var(--verde); --ncs: var(--verde-suave); }
 .perfil-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .lealtad { margin: 0; padding: 14px 16px; background: var(--superficie); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
 .lealtad-cab { display: flex; align-items: center; gap: 12px; }
@@ -414,23 +415,25 @@ a.fila:active { background: var(--fondo); }
 .resumen > [class*="nv-"] .resumen-n { color: var(--nc); }
 .nivel-txt { color: var(--nc); font-weight: 700; }
 /* Marcos de nivel alrededor del avatar (lista, íconos y ficha) */
-.rango { --rs: 60px; position: relative; flex: none; width: var(--rs); height: var(--rs); display: grid; place-items: center; }
-.rango-lista { --rs: 60px; }
-.rango-grilla { --rs: 112px; margin-bottom: 10px; }
-.rango-perfil { --rs: 118px; }
+.rango { --rs: 50px; position: relative; flex: none; width: var(--rs); height: var(--rs); display: grid; place-items: center; }
+.rango-lista { --rs: 50px; }      /* tamaños reducidos 17 % para que el rango sea más sutil */
+.rango-grilla { --rs: 93px; margin-bottom: 10px; }
+.rango-perfil { --rs: 98px; }
 .rango > .avatar, .tarjeta.cliente .rango > .avatar.grande, .perfil-foto .rango > .avatar.grande { width: calc(var(--rs) * .62); height: calc(var(--rs) * .62); margin: 0; }
-.rango-lista > .avatar { font-size: 15px; }
-.rango-grilla > .avatar { font-size: 22px; }
-.rango-perfil > .avatar { font-size: 24px; }
+.rango-lista > .avatar { font-size: 14px; }
+.rango-grilla > .avatar { font-size: 19px; }
+.rango-perfil > .avatar { font-size: 20px; }
+/* Cliente nuevo: sin marco; el avatar ocupa el espacio del emblema */
+.rango.nv-nuevo > .avatar, .tarjeta.cliente .rango.nv-nuevo > .avatar.grande, .perfil-foto .rango.nv-nuevo > .avatar.grande { width: calc(var(--rs) * .74); height: calc(var(--rs) * .74); }
 .rango-marco { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; color: var(--nc); pointer-events: none; }
 .rango-marco .anillo { fill: none; stroke: currentColor; stroke-width: 4.5; }
 .rango-marco .fino { fill: none; stroke: currentColor; stroke-width: 1.4; }
 .rango-marco path { fill: currentColor; stroke: var(--superficie); stroke-width: 1.2; stroke-linejoin: round; }
 .rango-marco .gema { fill: var(--ncs); stroke: currentColor; stroke-width: 1.4; }
 .rango-placa {
-  position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%); white-space: nowrap;
-  padding: 1px 10px; font-size: 14px; font-weight: 700; color: var(--nc); background: var(--ncs);
-  border: 1.5px solid var(--nc); border-radius: 4px;
+  position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); white-space: nowrap;
+  padding: 0 7px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--nc); background: var(--ncs);
+  border: 1px solid var(--nc); border-radius: 4px;
 }
 .perfil-foto .rango + .foto-insignia, .perfil-foto:has(.rango) .foto-insignia { right: 6px; bottom: 6px; }
 .nivel-form { margin-top: 8px; padding: 12px; border: 1px solid var(--borde); border-left: 4px solid var(--nc); border-radius: var(--radio); background: var(--superficie); display: flex; flex-direction: column; gap: 10px; }
