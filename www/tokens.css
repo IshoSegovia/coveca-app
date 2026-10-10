@@ -1,7 +1,8 @@
-/* Variables de diseño COVECA. Ver DESIGN.md. */
+/* Variables de diseño COVECA. Ver DESIGN.md.
+   Tema claro por defecto; el oscuro se activa solo desde Ajustes > Avanzado (html[data-tema="oscuro"]). */
 :root {
-  --azul: #3E4095;
-  --azul-oscuro: #2C2E73;
+  --azul: #3E4095;          /* acento: textos, bordes e íconos destacados */
+  --azul-oscuro: #2C2E73;   /* relleno azul presionado */
   --rojo: #EC3237;
   --rojo-texto: #C42127;
   --verde: #1B5E20;
@@ -16,7 +17,35 @@
   --verde-suave: #E8F2E9;
   --ambar-suave: #FBF0E0;
   --rojo-suave: #FBE9EA;
+  /* Rellenos de marca con texto blanco encima (barra, botón principal, selección). Iguales en ambos temas. */
+  --relleno: #3E4095;
+  --sobre-relleno: #FFFFFF;
+  --rojo-relleno: #C42127;
+  --verde-relleno: #1B5E20;
+  --ambar-relleno: #8A5300;
+  --aviso-fondo: #1D1F2B;
+  --papel: #FFFFFF;         /* nota impresa, QR y fondo del logo: siempre blanco */
+  --luz-lista: #7BD88F;
   --radio: 10px;
   --toque: 48px;
   --fuente: system-ui, Roboto, "Noto Sans", Arial, sans-serif;
+  color-scheme: light;
+}
+
+:root[data-tema="oscuro"] {
+  --azul: #A9ADF7;
+  --rojo-texto: #FF8F93;
+  --verde: #86CF8B;
+  --ambar: #F0B35A;
+  --texto: #E9EAF1;
+  --texto-suave: #A7ABBB;
+  --fondo: #121319;
+  --superficie: #1C1D26;
+  --borde: #383B4A;
+  --azul-suave: #272A52;
+  --verde-suave: #1E3522;
+  --ambar-suave: #3B2B12;
+  --rojo-suave: #40201F;
+  --aviso-fondo: #3A3D4F;
+  color-scheme: dark;
 }

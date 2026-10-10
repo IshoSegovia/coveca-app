@@ -37,6 +37,7 @@ const PANTALLAS = [
   ['#/proveedores/1', '18-proveedor'],
   ['#/proveedores/1/editar', '18b-proveedor-editar'],
   ['#/ajustes', '13-ajustes'],
+  ['#/ajustes/avanzado', '19-avanzado'],
 ];
 
 const server = createServer(async (req, res) => {
@@ -71,6 +72,16 @@ for (const [ruta, nombre, accion] of PANTALLAS.slice(1)) {
   await page.screenshot({ path: `capturas/${nombre}.png` });
   console.log(`capturas/${nombre}.png`);
 }
+// Mismas pantallas en modo oscuro (Ajustes > Avanzado)
+await page.evaluate(() => localStorage.setItem('coveca.tema', 'oscuro'));
+for (const [ruta, nombre, accion] of PANTALLAS.slice(1)) {
+  await page.goto('about:blank');
+  await page.goto(base + ruta);
+  await page.waitForTimeout(500);
+  if (accion) { await accion(page); await page.waitForTimeout(300); }
+  await page.screenshot({ path: `capturas/oscuro-${nombre}.png` });
+}
+console.log('capturas/oscuro-*.png');
 await browser.close();
 server.close();
 if (errores) { console.error(`${errores} error(es) en la página`); process.exit(1); }

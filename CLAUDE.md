@@ -10,6 +10,7 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
   - `js/gps.js` ubicación, orden del recorrido (vecino más cercano + 2-opt) y enlaces de Google Maps por tramos (base de partida opcional por ruta).
   - `js/pdf.js` reportes PDF de marca (jsPDF + autotable en `vendor/`); en Android se guardan en Descargas/COVECA con `Compartir.guardarArchivo`.
   - `js/fotos.js` recorte/reducción de fotos antes de subir a Storage (carpetas `productos` y `clientes`).
+  - `js/tema.js` + `js/vistas/avanzado.js` tema claro/oscuro (solo desde Ajustes → Avanzado; ver DESIGN.md).
   - `js/actualizacion.js` actualización obligatoria; `js/externo.js` abre enlaces fuera de la app (`<a data-externo>`).
   - `js/impresora.js` imprime una nota (animación + Bluetooth + QR + WhatsApp) usando `escpos.js`, `render.js`, `impresion-animada.js`, `nota-qr.js`.
   - `vendor/` librerías copiadas (supabase-js UMD, qrcode). Para actualizar supabase-js: `npm i @supabase/supabase-js@2` y copiar `node_modules/@supabase/supabase-js/dist/umd/supabase.js`.

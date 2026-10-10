@@ -10,7 +10,7 @@
 .imp-impresora {
   position: relative; z-index: 2; flex: none;
   height: calc(72px + env(safe-area-inset-top));
-  background: var(--azul);
+  background: var(--relleno);
   border-radius: 0 0 var(--radio) var(--radio);
 }
 .imp-ranura {
@@ -20,10 +20,10 @@
 }
 .imp-luz {
   position: absolute; right: 20px; top: calc(20px + env(safe-area-inset-top));
-  width: 10px; height: 10px; border-radius: 50%; background: #fff; opacity: .5;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--sobre-relleno); opacity: .5;
 }
 .imp-capa[data-estado="imprimiendo"] .imp-luz { animation: imp-parpadeo .8s steps(2) infinite; opacity: 1; }
-.imp-capa[data-estado="listo"] .imp-luz { background: #7BD88F; opacity: 1; }
+.imp-capa[data-estado="listo"] .imp-luz { background: var(--luz-lista); opacity: 1; }
 .imp-capa[data-estado="error"] .imp-luz { background: var(--rojo); opacity: 1; }
 @keyframes imp-parpadeo { 50% { opacity: .2; } }
 
@@ -35,7 +35,7 @@
 .imp-papel {
   position: relative;
   width: min(300px, calc(100% - 48px));
-  background: #fff;
+  background: var(--papel);
   border: 1px solid var(--borde); border-top: 0;
   padding-bottom: 8px;
   will-change: transform;
@@ -58,13 +58,13 @@
 .imp-check {
   width: 112px; height: 112px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: var(--verde); color: #fff; font-size: 60px; font-weight: 700;
+  background: var(--verde-relleno); color: var(--sobre-relleno); font-size: 60px; font-weight: 700;
   animation: imp-aparece .25s ease-out;
 }
 .imp-hecho.con-qr { flex-direction: column; gap: 12px; padding: 16px 24px; }
 .imp-qr {
   width: min(300px, 78vw, 44vh); aspect-ratio: 1;
-  background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
+  background: var(--papel); border: 1px solid var(--borde); border-radius: var(--radio);
   animation: imp-aparece .25s ease-out;
 }
 .imp-qr svg { display: block; width: 100%; height: 100%; }
@@ -90,7 +90,7 @@
 }
 .imp-whatsapp svg { width: 24px; height: 24px; }
 .imp-capa:not([data-estado="listo"]) .imp-whatsapp { display: none; }
-.imp-principal { background: var(--azul); color: #fff; border: 0; }
+.imp-principal { background: var(--relleno); color: var(--sobre-relleno); border: 0; }
 .imp-secundario { background: var(--superficie); color: var(--azul); border: 2px solid var(--azul); }
 .imp-capa[data-estado="imprimiendo"] .imp-botones { visibility: hidden; }
 

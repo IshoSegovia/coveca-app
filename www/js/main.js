@@ -7,6 +7,7 @@ import { vistaClientes, vistaCliente, vistaClienteForm } from './vistas/clientes
 import { vistaPedido } from './vistas/pedido.js';
 import { vistaInventario, vistaProductoForm } from './vistas/inventario.js';
 import { vistaAjustes } from './vistas/ajustes.js';
+import { vistaAvanzado } from './vistas/avanzado.js';
 import { revisarActualizacion } from './actualizacion.js';
 import { vistaRecorrido } from './vistas/recorrido.js';
 import { vistaReportes, vistaStockBajo, vistaVentasSemana } from './vistas/reportes.js';
@@ -36,6 +37,7 @@ const RUTAS = [
   [/^\/proveedores\/(\d+)\/editar$/, (p, id) => vistaProveedorForm(p, id), 'ajustes'],
   [/^\/proveedores\/(\d+)$/, vistaProveedor, 'ajustes'],
   [/^\/ajustes$/, vistaAjustes, 'ajustes'],
+  [/^\/ajustes\/avanzado$/, vistaAvanzado, 'ajustes'],
 ];
 
 let sesion = false;

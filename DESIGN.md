@@ -72,3 +72,9 @@ Reglas:
 
 ## Referencias
 Capturas de apps que le gustan a COVECA se guardan en `assets/referencias/` con una nota de qué se toma de cada una.
+
+## Tema oscuro
+- Se activa solo en **Ajustes → Avanzado → Apariencia** y se guarda en cada celular (`localStorage` `coveca.tema`); por defecto, claro. `js/tema.js` lo aplica antes de pintar (`<html data-tema="oscuro">`).
+- `tokens.css` redefine los colores bajo `:root[data-tema="oscuro"]`. Usar `--azul` para textos/bordes de acento y `--relleno` + `--sobre-relleno` para fondos de marca con texto blanco (barra, botón principal, selección). Nunca `#fff` a mano: `--sobre-relleno` o `--papel`.
+- La nota impresa, el QR y los PDF no cambian de tema. El logo se muestra sobre placa `--papel`.
+- Las capturas generan también `capturas/oscuro-*.png`: revisar ambas versiones.

@@ -1,4 +1,5 @@
-import { $, esc, barra, aviso } from '../ui.js';
+import { $, esc, barra, aviso, icono } from '../ui.js';
+import { temaActual } from './avanzado.js';
 import * as datos from '../datos.js';
 import { config, buscarImpresoras, imprimirNota, esApp } from '../impresora.js';
 import { versionLocal, revisarActualizacion } from '../actualizacion.js';
@@ -29,6 +30,10 @@ export async function vistaAjustes(v) {
       <p class="ayuda">Si la animación termina antes que el papel, baja este número; si termina después, súbelo.</p>
       <button id="prueba" type="button" class="btn sec">Imprimir nota de prueba</button>
     </form>
+    <h2 class="sec-t">Avanzado</h2>
+    <div class="lista"><a class="fila" href="#/ajustes/avanzado">
+      <div class="fila-txt"><p class="fila-t">Avanzado</p><p class="fila-s">Apariencia: modo ${temaActual() === 'oscuro' ? 'oscuro' : 'claro'}</p></div>
+      ${icono('derecha', 'ico-chev')}</a></div>
     <h2 class="sec-t">Versión</h2>
     <dl class="datos">
       <div class="dato"><dt>Instalada</dt><dd>${esc(versionLocal().nombre)}</dd></div>
