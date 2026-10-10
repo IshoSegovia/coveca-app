@@ -30,6 +30,9 @@ const PANTALLAS = [
     for (const id of [12, 12, 4]) await p.click(`.fila.prod[data-id="${id}"] [data-d="1"]`);
     await p.click('#sig');
   }],
+  ['#/reportes', '14-reportes'],
+  ['#/reportes/stock-bajo', '15-stock-bajo'],
+  ['#/reportes/ventas-semana', '16-ventas-semana'],
   ['#/ajustes', '13-ajustes'],
 ];
 

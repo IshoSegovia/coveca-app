@@ -338,3 +338,33 @@ a.fila:active { background: var(--fondo); }
 .opcion-txt small { font-size: 14px; font-weight: 400; color: var(--texto-suave); }
 .btn.mini-link { min-height: 44px; padding: 0 8px; }
 .opcion { min-height: 60px; }
+
+/* ---------- Reportes ---------- */
+.tabs a { font-size: 13px; }
+.reportes-menu { padding-top: 16px; }
+.tarjeta.reporte { padding: 16px 14px 14px; }
+.tarjeta.reporte .tarjeta-t { margin: 12px 0 2px; font-size: 18px; min-height: 0; }
+.tarjeta.reporte .tarjeta-s { margin: 0; -webkit-line-clamp: 2; }
+.ruta-ico.ambar { background: var(--ambar-suave); color: var(--ambar); }
+.reporte-acc { margin-bottom: 8px; }
+.reporte-acc .btn { gap: 8px; }
+.umbral { margin-top: 4px; }
+.umbral-in { display: flex; align-items: center; gap: 10px; font-weight: 400 !important; font-size: 16px !important; }
+.umbral-in input { width: 88px !important; text-align: center; }
+.semana-nav { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.semana-nav .btn { width: 52px; flex: none; padding: 0; }
+.semana-nav .btn:disabled { opacity: .4; }
+.semana-lbl { flex: 1; text-align: center; }
+.semana-lbl p { margin: 0; }
+.total-semana { margin-top: 16px; text-align: center; }
+.total-semana p { margin: 2px 0; }
+.total-semana .monto.grande { font-size: 32px; color: var(--azul); }
+.dato dd.der { text-align: right; }
+.fila.dia { min-height: 48px; gap: 12px; }
+.dia-n { width: 36px; flex: none; font-weight: 600; }
+.dia-barra { flex: 1; height: 10px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); overflow: hidden; }
+.dia-barra span { display: block; height: 100%; background: var(--azul); border-radius: 999px; }
+.fila.dia .monto { min-width: 84px; text-align: right; }
+.ayuda.mt { margin-top: 12px; }
+.total-reponer { margin: 16px 0 0; font-size: 18px; text-align: center; }
+.total-reponer + .resumen { margin-top: 8px; }

@@ -29,6 +29,19 @@ let productos = [
 ].map(([ref, nombre, categoria_id, costo, precio, stock], i) => ({ id: i + 1, ref, nombre, categoria_id, costo, precio, stock, stock_minimo: 3, activo: true }));
 let pedidos = [];
 let numero = 0;
+// Ventas de ejemplo en lo que va de la semana (para ver el reporte en modo demostración).
+{
+  const lunes = new Date(hoy); lunes.setHours(10, 0, 0, 0); lunes.setDate(lunes.getDate() - ((lunes.getDay() + 6) % 7));
+  const ejemplo = [[0, 4, 'efectivo', [[12, 2], [2, 1]]], [0, 5, 'transferencia', [[4, 3]]], [1, 6, 'credito', [[9, 2], [10, 1], [13, 4]]],
+    [2, 7, 'efectivo', [[12, 3], [7, 1]]], [3, 4, 'efectivo', [[2, 2], [3, 1]]]];
+  for (const [d, cliente, pago, its] of ejemplo) {
+    const f = new Date(lunes); f.setDate(f.getDate() + d); f.setHours(10 + d);
+    if (f > hoy) continue;
+    const items = its.map(([pid, cant]) => { const pr = productos.find((x) => x.id === pid); return { producto_id: pid, nombre: pr.nombre, cantidad: cant, precio: pr.precio, costo: pr.costo, subtotal: cant * pr.precio }; });
+    const sub = items.reduce((a, i) => a + i.subtotal, 0);
+    pedidos.push({ id: 'demo-' + numero, numero: ++numero, cliente_id: cliente, fecha: f.toISOString(), subtotal: sub, descuento: 0, total: sub, estado: 'generado', forma_pago: pago, items });
+  }
+}
 
 const atendido = (c) => pedidos.some((p) => p.cliente_id === c.id && (hoy - new Date(p.fecha)) / 864e5 < c.frecuencia_dias);
 const enriquecer = (c) => ({ ...c, activo: true, ruta_nombre: rutas.find((r) => r.id === c.ruta_id)?.nombre || null,
@@ -75,10 +88,16 @@ export const demo = {
   fotoCliente(id, url) { clientes.find((x) => x.id == id).imagen_url = url; return url; },
   fotoProducto(id, url) { productos.find((x) => x.id == id).imagen_url = url; return url; },
   ajustarStock(id, cant) { const p = productos.find((x) => x.id == id); p.stock += cant; },
+  ventas(desde, hasta) {
+    return pedidos.filter((p) => new Date(p.fecha) >= desde && new Date(p.fecha) < hasta)
+      .map((p) => ({ ...p, cliente: clientes.find((c) => c.id === p.cliente_id)?.nombre || '—' }))
+      .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
   crearPedido(p) {
     const items = p.items.map((i) => { const pr = productos.find((x) => x.id == i.producto_id); pr.stock -= i.cantidad; return { ...i, precio: i.precio ?? pr.precio }; });
     const sub = items.reduce((s, i) => s + i.cantidad * i.precio, 0);
-    const ped = { id: p.id, numero: ++numero, cliente_id: p.cliente_id, fecha: new Date().toISOString(), total: Math.max(0, sub - (p.descuento || 0)), subtotal: sub, descuento: p.descuento || 0, estado: 'generado', forma_pago: p.forma_pago };
+    const ped = { id: p.id, numero: ++numero, cliente_id: p.cliente_id, fecha: new Date().toISOString(), total: Math.max(0, sub - (p.descuento || 0)), subtotal: sub, descuento: p.descuento || 0, estado: 'generado', forma_pago: p.forma_pago,
+      items: items.map((i) => { const pr = productos.find((x) => x.id == i.producto_id); return { producto_id: pr.id, nombre: pr.nombre, cantidad: i.cantidad, precio: i.precio, costo: pr.costo, subtotal: i.cantidad * i.precio }; }) };
     pedidos.push(ped); return ped;
   },
 };

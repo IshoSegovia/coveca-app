@@ -49,3 +49,10 @@ export async function imprimirNota(nota, negocio) {
     },
   });
 }
+
+// Imprime un ticket ya armado (reportes). Devuelve cuando la impresora terminó de recibir.
+export async function imprimirTicket(base64) {
+  if (!esApp) throw new Error('La impresión térmica funciona desde la app en el celular.');
+  if (!config.impresora) throw new Error('Primero elige la impresora en Ajustes.');
+  await Printer.print({ address: config.impresora, data: base64 });
+}

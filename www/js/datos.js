@@ -173,6 +173,16 @@ export async function ajustarStock(productoId, cantidad, motivo = 'ajuste') {
 }
 
 // ---------------- Pedidos ----------------
+// Ventas (pedidos con su detalle) entre dos fechas [desde, hasta).
+export async function ventas(desde, hasta) {
+  if (modoDemo) return demo.ventas(desde, hasta);
+  return chk(await sb.from('pedidos')
+    .select('id,numero,fecha,total,subtotal,descuento,forma_pago,estado,cliente_id,clientes(nombre),pedido_items(producto_id,nombre,cantidad,precio,costo,subtotal)')
+    .gte('fecha', desde.toISOString()).lt('fecha', hasta.toISOString())
+    .order('fecha'))
+    .map((p) => ({ ...p, cliente: p.clientes?.nombre || '—', items: p.pedido_items || [] }));
+}
+
 export async function crearPedido(p) {
   if (modoDemo) return demo.crearPedido(p);
   return chk(await sb.rpc('crear_pedido', { p }));
