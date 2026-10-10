@@ -1,7 +1,7 @@
 import { $, esc, barra, aviso, icono } from '../ui.js';
 import { temaActual } from './avanzado.js';
 import * as datos from '../datos.js';
-import { config, buscarImpresoras, imprimirNota, esApp } from '../impresora.js';
+import { config, buscarImpresoras, esApp } from '../impresora.js';
 import { versionLocal, revisarActualizacion } from '../actualizacion.js';
 
 export async function vistaAjustes(v) {
@@ -23,16 +23,10 @@ export async function vistaAjustes(v) {
       <label class="campo"><span>Impresora Bluetooth</span>
         <select id="impresora"><option value="">${esApp ? 'Presiona Buscar' : 'Solo disponible en el celular'}</option></select></label>
       <button id="buscar" type="button" class="btn sec">Buscar impresoras vinculadas</button>
-      <label class="campo"><span>Modo de impresión</span>
-        <select id="modo"><option value="texto">Texto + logo (rápido)</option><option value="imagen">Imagen completa</option></select></label>
-      <label class="campo"><span>Velocidad de la impresora (mm/s)</span>
-        <input id="velocidad" type="number" inputmode="numeric" min="5" max="100"></label>
-      <p class="ayuda">Si la animación termina antes que el papel, baja este número; si termina después, súbelo.</p>
-      <button id="prueba" type="button" class="btn sec">Imprimir nota de prueba</button>
     </form>
-    <h2 class="sec-t">Avanzado</h2>
+    <h2 class="sec-t">Otras opciones</h2>
     <div class="lista"><a class="fila" href="#/ajustes/avanzado">
-      <div class="fila-txt"><p class="fila-t">Avanzado</p><p class="fila-s">Apariencia: modo ${temaActual() === 'oscuro' ? 'oscuro' : 'claro'}</p></div>
+      <div class="fila-txt"><p class="fila-t">Avanzado</p><p class="fila-s">Apariencia (modo ${temaActual() === 'oscuro' ? 'oscuro' : 'claro'}), impresión y nota de prueba</p></div>
       ${icono('derecha', 'ico-chev')}</a></div>
     <h2 class="sec-t">Versión</h2>
     <dl class="datos">
@@ -54,22 +48,12 @@ export async function vistaAjustes(v) {
     if (!config.impresora) { const rpp = lista.find((d) => /RPP|printer|pos/i.test(d.name)) || lista[0]; sel.value = rpp.address; config.impresora = rpp.address; }
   };
   if (config.impresora) sel.innerHTML = `<option value="${esc(config.impresora)}">${esc(config.impresora)}</option>`;
-  $('#modo', v).value = config.modo;
-  $('#velocidad', v).value = config.velocidad;
   sel.addEventListener('change', () => { config.impresora = sel.value; });
-  $('#modo', v).addEventListener('change', (e) => { config.modo = e.target.value; });
-  $('#velocidad', v).addEventListener('change', (e) => { config.velocidad = Number(e.target.value) || 24; });
   $('#buscar', v).addEventListener('click', async () => {
     try { const l = await buscarImpresoras(); l.length ? llenar(l) : aviso('No hay impresoras vinculadas. Vincúlala en Ajustes > Bluetooth del celular.', 'error'); }
     catch (e) { aviso(e.message, 'error'); }
   });
   if (esApp) buscarImpresoras().then(llenar).catch(() => {});
-  $('#prueba', v).addEventListener('click', async () => {
-    try {
-      await imprimirNota({ numero: 0, vendedor: yo.nombre, terminal: yo.terminal, cliente: 'Cliente de prueba Ñuñoa', fecha: new Date().toLocaleString('es-CL'), pago: 'Efectivo',
-        items: [{ nombre: 'Super 8 Oblea Clásica x24', cant: 2, precio: 5990 }, { nombre: 'BigTime Menta x20', cant: 1, precio: 6690 }] }, await datos.configuracion());
-    } catch (e) { aviso(e.message, 'error'); }
-  });
   $('#salir', v).addEventListener('click', async () => {
     await datos.salir();
     document.body.classList.remove('demo');
