@@ -27,6 +27,12 @@ let productos = [
   ['10042', 'Oreo Tradicional 108gr', 5, 592, 685, -15], ['10094', 'Super 8 Oblea Clásica x24', 3, 4890, 5990, 12],
   ['10137', 'Bolsa de basura mediana 70 x 90 rollo x10', 1, 665, 840, 42],
 ].map(([ref, nombre, categoria_id, costo, precio, stock], i) => ({ id: i + 1, ref, nombre, categoria_id, costo, precio, stock, stock_minimo: 3, activo: true }));
+let proveedores = [
+  { id: 1, nombre: 'Distribuidora Ejemplo Sur', contacto: 'Pedro Ejemplo', telefono: '+56 9 0000 0001', correo: 'ventas@ejemplo-sur.cl', activo: true },
+  { id: 2, nombre: 'Mayorista Demo', contacto: 'Laura Demo', telefono: '+56 9 0000 0002', correo: 'pedidos@mayorista-demo.cl', activo: true },
+];
+productos.forEach((p) => { p.proveedor_id = [1, 2, 3, 4, 5].includes(p.categoria_id) ? (p.categoria_id % 2) + 1 : null; });
+productos[productos.length - 1].proveedor_id = null;
 let pedidos = [];
 let numero = 0;
 // Ventas de ejemplo en lo que va de la semana (para ver el reporte en modo demostración).
@@ -76,7 +82,14 @@ export const demo = {
   pedidosCliente: (id) => pedidos.filter((p) => p.cliente_id == id).slice().reverse(),
   categorias: () => cats,
   productos: ({ busqueda }) => productos.filter((p) => !busqueda || norm(p.nombre + ' ' + p.ref).includes(norm(busqueda)))
-    .map((p) => ({ ...p, categoria: cats.find((c) => c.id === p.categoria_id)?.nombre })).sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    .map((p) => ({ ...p, categoria: cats.find((c) => c.id === p.categoria_id)?.nombre, proveedor: proveedores.find((x) => x.id === p.proveedor_id)?.nombre || null })).sort((a, b) => a.nombre.localeCompare(b.nombre)),
+  proveedores: () => proveedores.map((p) => ({ ...p, productos: productos.filter((x) => x.proveedor_id === p.id).length })).sort((a, b) => a.nombre.localeCompare(b.nombre)),
+  proveedor: (id) => proveedores.find((p) => p.id == id),
+  productosDeProveedor: (id) => productos.filter((p) => p.proveedor_id == id),
+  guardarProveedor(p) {
+    if (p.id) { proveedores = proveedores.map((x) => (x.id == p.id ? { ...x, ...p } : x)); return proveedores.find((x) => x.id == p.id); }
+    const n = { ...p, id: Math.max(0, ...proveedores.map((x) => x.id)) + 1 }; proveedores.push(n); return n;
+  },
   producto: (id) => productos.find((p) => p.id == id),
   guardarProducto(p) {
     const { stock_inicial, ...campos } = p;

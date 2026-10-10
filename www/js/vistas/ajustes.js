@@ -13,6 +13,10 @@ export async function vistaAjustes(v) {
       <div class="dato"><dt>Rol</dt><dd>${yo.rol === 'admin' ? 'Administrador' : 'Vendedor'}</dd></div>
       <div class="dato"><dt>Terminal</dt><dd>${esc(yo.terminal)}</dd></div>
     </dl>
+    ${datos.esAdmin() ? `<h2 class="sec-t">Administración</h2>
+    <div class="lista"><a class="fila" href="#/proveedores">
+      <div class="fila-txt"><p class="fila-t">Proveedores</p><p class="fila-s">Contactos y productos de cada proveedor</p></div>
+      ${'<svg class="ico ico-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'}</a></div>` : ''}
     <form id="imp" class="form pad">
       <h2 class="sec-t">Impresora</h2>
       <label class="campo"><span>Impresora Bluetooth</span>

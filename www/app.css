@@ -368,3 +368,9 @@ a.fila:active { background: var(--fondo); }
 .ayuda.mt { margin-top: 12px; }
 .total-reponer { margin: 16px 0 0; font-size: 18px; text-align: center; }
 .total-reponer + .resumen { margin-top: 8px; }
+
+/* ---------- Proveedores ---------- */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.filtro-prov { margin-bottom: 8px; }
+.caja-inline { display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px dashed var(--azul); border-radius: var(--radio); background: var(--azul-suave); }
+.cuenta.mt { margin-top: 16px; }

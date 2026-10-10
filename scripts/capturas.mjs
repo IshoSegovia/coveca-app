@@ -33,6 +33,8 @@ const PANTALLAS = [
   ['#/reportes', '14-reportes'],
   ['#/reportes/stock-bajo', '15-stock-bajo'],
   ['#/reportes/ventas-semana', '16-ventas-semana'],
+  ['#/proveedores', '17-proveedores'],
+  ['#/proveedores/1', '18-proveedor'],
   ['#/ajustes', '13-ajustes'],
 ];
 

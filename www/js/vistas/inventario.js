@@ -5,7 +5,7 @@ import { prepararFoto } from '../fotos.js';
 const FILTROS = [
   ['todos', 'Todos'], ['disponible', 'Disponible'], ['bajo', 'Stock bajo'], ['sin', 'Sin stock'], ['negativo', 'Negativo'],
 ];
-let estado = { filtro: 'todos', q: '' };
+let estado = { filtro: 'todos', q: '', prov: '' };
 const clase = (p) => (p.stock < 0 ? 'negativo' : p.stock === 0 ? 'sin' : p.stock_minimo && p.stock <= p.stock_minimo ? 'bajo' : 'disponible');
 
 const iniciales = (n) => n.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9 ]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -19,16 +19,24 @@ export const miniatura = (p, cls = '') => p.imagen_url
 export async function vistaInventario(v) {
   barra({ titulo: 'Inventario', accion: datos.esAdmin() ? { href: '#/inventario/nuevo', icono: 'mas', etiqueta: 'Nuevo producto' } : null });
   const todos = await datos.productos({ soloActivos: false });
+  const provs = await datos.proveedores();
   v.innerHTML = `
     <div class="inv-cab">
       <div class="buscador">${icono('buscar')}<input id="q" type="search" placeholder="Buscar producto o REF" value="${esc(estado.q)}" aria-label="Buscar producto"></div>
       ${selectorVista()}
     </div>
     <div class="filtros" role="tablist">${FILTROS.map(([k, t]) => `<button class="filtro" data-f="${k}" role="tab">${t} <span class="n"></span></button>`).join('')}</div>
+    <label class="campo pad filtro-prov"><span class="sr">Proveedor</span>
+      <select id="prov" aria-label="Filtrar por proveedor">
+        <option value="">Todos los proveedores</option>
+        <option value="sin">Sin proveedor asignado</option>
+        ${provs.map((x) => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('')}
+      </select></label>
     <div id="lista"></div>`;
   const n = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const pintar = () => {
-    const buscados = todos.filter((p) => !estado.q || n(p.nombre + ' ' + p.ref).includes(n(estado.q)));
+    const buscados = todos.filter((p) => (!estado.q || n(p.nombre + ' ' + p.ref).includes(n(estado.q)))
+      && (!estado.prov || (estado.prov === 'sin' ? !p.proveedor_id : String(p.proveedor_id) === estado.prov)));
     v.querySelectorAll('.filtro').forEach((b) => {
       const k = b.dataset.f;
       b.querySelector('.n').textContent = k === 'todos' ? buscados.length : buscados.filter((p) => clase(p) === k).length;
@@ -58,6 +66,8 @@ export async function vistaInventario(v) {
     }
   };
   $('#q', v).addEventListener('input', (e) => { estado.q = e.target.value.trim(); pintar(); });
+  $('#prov', v).value = estado.prov;
+  $('#prov', v).addEventListener('change', (e) => { estado.prov = e.target.value; pintar(); });
   v.querySelectorAll('.filtro').forEach((b) => b.addEventListener('click', () => { estado.filtro = b.dataset.f; pintar(); }));
   const vista = activarSelector(v, 'inventario', pintar);
   pintar();
@@ -66,6 +76,7 @@ export async function vistaInventario(v) {
 export async function vistaProductoForm(v, id) {
   const p = id ? await datos.producto(id) : { activo: true, costo: null, precio: null };
   const cats = await datos.categorias();
+  let provs = await datos.proveedores();
   const admin = datos.esAdmin();
   barra({ titulo: id ? p.nombre : 'Nuevo producto', sub: id ? `REF ${p.ref || '—'}` : '', atras: '#/inventario' });
   const m0 = margen(p.costo || 0, p.precio || 0);
@@ -87,6 +98,17 @@ export async function vistaProductoForm(v, id) {
         <select name="categoria_id" data-num><option value="">Sin categoría</option>
           ${cats.map((c) => `<option value="${c.id}" ${p.categoria_id === c.id ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}
         </select></label>
+      <label class="campo"><span>Proveedor</span>
+        <select id="proveedor" name="proveedor_id" data-num><option value="">Sin proveedor</option>
+          ${provs.filter((x) => x.activo !== false || x.id === p.proveedor_id).map((x) => `<option value="${x.id}" ${p.proveedor_id === x.id ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}
+          ${admin ? '<option value="nuevo">+ Agregar proveedor nuevo…</option>' : ''}
+        </select></label>
+      <div id="prov-nuevo" class="caja-inline" hidden>
+        <label class="campo"><span>Nombre del proveedor</span><input id="pn-nombre" placeholder="Ej.: Distribuidora del Sur"></label>
+        <label class="campo"><span>WhatsApp (opcional)</span><input id="pn-tel" type="tel" inputmode="tel" placeholder="+56 9 1234 5678"></label>
+        <div class="dos"><button type="button" id="pn-cancelar" class="btn sec">Cancelar</button><button type="button" id="pn-crear" class="btn sec">Crear y elegir</button></div>
+        <p class="ayuda">Los demás datos (correo, RUT, notas) se completan en Ajustes → Proveedores.</p>
+      </div>
       <div class="dos">
         <label class="campo"><span>REF</span><input name="ref" value="${esc(p.ref || '')}"></label>
         <label class="campo"><span>Código de barras</span><input name="codigo_barras" inputmode="numeric" value="${esc(p.codigo_barras || '')}"></label>
@@ -135,6 +157,26 @@ export async function vistaProductoForm(v, id) {
     });
   }
 
+  // Proveedor: crear uno nuevo sin salir de la ficha.
+  const selProv = $('#proveedor', v), cajaProv = $('#prov-nuevo', v);
+  let provAnterior = selProv.value;
+  selProv.addEventListener('change', () => {
+    if (selProv.value === 'nuevo') { cajaProv.hidden = false; $('#pn-nombre', v).focus(); }
+    else { provAnterior = selProv.value; cajaProv.hidden = true; }
+  });
+  $('#pn-cancelar', v)?.addEventListener('click', () => { selProv.value = provAnterior; cajaProv.hidden = true; });
+  $('#pn-crear', v)?.addEventListener('click', async () => {
+    const nombre = $('#pn-nombre', v).value.trim();
+    if (!nombre) return aviso('Escribe el nombre del proveedor.', 'error');
+    try {
+      const g = await datos.guardarProveedor({ nombre, telefono: $('#pn-tel', v).value.trim() || null, activo: true });
+      const o = document.createElement('option'); o.value = g.id; o.textContent = g.nombre;
+      selProv.insertBefore(o, selProv.querySelector('option[value="nuevo"]'));
+      selProv.value = String(g.id); provAnterior = selProv.value; cajaProv.hidden = true;
+      aviso('Proveedor creado. Guarda el producto para confirmar.');
+    } catch (err) { aviso(err.message, 'error'); }
+  });
+
   const costo = $('#costo', v), mg = $('#margen', v), precio = $('#precio', v);
   const gan = () => {
     const c = Number(costo.value), pr = Number(precio.value);
@@ -155,6 +197,7 @@ export async function vistaProductoForm(v, id) {
     const d = leerForm(e.target);
     if (!d.nombre) { $('#err', v).textContent = 'El nombre es obligatorio.'; return; }
     if (d.precio == null) { $('#err', v).textContent = 'Indica el precio de venta.'; return; }
+    if (Number.isNaN(d.proveedor_id)) d.proveedor_id = null;
     d.costo = d.costo ?? 0;
     try {
       const g = await datos.guardarProducto(id ? { ...d, id: Number(id) } : d);

@@ -25,6 +25,7 @@ function traducir(m) {
   if (/Payload too large|exceeded/i.test(m)) return 'La foto es demasiado pesada. Prueba con otra.';
   if (/duplicate key.*rutas_nombre/i.test(m)) return 'Ya existe una ruta con ese nombre.';
   if (/duplicate key.*productos_ref/i.test(m)) return 'Ya existe un producto con esa REF.';
+  if (/duplicate key.*proveedores_nombre/i.test(m)) return 'Ya existe un proveedor con ese nombre.';
   return m;
 }
 
@@ -132,12 +133,35 @@ export async function categorias() {
   if (modoDemo) return demo.categorias();
   return chk(await sb.from('categorias').select('*').order('nombre'));
 }
+// ---------------- Proveedores ----------------
+export async function proveedores() {
+  if (modoDemo) return demo.proveedores();
+  const ps = chk(await sb.from('proveedores').select('*').order('nombre'));
+  const cuentas = chk(await sb.from('productos').select('proveedor_id').not('proveedor_id', 'is', null));
+  return ps.map((p) => ({ ...p, productos: cuentas.filter((c) => c.proveedor_id === p.id).length }));
+}
+export async function proveedor(id) {
+  if (modoDemo) return demo.proveedor(id);
+  return chk(await sb.from('proveedores').select('*').eq('id', id).single());
+}
+export async function productosDeProveedor(id) {
+  if (modoDemo) return demo.productosDeProveedor(id);
+  return chk(await sb.from('productos').select('id,nombre,stock,precio,activo').eq('proveedor_id', id).order('nombre'));
+}
+export async function guardarProveedor(p) {
+  if (modoDemo) return demo.guardarProveedor(p);
+  const { id, ...campos } = p;
+  return id
+    ? chk(await sb.from('proveedores').update(campos).eq('id', id).select().single())
+    : chk(await sb.from('proveedores').insert(campos).select().single());
+}
+
 export async function productos({ busqueda = '', soloActivos = true } = {}) {
   if (modoDemo) return demo.productos({ busqueda });
-  let q = sb.from('productos').select('id,ref,nombre,costo,precio,stock,stock_minimo,activo,imagen_url,categoria_id,categorias(nombre)');
+  let q = sb.from('productos').select('id,ref,nombre,costo,precio,stock,stock_minimo,activo,imagen_url,categoria_id,categorias(nombre),proveedor_id,proveedores(nombre)');
   if (soloActivos) q = q.eq('activo', true);
   if (busqueda) q = q.or(`nombre.ilike.%${busqueda}%,ref.ilike.%${busqueda}%`);
-  return chk(await q.order('nombre')).map((p) => ({ ...p, categoria: p.categorias?.nombre || null }));
+  return chk(await q.order('nombre')).map((p) => ({ ...p, categoria: p.categorias?.nombre || null, proveedor: p.proveedores?.nombre || null }));
 }
 export async function producto(id) {
   if (modoDemo) return demo.producto(id);
