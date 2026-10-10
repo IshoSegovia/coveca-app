@@ -247,6 +247,11 @@ const corta = (d) => d.toLocaleDateString('es-CL', { day: 'numeric', month: 'sho
 export async function vistaVentasSemana(v) {
   barra({ titulo: 'Ventas de la semana', atras: '#/reportes' });
   let desde = lunesDe(new Date());
+  // Proveedor de cada producto (el actual) para filtrar las ventas por proveedor.
+  const [productos, provs] = await Promise.all([datos.productos({ soloActivos: false }), datos.proveedores()]);
+  const provDe = new Map(productos.map((p) => [p.id, p.proveedor_id || null]));
+  let prov = leer('ventas-prov', '');
+  if (prov && prov !== 'sin' && !provs.some((x) => String(x.id) === prov)) prov = '';
 
   const cargar = async () => {
     const hasta = new Date(desde); hasta.setDate(hasta.getDate() + 7);
@@ -255,8 +260,15 @@ export async function vistaVentasSemana(v) {
     const esActual = desde.getTime() === lunesDe(new Date()).getTime();
     v.innerHTML = '<div class="cargando" aria-label="Cargando"></div>';
     const todos = await datos.ventas(desde, hasta);
-    const peds = todos.filter((p) => p.estado !== 'anulado');
-    const anuladas = todos.length - peds.length;
+    const validas = todos.filter((p) => p.estado !== 'anulado');
+    const anuladas = todos.length - validas.length;
+    const proveedor = prov && prov !== 'sin' ? provs.find((x) => String(x.id) === prov) : null;
+    const nombreFiltro = proveedor ? proveedor.nombre : prov === 'sin' ? 'Sin proveedor asignado' : '';
+    // Con filtro: cada nota conserva solo los productos de ese proveedor y su monto (sin descuentos de la nota).
+    const peds = !prov ? validas : validas.map((p) => {
+      const items = p.items.filter((i) => (prov === 'sin' ? !provDe.get(i.producto_id) : String(provDe.get(i.producto_id)) === prov));
+      return { ...p, items, total: items.reduce((a, i) => a + i.subtotal, 0) };
+    }).filter((p) => p.items.length);
 
     const total = peds.reduce((s, p) => s + p.total, 0);
     const costo = peds.reduce((s, p) => s + p.items.reduce((a, i) => a + i.cantidad * (i.costo || 0), 0), 0);
@@ -274,13 +286,22 @@ export async function vistaVentasSemana(v) {
     const ranking = Object.values(prods).sort((a, b) => b.monto - a.monto);
 
     v.innerHTML = `
+      <div class="pad filtro-rep">
+        <label class="campo"><span>Proveedor</span>
+          <select id="prov-v">
+            <option value="">Todos los proveedores</option>
+            ${provs.filter((x) => x.activo !== false).map((x) => `<option value="${x.id}" ${prov === String(x.id) ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}
+            <option value="sin" ${prov === 'sin' ? 'selected' : ''}>Sin proveedor asignado</option>
+          </select></label>
+      </div>
       <div class="semana-nav pad">
         <button type="button" class="btn sec" id="ant" aria-label="Semana anterior">${icono('atras')}</button>
         <div class="semana-lbl"><p class="fila-t">${esc(etiqueta)}</p><p class="fila-s">${esActual ? 'Semana actual' : 'Semana pasada'}</p></div>
         <button type="button" class="btn sec" id="sig" aria-label="Semana siguiente" ${esActual ? 'disabled' : ''}>${icono('derecha')}</button>
       </div>
-      ${!peds.length ? vacio('Sin ventas esta semana', anuladas ? `${anuladas} nota(s) anulada(s) no se cuentan.` : 'Cuando se generen pedidos aparecerán aquí.') : `
-      <div class="total-semana pad"><p class="fila-s">Total vendido</p><p class="monto grande">${clp(total)}</p>
+      ${!peds.length ? vacio(nombreFiltro ? `Sin ventas de ${nombreFiltro} esta semana` : 'Sin ventas esta semana', anuladas ? `${anuladas} nota(s) anulada(s) no se cuentan.` : 'Cuando se generen pedidos aparecerán aquí.') : `
+      ${nombreFiltro ? `<p class="ayuda pad mt">Solo productos de <b>${esc(nombreFiltro)}</b>. Montos por producto, sin descuentos aplicados a la nota completa.</p>` : ''}
+      <div class="total-semana pad"><p class="fila-s">Total vendido${nombreFiltro ? ' · ' + esc(nombreFiltro) : ''}</p><p class="monto grande">${clp(total)}</p>
         <p class="fila-s">Ganancia estimada <b class="monto">${clp(ganancia)}</b> (${pct(total ? ganancia / total : null)} sobre venta)</p></div>
       <div class="resumen">
         <div><p class="resumen-n">${peds.length}</p><p>Notas</p></div>
@@ -307,13 +328,15 @@ export async function vistaVentasSemana(v) {
           <span class="monto">${clp(p.total)}</span></a>`).join('')}</div>
       ${anuladas ? `<p class="ayuda pad mt">${anuladas} nota(s) anulada(s) no se incluyen.</p>` : ''}`}`;
 
+    $('#prov-v', v).addEventListener('change', (e) => { prov = e.target.value; guardar('ventas-prov', prov); cargar(); });
     $('#ant', v).addEventListener('click', () => { desde.setDate(desde.getDate() - 7); cargar(); });
     $('#sig', v).addEventListener('click', () => { desde.setDate(desde.getDate() + 7); cargar(); });
     if (!peds.length) return;
     activarAcciones(v, {
-      nombre: () => `COVECA-ventas-${desde.toISOString().slice(0, 10)}.pdf`,
+      nombre: () => `COVECA-ventas-${nombreFiltro ? nombreFiltro.normalize('NFD').replace(/[^\w]+/g, '-') + '-' : ''}${desde.toISOString().slice(0, 10)}.pdf`,
       pdf: async () => {
-        const r = await nuevoReporte({ titulo: 'Ventas de la semana', subtitulo: `Semana del ${etiqueta}` });
+        const r = await nuevoReporte({ titulo: 'Ventas de la semana', subtitulo: `Semana del ${etiqueta}${nombreFiltro ? ' · ' + nombreFiltro : ''}` });
+        if (nombreFiltro) r.seccion(`Proveedor: ${nombreFiltro}`, 'Solo se incluyen los productos de este proveedor. Montos por producto, sin descuentos aplicados a la nota completa.');
         r.resumen([
           { valor: clp(total), etiqueta: 'Total vendido', color: COLORES.AZUL, grande: true },
           { valor: clp(ganancia), etiqueta: `Ganancia (${pct(total ? ganancia / total : null)})`, color: COLORES.VERDE, grande: true },
@@ -337,7 +360,7 @@ export async function vistaVentasSemana(v) {
         return r.terminar();
       },
       texto: () => [
-        `*COVECA – Ventas ${etiqueta}*`,
+        `*COVECA – Ventas ${etiqueta}*${nombreFiltro ? ` · ${nombreFiltro}` : ''}`,
         `Total: *${clp(total)}* · ${peds.length} notas · ${clientes} clientes`,
         `Ganancia estimada: ${clp(ganancia)}`,
         '', '*Por forma de pago*', ...Object.entries(PAGOS).filter(([k]) => porPago[k]).map(([k, tt]) => `• ${tt}: ${clp(porPago[k])}`),

@@ -6,11 +6,15 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 - `www/` – interfaz (HTML/JS/CSS sin compilación). `tokens.css` = variables de diseño, `app.css` = estilos de la app.
   - `js/main.js` entrada y enrutador (`#/rutas`, `#/clientes/:id`, `#/inventario/:id`, `#/ajustes`…).
   - `js/datos.js` capa de datos: Supabase con sesión; `js/demo.js` datos de ejemplo ("Ver con datos de ejemplo" en el ingreso).
-  - `js/vistas/` pantallas: login, rutas, clientes, pedido, inventario, ajustes. `js/ui.js` utilidades (clp, margen, íconos, barra).
+  - `js/vistas/` pantallas: login, rutas (+ recorrido), clientes (+ ubicación), pedido, inventario, proveedores, reportes, ajustes. `js/ui.js` utilidades (clp, margen, íconos, barra, selector lista/íconos).
+  - `js/gps.js` ubicación, orden del recorrido (vecino más cercano + 2-opt) y enlaces de Google Maps por tramos (base de partida opcional por ruta).
+  - `js/pdf.js` reportes PDF de marca (jsPDF + autotable en `vendor/`); en Android se guardan en Descargas/COVECA con `Compartir.guardarArchivo`.
+  - `js/fotos.js` recorte/reducción de fotos antes de subir a Storage (carpetas `productos` y `clientes`).
+  - `js/actualizacion.js` actualización obligatoria; `js/externo.js` abre enlaces fuera de la app (`<a data-externo>`).
   - `js/impresora.js` imprime una nota (animación + Bluetooth + QR + WhatsApp) usando `escpos.js`, `render.js`, `impresion-animada.js`, `nota-qr.js`.
   - `vendor/` librerías copiadas (supabase-js UMD, qrcode). Para actualizar supabase-js: `npm i @supabase/supabase-js@2` y copiar `node_modules/@supabase/supabase-js/dist/umd/supabase.js`.
 - `www/render.js` – nota de venta como imagen + conversión a ESC/POS raster (impresora RPP02N, 58 mm = 384 px).
-- `android/` – proyecto Capacitor. `BtPrinterPlugin.java` = impresión Bluetooth SPP.
+- `android/` – proyecto Capacitor. `BtPrinterPlugin.java` = impresión Bluetooth SPP. `CompartirPlugin.java` = WhatsApp con imagen, abrir enlaces y guardar archivos (PDF) en Descargas.
 - `scripts/capturas.mjs` – capturas de pantalla automáticas en tamaño celular.
 - `.github/workflows/android.yml` – compila el APK (firma fija con secretos `ANDROID_KEYSTORE_*`) y lo publica en Releases (`ultima`).
 - `supabase/migrations/` – esquema de la base de datos. Cada archivo nuevo se aplica solo en Supabase vía `.github/workflows/base-de-datos.yml` (secreto `SUPABASE_DB_URL`). Nunca editar una migración ya aplicada: crear una nueva.
@@ -40,6 +44,11 @@ Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 - [ ] Mensajes de error dicen qué pasó y qué hacer, en español simple.
 - [ ] Se ve bien sin conexión (sin fuentes ni recursos externos).
 - [ ] Nada de degradados, sombras decorativas ni "tarjetas genéricas".
+
+## Reportes
+- Stock bajo: negativo / sin stock / bajo mínimo (mínimo general editable para productos sin mínimo propio). Filtro por proveedor: con un proveedor elegido se arma la solicitud de pedido (cantidad sugerida = hasta el doble del mínimo, editable) para enviar por WhatsApp, correo o PDF sin stock ni costos.
+- Ventas de la semana (lunes a domingo): filtro por proveedor según el proveedor actual de cada producto; con filtro, montos por producto sin descuentos de la nota.
+- Salida: PDF de marca y WhatsApp como texto (no se imprimen en la térmica).
 
 ## Impresión
 - Revisar cambios a la nota con la vista previa (imagen) antes de publicar.
