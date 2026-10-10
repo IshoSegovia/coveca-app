@@ -40,7 +40,7 @@ export async function vistaClientes(v) {
       cont.innerHTML = cs.map((c) => `
         <a class="fila" href="#/clientes/${c.id}">
           ${conRango(avatar(c), nivelDe(c), 'lista')}
-          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${(() => { const e = nivelDe(c); return e && e.stats.compras ? `<b class="nivel-txt nv-${e.i}">${esc(e.nivel.nombre)}</b> · ` : ''; })()}${lugar(c)}</p></div>
+          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${(() => { const e = nivelDe(c); return e ? `<b class="nivel-txt nv-${e.i}">${esc(e.nivel.nombre)}</b> · ` : ''; })()}${lugar(c)}</p></div>
           ${icono('derecha', 'ico-chev')}</a>`).join('');
     }
   };
@@ -51,7 +51,7 @@ export async function vistaClientes(v) {
 }
 
 // Marco de nivel alrededor del avatar (inspirado en los emblemas de rango de los videojuegos):
-// cada nivel suma adornos. Sin compras en el periodo = sin marco. El nombre del nivel siempre va escrito al lado.
+// cada nivel suma adornos. Todos los clientes parten con el marco Bronce. El nombre del nivel siempre va escrito al lado.
 const PLUMAS = ['M37 -6 52 -12 45 4Z', 'M34 -19 50 -31 44 -12Z', 'M36 8 49 9 40 19Z'];
 const ala = (n) => PLUMAS.slice(0, n).map((d) => `<path d="M${d.slice(1)}"/><path d="M${d.slice(1)}" transform="scale(-1 1)"/>`).join('');
 const ADORNOS = [
@@ -63,7 +63,7 @@ const ADORNOS = [
 const marco = (i) => `<svg class="rango-marco" viewBox="-52 -52 104 104" aria-hidden="true"><circle r="35" class="anillo"/>${ADORNOS[i]}</svg>`;
 // e: estado de lealtad del cliente (o null). tam: 'lista' | 'grilla' | 'perfil'
 const conRango = (avatarHtml, e, tam) => {
-  const r = e && e.stats.compras ? e : null;
+  const r = e || null;
   return `<span class="rango rango-${tam} ${r ? `nv-${r.i} con-marco` : ''}">${avatarHtml}${r ? marco(r.i) : ''}${r && tam === 'grilla' ? `<span class="rango-placa">${esc(r.nivel.nombre)}</span>` : ''}</span>`;
 };
 
