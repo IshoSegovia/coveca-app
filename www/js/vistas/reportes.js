@@ -1,9 +1,8 @@
-// Reportes: stock bajo y ventas de la semana. Se ven en pantalla, se imprimen en la térmica
+// Reportes: stock bajo y ventas de la semana. Se ven en pantalla, se guardan como PDF de marca
 // o se envían por WhatsApp como texto.
 import { $, esc, barra, icono, vacio, aviso, clp, pct, fecha, DIAS } from '../ui.js';
 import * as datos from '../datos.js';
-import { Ticket, COLUMNAS } from '../../escpos.js';
-import { imprimirTicket } from '../impresora.js';
+import { nuevoReporte, guardarPdf, COLORES } from '../pdf.js';
 import { abrirExterno } from '../externo.js';
 
 const leer = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (_) { return d; } };
@@ -29,29 +28,23 @@ export function vistaReportes(v) {
 
 // Botones de salida comunes a ambos reportes.
 const accionesHtml = () => `<div class="foto-acciones mt reporte-acc">
-    <button type="button" class="btn sec" data-acc="imprimir">${icono('impresora')} Imprimir</button>
+    <button type="button" class="btn sec" data-acc="pdf">${icono('descargar')} Guardar PDF</button>
     <button type="button" class="btn sec" data-acc="whatsapp">${icono('whatsapp')} WhatsApp</button>
   </div>`;
 
-function activarAcciones(v, { ticket, texto }) {
-  v.querySelector('[data-acc="imprimir"]').addEventListener('click', async (e) => {
-    const b = e.currentTarget; b.disabled = true;
-    try { await imprimirTicket(ticket()); aviso('Reporte impreso'); } catch (err) { aviso(err.message, 'error'); }
-    b.disabled = false;
+function activarAcciones(v, { pdf, nombre, texto }) {
+  v.querySelector('[data-acc="pdf"]').addEventListener('click', async (e) => {
+    const b = e.currentTarget, html = b.innerHTML;
+    b.disabled = true; b.textContent = 'Generando…';
+    try { const donde = await guardarPdf(await pdf(), nombre()); aviso(`PDF guardado en ${donde}`); }
+    catch (err) { aviso(err.message || 'No se pudo generar el PDF.', 'error'); }
+    b.disabled = false; b.innerHTML = html;
   });
   v.querySelector('[data-acc="whatsapp"]').addEventListener('click', () =>
     abrirExterno('https://wa.me/?text=' + encodeURIComponent(texto())));
 }
 
-// Encabezado de ticket de reporte.
-function cabecera(titulo, sub) {
-  const t = new Ticket('pc850');
-  t.centro().negrita().alto().linea('COVECA').alto(false).linea(titulo).negrita(false);
-  if (sub) t.linea(sub);
-  t.linea(new Date().toLocaleString('es-CL')).izquierda().separador();
-  return t;
-}
-const recortar = (s, n) => (s.length > n ? s.slice(0, n - 1) + '.' : s);
+const hoyArchivo = () => new Date().toISOString().slice(0, 10);
 
 // ---------------------------------------------------------------- Stock bajo
 const nivel = (p, umbral) => (p.stock < 0 ? 'negativo' : p.stock === 0 ? 'sin'
@@ -98,15 +91,25 @@ export async function vistaStockBajo(v) {
     });
     if (!total) return;
     activarAcciones(v, {
-      ticket: () => {
-        const t = cabecera('REPORTE STOCK BAJO', `${total} productos por reponer`);
-        for (const [k, tit] of [['negativo', 'NEGATIVO (revisar)'], ['sin', 'SIN STOCK'], ['bajo', 'STOCK BAJO']]) {
-          if (!grupos[k].length) continue;
-          t.negrita().linea(tit).negrita(false);
-          for (const p of grupos[k]) t.par(recortar(p.nombre, COLUMNAS - 6), String(p.stock));
-          t.separador();
-        }
-        return t.avanzar().base64();
+      nombre: () => `COVECA-stock-bajo-${hoyArchivo()}.pdf`,
+      pdf: async () => {
+        const r = await nuevoReporte({ titulo: 'Reporte de stock bajo', subtitulo: `${total} productos por reponer` });
+        r.resumen([
+          { valor: total, etiqueta: 'Por reponer', color: COLORES.AZUL },
+          { valor: grupos.negativo.length, etiqueta: 'Negativo (revisar)', color: COLORES.ROJO_TEXTO },
+          { valor: grupos.sin.length, etiqueta: 'Sin stock', color: COLORES.ROJO_TEXTO },
+          { valor: grupos.bajo.length, etiqueta: 'Stock bajo', color: COLORES.AMBAR },
+        ]);
+        const cols = [{ titulo: 'Producto' }, { titulo: 'Categoría', ancho: 34 }, { titulo: 'REF', ancho: 20 },
+          { titulo: 'Mínimo', ancho: 18, alinear: 'right' }, { titulo: 'Stock', ancho: 18, alinear: 'right' }];
+        const filas = (lista) => lista.map((p) => [p.nombre, p.categoria || '—', p.ref || '—',
+          String(p.stock_minimo ?? umbral) + (p.stock_minimo == null ? '*' : ''), String(p.stock)]);
+        const rojo = (k) => (i, c) => (c === 4 ? (k === 'bajo' ? COLORES.AMBAR : COLORES.ROJO_TEXTO) : null);
+        if (grupos.negativo.length) { r.seccion('Negativo · revisar', 'Se vendió más de lo registrado. Conviene contar en bodega y ajustar el stock.'); r.tabla(cols, filas(grupos.negativo), { colorFila: rojo('negativo') }); }
+        if (grupos.sin.length) { r.seccion('Sin stock'); r.tabla(cols, filas(grupos.sin), { colorFila: rojo('sin') }); }
+        if (grupos.bajo.length) { r.seccion('Stock bajo'); r.tabla(cols, filas(grupos.bajo), { colorFila: rojo('bajo') }); }
+        r.seccion('Nota', `* Productos sin mínimo propio: se consideran bajos con ${umbral} unidades o menos. Solo productos activos.`);
+        return r.terminar();
       },
       texto: () => {
         const l = [`*COVECA – Stock bajo* (${new Date().toLocaleDateString('es-CL')})`, `${total} productos por reponer`];
@@ -193,17 +196,30 @@ export async function vistaVentasSemana(v) {
     $('#sig', v).addEventListener('click', () => { desde.setDate(desde.getDate() + 7); cargar(); });
     if (!peds.length) return;
     activarAcciones(v, {
-      ticket: () => {
-        const t = cabecera('VENTAS DE LA SEMANA', etiqueta);
-        t.negrita().alto().par('TOTAL', clp(total)).alto(false).negrita(false)
-          .par('Notas', String(peds.length)).par('Clientes', String(clientes))
-          .par('Ganancia estimada', clp(ganancia)).separador();
-        for (const [k, tt] of Object.entries(PAGOS)) if (porPago[k]) t.par(tt, clp(porPago[k]));
-        t.separador().negrita().linea('POR DIA').negrita(false);
-        porDia.forEach((m, i) => { if (m) t.par(DIAS[i + 1], clp(m)); });
-        t.separador().negrita().linea('PRODUCTOS').negrita(false);
-        for (const r of ranking) t.par(`${r.cant} ${recortar(r.nombre, COLUMNAS - 12)}`, clp(r.monto));
-        return t.avanzar().base64();
+      nombre: () => `COVECA-ventas-${desde.toISOString().slice(0, 10)}.pdf`,
+      pdf: async () => {
+        const r = await nuevoReporte({ titulo: 'Ventas de la semana', subtitulo: `Semana del ${etiqueta}` });
+        r.resumen([
+          { valor: clp(total), etiqueta: 'Total vendido', color: COLORES.AZUL, grande: true },
+          { valor: clp(ganancia), etiqueta: `Ganancia (${pct(total ? ganancia / total : null)})`, color: COLORES.VERDE, grande: true },
+          { valor: peds.length, etiqueta: 'Notas de venta' },
+          { valor: clientes, etiqueta: 'Clientes atendidos' },
+        ]);
+        r.seccion('Por forma de pago');
+        r.tabla([{ titulo: 'Forma de pago' }, { titulo: 'Notas', ancho: 24, alinear: 'right' }, { titulo: '% del total', ancho: 28, alinear: 'right' }, { titulo: 'Monto', ancho: 32, alinear: 'right' }],
+          Object.entries(PAGOS).filter(([k]) => porPago[k]).map(([k, t]) => [t, String(peds.filter((p) => p.forma_pago === k).length), pct(porPago[k] / total), clp(porPago[k])]),
+          { pie: ['Total', String(peds.length), '100 %', clp(total)] });
+        r.seccion('Ventas por día');
+        r.barras(porDia.map((m, i) => ({ etiqueta: DIAS[i + 1], valor: m })));
+        r.seccion('Productos vendidos', `${ranking.length} productos · ${ranking.reduce((s, x) => s + x.cant, 0)} unidades`);
+        r.tabla([{ titulo: 'Producto' }, { titulo: 'Unidades', ancho: 22, alinear: 'right' }, { titulo: '% del total', ancho: 26, alinear: 'right' }, { titulo: 'Monto', ancho: 32, alinear: 'right' }],
+          ranking.map((x) => [x.nombre, String(x.cant), pct(x.monto / ranking.reduce((s, y) => s + y.monto, 0)), clp(x.monto)]),
+          { pie: ['Total', String(ranking.reduce((s, x) => s + x.cant, 0)), '', clp(ranking.reduce((s, x) => s + x.monto, 0))] });
+        r.seccion('Notas de venta', anuladas ? `${anuladas} nota(s) anulada(s) no se incluyen.` : '');
+        r.tabla([{ titulo: 'N°', ancho: 14 }, { titulo: 'Fecha', ancho: 24 }, { titulo: 'Cliente' }, { titulo: 'Pago', ancho: 30 }, { titulo: 'Total', ancho: 28, alinear: 'right' }],
+          peds.map((p) => [String(p.numero), fecha(p.fecha), p.cliente, PAGOS[p.forma_pago] || p.forma_pago, clp(p.total)]),
+          { pie: ['', '', `${peds.length} notas`, '', clp(total)] });
+        return r.terminar();
       },
       texto: () => [
         `*COVECA – Ventas ${etiqueta}*`,

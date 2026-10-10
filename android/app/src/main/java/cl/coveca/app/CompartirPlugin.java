@@ -1,6 +1,12 @@
 package cl.coveca.app;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import java.io.OutputStream;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
@@ -22,6 +28,58 @@ import java.io.FileOutputStream;
  */
 @CapacitorPlugin(name = "Compartir")
 public class CompartirPlugin extends Plugin {
+
+    /**
+     * Guarda un archivo (ej. PDF de un reporte) en Descargas/COVECA y lo abre con el visor del celular.
+     * Si no hay visor, abre el menú Compartir.
+     */
+    @PluginMethod
+    public void guardarArchivo(PluginCall call) {
+        String base64 = call.getString("base64");
+        String nombre = call.getString("nombre", "reporte.pdf");
+        String mime = call.getString("mime", "application/pdf");
+        if (base64 == null) { call.reject("Falta el contenido del archivo."); return; }
+        try {
+            byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+            Uri uri;
+            String ubicacion;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentResolver cr = getContext().getContentResolver();
+                ContentValues v = new ContentValues();
+                v.put(MediaStore.MediaColumns.DISPLAY_NAME, nombre);
+                v.put(MediaStore.MediaColumns.MIME_TYPE, mime);
+                v.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/COVECA");
+                uri = cr.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+                if (uri == null) throw new Exception("No se pudo crear el archivo en Descargas.");
+                try (OutputStream out = cr.openOutputStream(uri)) { out.write(bytes); }
+                ubicacion = "Descargas/COVECA";
+            } else {
+                File dir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "COVECA");
+                dir.mkdirs();
+                File f = new File(dir, nombre);
+                try (FileOutputStream out = new FileOutputStream(f)) { out.write(bytes); }
+                uri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", f);
+                ubicacion = f.getAbsolutePath();
+            }
+            Intent ver = new Intent(Intent.ACTION_VIEW);
+            ver.setDataAndType(uri, mime);
+            ver.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                getActivity().startActivity(ver);
+            } catch (ActivityNotFoundException e) {
+                Intent env = new Intent(Intent.ACTION_SEND);
+                env.setType(mime);
+                env.putExtra(Intent.EXTRA_STREAM, uri);
+                env.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                getActivity().startActivity(Intent.createChooser(env, "Abrir o compartir reporte"));
+            }
+            com.getcapacitor.JSObject r = new com.getcapacitor.JSObject();
+            r.put("ubicacion", ubicacion);
+            call.resolve(r);
+        } catch (Exception e) {
+            call.reject("No se pudo guardar el archivo: " + e.getMessage());
+        }
+    }
 
     /** Abre un enlace en el navegador del celular (ej. descargar la actualización). */
     @PluginMethod
