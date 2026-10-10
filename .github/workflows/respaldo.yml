@@ -1,0 +1,102 @@
+name: Respaldo diario
+
+# Cada noche copia la base de datos (productos, clientes, pedidos, usuarios…) y todas las fotos de Storage,
+# cifra todo con la clave RESPALDO_CLAVE y lo guarda 90 días como artefacto de GitHub.
+# Cómo restaurar: docs/RESPALDO.md
+on:
+  schedule:
+    - cron: '30 6 * * *'   # 06:30 UTC = 03:30 en Chile (horario de verano) / 02:30 (invierno)
+  workflow_dispatch:
+
+concurrency: respaldo
+
+jobs:
+  respaldar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      RESPALDO_CLAVE: ${{ secrets.RESPALDO_CLAVE }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Revisar secretos
+        run: |
+          [ -n "$DB_URL" ] || { echo "::error::Falta el secreto SUPABASE_DB_URL"; exit 1; }
+          [ ${#RESPALDO_CLAVE} -ge 20 ] || { echo "::error::Falta el secreto RESPALDO_CLAVE (o es muy corto). Cárgalo en Settings > Secrets and variables > Actions"; exit 1; }
+
+      - name: Instalar cliente PostgreSQL 17
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common > /dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+          sudo apt-get install -y -qq postgresql-client-17 > /dev/null
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Copiar base de datos
+        run: |
+          set -o pipefail
+          FECHA=$(TZ=America/Santiago date +%Y-%m-%d)
+          DIR="coveca-respaldo-$FECHA"; mkdir -p "$DIR/fotos"
+          echo "DIR=$DIR" >> "$GITHUB_ENV"; echo "FECHA=$FECHA" >> "$GITHUB_ENV"
+          limpiar() { sed -E 's#postgresql://[^ ]*#<direccion>#g' | tr '\n' ' ' | cut -c1-500; }
+
+          # 1) Todo lo del negocio (esquema public): tablas, funciones, reglas y datos
+          if ! err=$(pg_dump "$DB_URL" --schema=public --no-owner --no-privileges -f "$DIR/base-public.sql" 2>&1); then
+            echo "::error::Falló la copia de la base: $(echo "$err" | limpiar)"; exit 1; fi
+          # 2) Usuarios (para no tener que recrear las cuentas) y las carpetas de fotos
+          if ! err=$(pg_dump "$DB_URL" --data-only --no-owner --no-privileges \
+              -t auth.users -t auth.identities -t storage.buckets \
+              -f "$DIR/usuarios-y-carpetas.sql" 2>&1); then
+            echo "::error::Falló la copia de usuarios/carpetas: $(echo "$err" | limpiar)"; exit 1; fi
+          # 3) Lo que vive fuera del esquema public: aviso al crear usuario y permisos de las fotos
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -qtA -f supabase/respaldo/extras.sql > "$DIR/extras.sql"
+
+          # Resumen legible: cuántos registros hay en cada tabla
+          psql "$DB_URL" -tA -F ' ' -c "
+            select 'productos', count(*) from public.productos union all
+            select 'clientes', count(*) from public.clientes union all
+            select 'rutas', count(*) from public.rutas union all
+            select 'proveedores', count(*) from public.proveedores union all
+            select 'pedidos', count(*) from public.pedidos union all
+            select 'pedido_items', count(*) from public.pedido_items union all
+            select 'movimientos_stock', count(*) from public.movimientos_stock union all
+            select 'usuarios', count(*) from auth.users" > "$DIR/conteos.txt"
+          psql "$DB_URL" -tA -F '|' -c "select bucket_id, name from storage.objects where name not like '%.emptyFolderPlaceholder' order by 1, 2" > fotos.txt
+          cp fotos.txt "$DIR/indice-fotos.txt"
+          { echo "Respaldo COVECA del $FECHA"; psql "$DB_URL" -tAc "select version()"; } > "$DIR/LEEME.txt"
+
+      - name: Copiar fotos de Storage
+        run: |
+          URL=$(sed -nE "s/.*SUPABASE_URL = '([^']+)'.*/\1/p" www/config.js)
+          total=0; fallas=0
+          while IFS='|' read -r bucket nombre; do
+            [ -n "$nombre" ] || continue
+            total=$((total+1))
+            mkdir -p "$DIR/fotos/$bucket/$(dirname "$nombre")"
+            ruta=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$nombre")
+            if ! curl -sfL --retry 3 -o "$DIR/fotos/$bucket/$nombre" "$URL/storage/v1/object/public/$bucket/$ruta"; then
+              fallas=$((fallas+1)); echo "No se pudo bajar $bucket/$nombre"
+            fi
+          done < fotos.txt
+          echo "fotos $total (fallidas: $fallas)" >> "$DIR/conteos.txt"
+          [ "$fallas" -eq 0 ] || echo "::warning::$fallas de $total fotos no se pudieron copiar"
+
+      - name: Cifrar
+        run: |
+          tar czf - "$DIR" | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:RESPALDO_CLAVE -out "$DIR.tar.gz.cifrado"
+          # Comprobar que se puede descifrar con la misma clave antes de guardarlo
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:RESPALDO_CLAVE -in "$DIR.tar.gz.cifrado" | tar tzf - > /dev/null
+          TAM=$(du -h "$DIR.tar.gz.cifrado" | cut -f1)
+          echo "::notice title=Respaldo $FECHA listo::$(tr '\n' ',' < "$DIR/conteos.txt" | sed 's/,$//; s/,/, /g') · tamaño $TAM"
+          {
+            echo "### Respaldo COVECA $FECHA"; echo; echo "Tamaño cifrado: $TAM"; echo; echo '```'; cat "$DIR/conteos.txt"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DIR }}
+          path: ${{ env.DIR }}.tar.gz.cifrado
+          retention-days: 90
+          compression-level: 0
+          if-no-files-found: error

@@ -18,6 +18,7 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 - `scripts/capturas.mjs` – capturas de pantalla automáticas en tamaño celular.
 - `.github/workflows/android.yml` – compila el APK (firma fija con secretos `ANDROID_KEYSTORE_*`) y lo publica en Releases (`ultima`).
 - `supabase/migrations/` – esquema de la base de datos. Cada archivo nuevo se aplica solo en Supabase vía `.github/workflows/base-de-datos.yml` (secreto `SUPABASE_DB_URL`). Nunca editar una migración ya aplicada: crear una nueva.
+- `.github/workflows/respaldo.yml` – respaldo diario (03:30 Chile): pg_dump + fotos de Storage, cifrado con el secreto `RESPALDO_CLAVE`, artefacto 90 días. `supabase/respaldo/extras.sql` copia el disparador de auth.users y las reglas de storage.objects. Restauración: `docs/RESPALDO.md` (orden: usuarios → base → extras).
 - `supabase/pruebas/` – pruebas SQL. Correr en un PostgreSQL local: `simular_supabase.sql`, luego las migraciones, luego `prueba_pedidos.sql`.
 - `www/config.js` – URL y clave publishable de Supabase (públicas por diseño; la seguridad está en RLS).
 
