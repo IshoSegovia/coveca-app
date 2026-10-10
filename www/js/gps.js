@@ -2,7 +2,7 @@
 // El orden se calcula en el celular (sin servicios de pago): vecino más cercano + mejora 2-opt
 // sobre distancia en línea recta. Funciona sin señal; solo Google Maps necesita internet.
 
-export const PARADAS_POR_TRAMO = 4; // Google Maps en celular admite pocas paradas por enlace
+export const PARADAS_POR_TRAMO = 5; // probado en terreno: Google Maps en el celular acepta 5 paradas por enlace
 
 // Ubicación actual del celular (pide permiso la primera vez).
 export function miUbicacion({ precisa = true, espera = 20000 } = {}) {

@@ -4,7 +4,33 @@ import * as datos from '../datos.js';
 import { miUbicacion, optimizar, tramos, urlTramo, largoKm, tieneGps, urlPunto, PARADAS_POR_TRAMO } from '../gps.js';
 import { abrirExterno } from '../externo.js';
 
+// Animación de entrada: un auto recorre el camino pasando por las paradas (≈1,6 s, no bloquea la pantalla).
+function animarArranque() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelector('.arranque')?.remove();
+  const capa = document.createElement('div');
+  capa.className = 'arranque';
+  capa.setAttribute('aria-hidden', 'true');
+  capa.style.top = `${document.getElementById('barra').getBoundingClientRect().bottom}px`;
+  capa.innerHTML = `
+    <div class="arranque-escena">
+      <span class="arranque-parada" style="--i:0"></span><span class="arranque-parada" style="--i:1"></span><span class="arranque-parada" style="--i:2"></span>
+      <svg class="arranque-meta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>
+      <div class="arranque-camino"></div>
+      <svg class="arranque-auto" viewBox="0 0 64 32">
+        <path class="auto-cuerpo" d="M6 22v-6l6-1 7-7h20l9 7 9 2v5H6z"/>
+        <path class="auto-vidrio" d="M21 10h8v6H15zM32 10h6l7 6H32z"/>
+        <g class="auto-rueda"><circle cx="18" cy="24" r="5"/><circle cx="18" cy="24" r="1.8" class="auto-llanta"/></g>
+        <g class="auto-rueda"><circle cx="49" cy="24" r="5"/><circle cx="49" cy="24" r="1.8" class="auto-llanta"/></g>
+      </svg>
+    </div>
+    <p class="arranque-txt">¡En marcha!</p>`;
+  document.body.appendChild(capa);
+  setTimeout(() => capa.remove(), 1800);
+}
+
 export async function vistaRecorrido(v, rutaId) {
+  animarArranque();
   const r = await datos.ruta(rutaId);
   const todos = await datos.clientes({ rutaId });
   barra({ titulo: 'Recorrido', sub: r.nombre, atras: `#/rutas/${rutaId}` });

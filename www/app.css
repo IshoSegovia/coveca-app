@@ -442,6 +442,38 @@ a.fila:active { transform: scale(.99); }
 @keyframes crece { from { transform: scaleX(0); } }
 .vista.animando .barra-avance span, .vista.animando .dia-barra span { transform-origin: left; animation: crece 500ms var(--suave) 120ms both; }
 
+/* Entrada a "Planificar recorrido": un auto cruza el camino y pasa por las paradas */
+.arranque {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  background: var(--fondo); animation: arranque-sale 300ms ease-in 1.45s both;
+}
+.arranque-escena { position: relative; width: min(340px, 84vw); height: 80px; }
+.arranque-camino {
+  position: absolute; left: 0; right: 0; bottom: 6px; height: 0; border-top: 4px dashed var(--borde);
+}
+.arranque-parada {
+  position: absolute; bottom: 2px; left: calc(28% + var(--i) * 22%); width: 12px; height: 12px; margin-left: -6px;
+  border-radius: 50%; background: var(--superficie); border: 3px solid var(--borde);
+  animation: arranque-parada 200ms var(--suave) calc(520ms + var(--i) * 150ms) both;
+}
+.arranque-meta { position: absolute; right: -4px; bottom: 8px; width: 28px; height: 28px; color: var(--rojo); }
+.arranque-auto {
+  position: absolute; left: 0; bottom: 4px; width: 80px; height: 40px;
+  animation: arranque-avanza 1.3s cubic-bezier(.45, 0, .25, 1) both;
+}
+.auto-cuerpo { fill: var(--relleno); }
+.auto-vidrio { fill: var(--azul-suave); }
+.auto-rueda circle { fill: var(--texto); }
+.auto-rueda .auto-llanta { fill: var(--superficie); }
+.arranque-auto .auto-cuerpo, .arranque-auto .auto-vidrio { animation: arranque-rebote 260ms ease-in-out infinite alternate; }
+.arranque-txt { margin: 0; font-size: 20px; font-weight: 700; color: var(--azul); animation: entra-suave 300ms var(--suave) 200ms both; }
+@keyframes arranque-avanza { from { transform: translateX(-88px); } to { transform: translateX(calc(min(340px, 84vw) - 108px)); } }
+@keyframes arranque-rebote { to { transform: translateY(-1px); } }
+@keyframes arranque-parada { to { background: var(--verde); border-color: var(--verde); transform: scale(1.15); } }
+@keyframes arranque-sale { to { opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .arranque { display: none; }
   *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
 }
