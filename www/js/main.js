@@ -10,7 +10,7 @@ import { vistaAjustes } from './vistas/ajustes.js';
 import { revisarActualizacion } from './actualizacion.js';
 import { vistaRecorrido } from './vistas/recorrido.js';
 import { vistaReportes, vistaStockBajo, vistaVentasSemana } from './vistas/reportes.js';
-import { vistaProveedores, vistaProveedorForm } from './vistas/proveedores.js';
+import { vistaProveedores, vistaProveedor, vistaProveedorForm } from './vistas/proveedores.js';
 import './externo.js';
 
 const RUTAS = [
@@ -33,7 +33,8 @@ const RUTAS = [
   [/^\/reportes\/ventas-semana$/, vistaVentasSemana, 'reportes'],
   [/^\/proveedores$/, vistaProveedores, 'ajustes'],
   [/^\/proveedores\/nuevo$/, (p) => vistaProveedorForm(p, null), 'ajustes'],
-  [/^\/proveedores\/(\d+)$/, (p, id) => vistaProveedorForm(p, id), 'ajustes'],
+  [/^\/proveedores\/(\d+)\/editar$/, (p, id) => vistaProveedorForm(p, id), 'ajustes'],
+  [/^\/proveedores\/(\d+)$/, vistaProveedor, 'ajustes'],
   [/^\/ajustes$/, vistaAjustes, 'ajustes'],
 ];
 

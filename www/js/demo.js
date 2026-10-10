@@ -29,7 +29,7 @@ let productos = [
 ].map(([ref, nombre, categoria_id, costo, precio, stock], i) => ({ id: i + 1, ref, nombre, categoria_id, costo, precio, stock, stock_minimo: 3, activo: true }));
 let proveedores = [
   { id: 1, nombre: 'Distribuidora Ejemplo Sur', contacto: 'Pedro Ejemplo', telefono: '+56 9 0000 0001', correo: 'ventas@ejemplo-sur.cl', activo: true },
-  { id: 2, nombre: 'Mayorista Demo', contacto: 'Laura Demo', telefono: '+56 9 0000 0002', correo: 'pedidos@mayorista-demo.cl', activo: true },
+  { id: 2, nombre: 'Mayorista Demo', activo: true },
 ];
 productos.forEach((p) => { p.proveedor_id = [1, 2, 3, 4, 5].includes(p.categoria_id) ? (p.categoria_id % 2) + 1 : null; });
 productos[productos.length - 1].proveedor_id = null;

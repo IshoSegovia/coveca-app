@@ -35,6 +35,7 @@ const PANTALLAS = [
   ['#/reportes/ventas-semana', '16-ventas-semana'],
   ['#/proveedores', '17-proveedores'],
   ['#/proveedores/1', '18-proveedor'],
+  ['#/proveedores/1/editar', '18b-proveedor-editar'],
   ['#/ajustes', '13-ajustes'],
 ];
 
