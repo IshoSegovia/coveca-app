@@ -16,6 +16,10 @@ export async function vistaClientes(v) {
     </div>
     <p id="cuenta" class="cuenta"></p>
     <div id="lista"></div>`;
+  // Niveles de lealtad (si no se pueden leer, la lista se muestra igual sin marcos)
+  const niveles = await Promise.all([datos.programaLealtad(), datos.comprasLealtad()])
+    .then(([cfg, compras]) => (cfg.activo ? { cfg, compras } : null)).catch(() => null);
+  const nivelDe = (c) => (niveles ? lealtad.estado(niveles.compras.get(c.id), niveles.cfg) : null);
   const pintar = async () => {
     const cs = await datos.clientes({ busqueda: ultimaBusqueda });
     $('#cuenta', v).textContent = `${cs.length} cliente${cs.length === 1 ? '' : 's'}`;
@@ -27,7 +31,7 @@ export async function vistaClientes(v) {
       cont.className = 'grilla';
       cont.innerHTML = cs.map((c) => `
         <a class="tarjeta cliente" href="#/clientes/${c.id}">
-          ${avatar(c, 'grande')}
+          ${conRango(avatar(c, 'grande'), nivelDe(c), 'grilla')}
           <p class="tarjeta-t">${esc(c.nombre)}</p>
           <p class="tarjeta-s">${lugar(c)}</p>
           ${estado(c)}</a>`).join('');
@@ -35,8 +39,8 @@ export async function vistaClientes(v) {
       cont.className = 'lista';
       cont.innerHTML = cs.map((c) => `
         <a class="fila" href="#/clientes/${c.id}">
-          ${avatar(c)}
-          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${lugar(c)}</p></div>
+          ${conRango(avatar(c), nivelDe(c), 'lista')}
+          <div class="fila-txt"><p class="fila-t">${esc(c.nombre)}</p><p class="fila-s">${(() => { const e = nivelDe(c); return e && e.stats.compras ? `<b class="nivel-txt nv-${e.i}">${esc(e.nivel.nombre)}</b> · ` : ''; })()}${lugar(c)}</p></div>
           ${icono('derecha', 'ico-chev')}</a>`).join('');
     }
   };
@@ -45,6 +49,23 @@ export async function vistaClientes(v) {
   $('#q', v).addEventListener('input', (e) => { ultimaBusqueda = e.target.value.trim(); clearTimeout(t); t = setTimeout(pintar, 250); });
   await pintar();
 }
+
+// Marco de nivel alrededor del avatar (inspirado en los emblemas de rango de los videojuegos):
+// cada nivel suma adornos. Sin compras en el periodo = sin marco. El nombre del nivel siempre va escrito al lado.
+const PLUMAS = ['M37 -6 52 -12 45 4Z', 'M34 -19 50 -31 44 -12Z', 'M36 8 49 9 40 19Z'];
+const ala = (n) => PLUMAS.slice(0, n).map((d) => `<path d="M${d.slice(1)}"/><path d="M${d.slice(1)}" transform="scale(-1 1)"/>`).join('');
+const ADORNOS = [
+  '<path d="M-6 36 0 43 6 36Z"/>',
+  `${ala(1)}<circle r="39.5" class="fino"/><path d="M-7 36 0 44 7 36Z"/>`,
+  `${ala(2)}<circle r="39.5" class="fino"/><path d="M-10 -36-12-46-5-41 0-49 5-41 12-46 10-36Z"/><path d="M-8 36 0 45 8 36Z"/>`,
+  `${ala(3)}<circle r="39.5" class="fino"/><path d="M-11 -36-13-47-5-42 0-50 5-42 13-47 11-36Z"/><circle cy="-44" r="3.2" class="gema"/><path d="M0 34 7 42 0 50-7 42Z"/><circle cy="42" r="2" class="gema"/>`,
+];
+const marco = (i) => `<svg class="rango-marco" viewBox="-52 -52 104 104" aria-hidden="true"><circle r="35" class="anillo"/>${ADORNOS[i]}</svg>`;
+// e: estado de lealtad del cliente (o null). tam: 'lista' | 'grilla' | 'perfil'
+const conRango = (avatarHtml, e, tam) => {
+  const r = e && e.stats.compras ? e : null;
+  return `<span class="rango rango-${tam} ${r ? `nv-${r.i} con-marco` : ''}">${avatarHtml}${r ? marco(r.i) : ''}${r && tam === 'grilla' ? `<span class="rango-placa">${esc(r.nivel.nombre)}</span>` : ''}</span>`;
+};
 
 const avatar = (c, cls = '') => c.imagen_url
   ? `<img class="avatar foto ${cls}" src="${esc(c.imagen_url)}" alt="" loading="lazy">`
@@ -111,7 +132,7 @@ export async function vistaCliente(v, id) {
   const faltan = ['rut', 'telefono', 'direccion', 'comuna'].filter((k) => !c[k]).concat(tieneGps(c) ? [] : ['gps']);
   v.innerHTML = `
     <div class="perfil-cab">
-      <label class="perfil-foto" aria-label="Agregar o cambiar foto del cliente">${avatar(c, 'grande')}
+      <label class="perfil-foto" aria-label="Agregar o cambiar foto del cliente">${conRango(avatar(c, 'grande'), le?.e, 'perfil')}
         <span class="foto-insignia" aria-hidden="true">${icono('camara')}</span>
         <input class="foto-in" type="file" accept="image/*" hidden></label>
       <div>

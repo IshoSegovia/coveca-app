@@ -51,9 +51,11 @@ let numero = 0;
 }
 
 // Historial de las semanas anteriores (solo para ver el programa de lealtad en modo demostración):
-// "Minimarket El Ejemplo" queda en Oro y "Almacén Doña Prueba" cerca de Plata.
+// Quedan: "Minimarket San Carlos Demo" Platino, "Minimarket El Ejemplo" Oro, "Distribuidora Demo Retiro" Plata
+// (por bajar) y "Almacén Doña Prueba" Bronce cerca de Plata.
 {
-  const hist = [[1, [9, 16, 23, 30, 37, 44, 51, 58, 72], 52000], [2, [10, 24, 38], 41000], [4, [12, 40, 66, 80], 48000]];
+  const hist = [[1, [9, 16, 23, 30, 37, 44, 51, 58, 72], 52000], [2, [10, 24, 38], 41000], [4, [12, 40, 66, 80], 48000],
+    [6, [8, 15, 22, 29, 36, 43, 50, 57, 64, 71, 78], 80000]];
   for (const [cliente, dias, monto] of hist) for (const d of dias) {
     const f = new Date(hoy - d * 864e5); f.setHours(11, 0, 0, 0);
     pedidos.push({ id: `hist-${cliente}-${d}`, numero: 0, cliente_id: cliente, fecha: f.toISOString(), subtotal: monto, descuento: 0, descuento_lealtad: 0,

@@ -17,7 +17,7 @@ const PANTALLAS = [
   ['#/rutas/sin', '03-sin-ruta'],
   ['#/rutas/1/recorrido', '03b-recorrido'],
   ['#/rutas/nueva', '04-ruta-nueva'],
-  ['#/clientes', '05-clientes'],
+  ['#/clientes', '05-clientes', async (p) => { await p.click('[data-v="iconos"]'); await p.waitForTimeout(400); }],
   ['#/clientes/1', '06-cliente-perfil'],
   ['#/clientes/1/editar', '07-cliente-editar'],
   ['#/inventario', '08-inventario'],
@@ -45,6 +45,8 @@ const PANTALLAS = [
     await p.evaluate(() => document.querySelector('.totales')?.scrollIntoView({ block: 'center' }));
   }],
   ['#/reportes/lealtad', '27-reporte-lealtad'],
+  ['#/clientes', '29-clientes-lista', async (p) => { await p.click('[data-v="lista"]'); await p.waitForTimeout(400); }],
+  ['#/clientes/6', '30-cliente-platino'],
   ['#/lealtad', '28-programa-lealtad'],
 ];
 
