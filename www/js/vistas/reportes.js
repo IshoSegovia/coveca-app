@@ -26,7 +26,7 @@ export function vistaReportes(v) {
       <a class="tarjeta reporte" href="#/reportes/lealtad">
         <span class="ruta-ico nv-2 medalla-ico" aria-hidden="true">${icono('medalla')}</span>
         <p class="tarjeta-t">Clientes por nivel</p>
-        <p class="tarjeta-s">Programa de lealtad: quién sube y quién baja</p>
+        <p class="tarjeta-s">Quién sube y quién baja</p>
       </a>
     </div>`;
 }

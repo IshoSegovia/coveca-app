@@ -89,7 +89,7 @@ a.fila:active { background: var(--fondo); }
 .buscador:focus-within { border-color: var(--azul); box-shadow: 0 0 0 2px var(--azul-suave); }
 .filtros { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 12px; scrollbar-width: none; }
 .filtro {
-  flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--borde);
+  flex: none; min-height: 48px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--borde);
   background: var(--superficie); font-size: 15px; font-weight: 600; color: var(--texto-suave); cursor: pointer;
 }
 .filtro .n { font-variant-numeric: tabular-nums; opacity: .8; }
@@ -149,7 +149,7 @@ a.fila:active { background: var(--fondo); }
 .perfil-s { margin: 6px 0 0; font-size: 14px; color: var(--texto-suave); }
 .acciones-rap { display: flex; gap: 12px; padding: 16px 16px 0; }
 .nota-falta {
-  display: block; margin: 16px 16px 0; padding: 12px; border-radius: var(--radio);
+  display: block; margin: 16px 16px 0; padding: 12px; min-height: 48px; border-radius: var(--radio);
   background: var(--ambar-suave); color: var(--ambar); font-weight: 600; font-size: 15px;
 }
 .datos { margin: 0; background: var(--superficie); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
@@ -215,9 +215,9 @@ a.fila:active { background: var(--fondo); }
 /* ---------- Inventario: lista / íconos y fotos ---------- */
 .inv-cab { display: flex; align-items: center; gap: 8px; margin: 16px 16px 8px; }
 .inv-cab .buscador { flex: 1; min-width: 0; margin: 0; }
-.segmento { display: flex; flex: none; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 3px; gap: 2px; }
+.segmento { display: flex; flex: none; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 1px; gap: 2px; }
 .segmento button {
-  width: 46px; height: 44px; border: 0; border-radius: 8px; background: none; color: var(--texto-suave);
+  width: 48px; height: 48px; border: 0; border-radius: 8px; background: none; color: var(--texto-suave);
   display: grid; place-items: center; cursor: pointer;
 }
 .segmento button[aria-checked="true"] { background: var(--relleno); color: var(--sobre-relleno); }
@@ -240,7 +240,7 @@ a.fila:active { background: var(--fondo); }
 .tarjeta.inactivo { opacity: .6; }
 .tarjeta-foto { position: relative; aspect-ratio: 1; border-bottom: 1px solid var(--borde); }
 .tarjeta-foto .mini { width: 100%; height: 100%; font-size: 34px; }
-.chip.flotante { position: absolute; left: 8px; bottom: 8px; font-size: 13px; padding: 3px 8px; }
+.chip.flotante { position: absolute; left: 8px; bottom: 8px; font-size: 14px; padding: 2px 8px; }
 .tarjeta-t {
   margin: 10px 10px 2px; font-size: 16px; font-weight: 600; line-height: 1.25;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em;
@@ -338,11 +338,11 @@ a.fila:active { background: var(--fondo); }
 .opciones.pad.partida { margin-top: 16px; padding: 0 16px; }
 .opcion-txt { flex: 1; display: flex; flex-direction: column; }
 .opcion-txt small { font-size: 14px; font-weight: 400; color: var(--texto-suave); }
-.btn.mini-link { min-height: 44px; padding: 0 8px; }
+.btn.mini-link { min-height: 48px; min-width: 48px; padding: 0 8px; }
 .opcion { min-height: 60px; }
 
 /* ---------- Reportes ---------- */
-.tabs a { font-size: 13px; }
+.tabs a { font-size: 14px; }
 .reportes-menu { padding-top: 16px; }
 .tarjeta.reporte { padding: 16px 14px 14px; }
 .tarjeta.reporte .tarjeta-t { margin: 12px 0 2px; font-size: 18px; min-height: 0; }
@@ -450,9 +450,11 @@ a.fila:active { background: var(--fondo); }
 @keyframes entra-adelante { from { opacity: 0; transform: translateX(28px); } }
 @keyframes entra-atras    { from { opacity: 0; transform: translateX(-28px); } }
 @keyframes entra-suave    { from { opacity: 0; transform: translateY(8px); } }
-.vista.anim-adelante > * { animation: entra-adelante var(--anim) var(--suave) both; }
-.vista.anim-atras > *    { animation: entra-atras var(--anim) var(--suave) both; }
-.vista.anim-tab > *, .vista.anim-inicio > * { animation: entra-suave var(--anim) var(--suave) both; }
+/* "backwards" (no "both"): al terminar no queda ningún transform; si quedara, los botones fijos
+   (.pie-fijo) dentro de un formulario se ubicarían respecto al formulario y no a la pantalla. */
+.vista.anim-adelante > * { animation: entra-adelante var(--anim) var(--suave) backwards; }
+.vista.anim-atras > *    { animation: entra-atras var(--anim) var(--suave) backwards; }
+.vista.anim-tab > *, .vista.anim-inicio > * { animation: entra-suave var(--anim) var(--suave) backwards; }
 .vista .pie-fijo { animation: none !important; }
 .barra-titulo { animation: entra-suave 180ms var(--suave) both; }
 

@@ -178,9 +178,9 @@ export async function vistaCliente(v, id) {
       <div class="fila"><div class="fila-txt"><p class="fila-t">Nota N° ${p.numero}</p>
         <p class="fila-s">${fecha(p.fecha)} · ${esc(p.forma_pago)}${p.estado === 'anulado' ? ' · Anulada' : ''}</p></div>
         <span class="monto">${clp(p.total)}</span></div>`).join('')}</div>`
-      : '<p class="texto-suave pad-x">Aún sin compras en la app nueva.</p>'}
+      : '<p class="texto-suave pad-x">Aún sin notas de venta.</p>'}
     ${c.loyverse_compras ? `<div class="historial-ant">
-      <p class="fila-t">Historial en Loyverse</p>
+      <p class="fila-t">Compras anteriores</p>
       <p class="fila-s">${c.loyverse_compras} compras · ${clp(c.loyverse_total)} en total</p>
       <p class="fila-s">Desde ${fecha(c.loyverse_primera_compra)} hasta ${fecha(c.loyverse_ultima_compra)}</p></div>` : ''}
     <div class="pie-fijo"><a class="btn prin" href="#/clientes/${id}/pedido">Generar pedido</a></div>`;

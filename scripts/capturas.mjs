@@ -15,7 +15,7 @@ const PANTALLAS = [
   ['#/rutas', '01-rutas'],
   ['#/rutas/1', '02-ruta-detalle'],
   ['#/rutas/sin', '03-sin-ruta'],
-  ['#/rutas/1/recorrido', '03b-recorrido'],
+  ['#/rutas/1/recorrido', '03b-recorrido', async (p) => { await p.waitForTimeout(1900); }],
   ['#/rutas/nueva', '04-ruta-nueva'],
   ['#/clientes', '05-clientes', async (p) => { await p.click('[data-v="iconos"]'); await p.waitForTimeout(400); }],
   ['#/clientes/1', '06-cliente-perfil'],

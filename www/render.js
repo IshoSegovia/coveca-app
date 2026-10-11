@@ -1,4 +1,4 @@
-// Dibuja la nota de venta como imagen (igual que Loyverse) y la convierte a comandos ESC/POS raster.
+// Dibuja la nota de venta como imagen y la convierte a comandos ESC/POS raster.
 // Impresora de 58 mm = 384 puntos de ancho.
 const ANCHO = 384;
 const M = 8; // margen lateral

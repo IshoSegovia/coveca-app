@@ -135,7 +135,7 @@ export async function vistaReporteLealtad(v) {
         r.tabla([{ titulo: 'Cliente' }, { titulo: 'Nivel actual', ancho: 30 }, { titulo: 'Bajaría a', ancho: 30 }],
           porBajar.map(({ c, e }) => [c.nombre, e.nivel.nombre, e.bajaA.nombre]), { colorFila: (f, col) => (col === 2 ? COLORES.AMBAR : null) });
       }
-      r.seccion('Clientes con compras', `${sinCompras} cliente(s) sin compras en el periodo no se listan.`);
+      r.seccion('Clientes con compras', `No se listan: ${sinCompras} cliente(s) en ${cfg.niveles[0].nombre} sin compras en el periodo y ${nuevos} cliente(s) nuevo(s), que nunca han comprado.`);
       const conCompras = [...porNivel].reverse().flat().filter((f) => f.e.stats.compras);
       r.tabla([{ titulo: 'Cliente' }, { titulo: 'Nivel', ancho: 24 }, { titulo: 'Semanas', ancho: 20, alinear: 'right' }, { titulo: 'Compras 90 días', ancho: 34, alinear: 'right' }],
         conCompras.map(({ c, e }) => [c.nombre, e.nivel.nombre, String(e.stats.semanas), clp(e.stats.monto)]));

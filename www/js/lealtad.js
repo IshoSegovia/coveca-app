@@ -1,6 +1,6 @@
 // Programa de lealtad COVECA: 4 niveles según lo comprado en los últimos 90 días.
 // Un cliente alcanza un nivel si cumple las DOS metas: monto comprado y semanas con compra (volumen + frecuencia).
-// Quien nunca ha comprado (ni en Loyverse ni en la app) es "Cliente nuevo": sin rango ni marco. Con su primera compra pasa al primer nivel.
+// Quien nunca ha comprado (ni en el historial importado ni en la app) es "Cliente nuevo": sin rango ni marco. Con su primera compra pasa al primer nivel.
 // Toda la regla vive aquí (la base de datos solo suma compras y semanas: vista lealtad_clientes).
 import { clp } from './ui.js';
 

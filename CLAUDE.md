@@ -32,8 +32,9 @@ Sistema de preventa por rutas para COVECA (Chile). Contexto de negocio completo:
 ## Diseño
 Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 1. Generar capturas: `node scripts/capturas.mjs` (modo demostración; salen en `capturas/`; agregar la pantalla nueva a `PANTALLAS`). Falla si hay errores de JavaScript.
-2. Mirar cada captura y pasar la lista de chequeo.
-3. Corregir y repetir hasta que todo cumpla. Mostrar las capturas a Francisco al cerrar la tarea.
+2. Correr `node scripts/auditoria.mjs` (revisa letra, contraste, toques de 48 px, botón principal único y desbordes en todas las pantallas, claro y oscuro) y dejarlo en 0 observaciones.
+3. Mirar cada captura y pasar la lista de chequeo.
+4. Corregir y repetir hasta que todo cumpla. Mostrar las capturas a Francisco al cerrar la tarea.
 
 ### Lista de chequeo de diseño
 - [ ] Usa solo variables de `tokens.css`; ningún color escrito a mano.
@@ -44,6 +45,8 @@ Toda pantalla sigue `DESIGN.md`. Antes de dar por terminada una pantalla:
 - [ ] Nada se corta ni se desborda a 412 px de ancho; textos largos (nombres de productos) se ajustan en varias líneas.
 - [ ] Montos alineados a la derecha, formato `$9.900`, cifras tabulares.
 - [ ] Mensajes de error dicen qué pasó y qué hacer, en español simple.
+- [ ] La app no menciona otras apps (Loyverse): se habla de "compras anteriores" o "historial".
+- [ ] Botones fijos (`.pie-fijo`) quedan pegados abajo: las animaciones de entrada usan `backwards`, nunca `both`.
 - [ ] Se ve bien sin conexión (sin fuentes ni recursos externos).
 - [ ] Nada de degradados, sombras decorativas ni "tarjetas genéricas".
 
