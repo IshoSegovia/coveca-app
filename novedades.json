@@ -1,0 +1,381 @@
+[
+  {
+    "titulo": "Te mostramos lo nuevo de cada versión",
+    "puntos": [
+      "Cuando la app se actualice verás esta ventana con lo nuevo, y con \"Muéstrame\" la app te lleva a cada cambio.",
+      "Si eliges \"Ahora no\", queda un aviso arriba del inicio para verlo después."
+    ],
+    "pasos": [
+      {
+        "ir": "#/ajustes",
+        "sel": [
+          "#novedades details"
+        ],
+        "t": "Vuelve a verlo cuando quieras",
+        "s": "En Ajustes → Novedades de esta versión está la lista de lo nuevo y el botón \"Mostrarme lo nuevo\"."
+      }
+    ]
+  },
+  {
+    "titulo": "Recorrido \"Cómo funciona\" más completo",
+    "puntos": [
+      "El recorrido ahora tiene 10 pasos: suma Tu semana, la ficha del cliente, el Cierre del día y qué revisar antes de salir a ruta.",
+      "Solo aparece la primera vez que entra un usuario nuevo y en el modo de ejemplo. Puedes verlo cuando quieras en Ajustes → Cómo funciona la app."
+    ],
+    "pasos": [
+      {
+        "ir": "#/ajustes",
+        "sel": [
+          "#ver-tour"
+        ],
+        "t": "Recorrido de 10 pasos",
+        "s": "\"Cómo funciona la app\" ahora explica también Tu semana, la ficha del cliente, el Cierre del día y qué revisar antes de salir."
+      }
+    ]
+  },
+  {
+    "titulo": "Corregir el pedido antes de generarlo",
+    "puntos": [
+      "En \"Revisar pedido\" puedes subir o bajar la cantidad de cada producto, o quitar uno que agregaste por error, sin volver a la lista."
+    ]
+  },
+  {
+    "titulo": "Inicio más limpio y recorrido \"Cómo funciona\"",
+    "puntos": [
+      "La tarjeta azul del inicio ya no muestra el dibujo de la ruta: solo la ruta, los clientes, el aro de visitados y lo que falta entregar o cobrar.",
+      "Los botones Ver clientes y Planificar aparecen solo el día de la ruta; los otros días se toca la tarjeta para ver la próxima ruta.",
+      "Nuevo recorrido \"Cómo funciona\" en 6 pasos sobre la app: marca cada parte y la explica. Sale al instalar o actualizar, siempre en el modo de ejemplo, y en Ajustes → Cómo funciona la app."
+    ]
+  },
+  {
+    "titulo": "Nota en hoja grande (PDF)",
+    "puntos": [
+      "En cada nota, \"Guardar en PDF (hoja grande)\": elige media carta, carta o tira y se guarda con el diseño de la nota impresa.",
+      "En el PC se puede imprimir o guardar la hoja; por WhatsApp sigue saliendo la nota digital a color."
+    ]
+  },
+  {
+    "titulo": "Widgets nuevos y nota impresa con el diseño nuevo",
+    "puntos": [
+      "Ruta de hoy ahora se puede estirar: chico (aro y ruta), mediano o grande (con los próximos 3 clientes por visitar).",
+      "Widgets nuevos: Nuevo pedido (un toque), Pedidos (por entregar y por cobrar con su monto) y Tu semana (ventas y meta).",
+      "Para agregarlos: mantén presionado un espacio vacío de la pantalla de inicio → Widgets → COVECA.",
+      "La nota impresa en la térmica sale con el diseño nuevo (antes salía con el diseño antiguo de solo texto).",
+      "En cada nota hay un botón \"Enviar por WhatsApp\" para mandarla al cliente sin volver a imprimir.",
+      "La solicitud de pedido al proveedor se puede enviar por WhatsApp aunque el proveedor no tenga teléfono guardado."
+    ]
+  },
+  {
+    "titulo": "Próxima ruta y mejoras internas",
+    "puntos": [
+      "Los días sin ruta, el inicio muestra la próxima ruta de la semana con su avance y mini mapa. Tócala para ver sus clientes.",
+      "Revisión completa del código para que la app sea más ordenada y estable."
+    ]
+  },
+  {
+    "titulo": "Nueva imagen de la app",
+    "puntos": [
+      "Diseño renovado: encabezados claros, tarjetas y un menú nuevo con el + al centro. Inventario, Reportes y Ajustes están en \"Más\".",
+      "Inicio con la ruta de hoy: avance, mini mapa, lo que falta entregar y cobrar, y \"Tu semana\" con la meta de ventas.",
+      "En el pedido: \"Repetir\" el último pedido del cliente y \"Suele comprar\" para agregar con un toque.",
+      "Escanea el código de barras con la cámara para buscar o agregar productos.",
+      "Cuentas por cobrar: \"Recordar por WhatsApp\" arma el mensaje de cobro.",
+      "Nota impresa más limpia y nota digital (PDF y QR) a color.",
+      "Cierre del día: comparte el resumen del día como imagen.",
+      "Widget para la pantalla de inicio del teléfono con la ruta de hoy."
+    ]
+  },
+  {
+    "titulo": "Pedidos: ruta al día",
+    "puntos": [
+      "Cuando no queda nada por entregar, Pedidos muestra un camión de reparto con el mensaje \"¡Ruta al día!\" y una frase del día.",
+      "Cuando no queda nada por cobrar, aparece \"¡Todo cobrado!\"."
+    ]
+  },
+  {
+    "titulo": "Cuentas por cobrar más completo",
+    "puntos": [
+      "Reportes → Cuentas por cobrar ahora muestra dos partes: \"Entregadas sin pago\" (notas entregadas a las que falta registrar el pago) y \"Créditos pendientes\".",
+      "Arriba se ve el total por cobrar y cuántos clientes deben algo. Tocar una nota sin pago la abre para registrar el pago.",
+      "Se borraron las notas de prueba; la numeración sigue igual."
+    ]
+  },
+  {
+    "titulo": "Ajustes desde todas las secciones e \"Ir\" con GPS en la nota",
+    "puntos": [
+      "El engranaje de Ajustes (arriba a la izquierda) ahora está en Rutas, Clientes, Pedidos, Inventario y Reportes. Al volver de Ajustes regresas a la sección donde estabas.",
+      "En una nota por entregar, el botón \"Ir\" (al lado de \"Nota lista\") abre Google Maps con la ruta al local del cliente."
+    ]
+  },
+  {
+    "titulo": "Ir con GPS a la entrega",
+    "puntos": [
+      "En Pedidos, al lado de \"Entregar\" hay un botón de ubicación: abre Google Maps con la ruta directo al local del cliente (por GPS o por su dirección).",
+      "Los botones de cada nota ahora son más compactos."
+    ]
+  },
+  {
+    "titulo": "El pago se registra al entregar",
+    "puntos": [
+      "Al tomar el pedido ya no se elige forma de pago: la nota impresa no la lleva.",
+      "Al tocar \"Entregar\", la app pregunta \"¿Cómo pagó?\": efectivo (con calculadora de vuelto), transferencia o crédito.",
+      "Si queda a crédito, el plazo empieza a contar desde la entrega, y la app avisa si supera el límite del cliente (deja seguir igual).",
+      "Si entregas varias notas juntas (\"Entregar todos\"), quedan en \"Por cobrar\" para registrar el pago después.",
+      "Cierre del día: cuenta lo cobrado y lo dado a crédito ese día."
+    ]
+  },
+  {
+    "titulo": "Versión 2.0: entregas y cobros en cada nota",
+    "puntos": [
+      "Cada nota muestra su camino: Pedido → Entregado → Pagado, con un dibujo que dice cómo va (Nota lista, Entregada · por cobrar, Todo listo).",
+      "Al revisar el pedido en efectivo o transferencia, elige \"Cobrado ahora\" o \"Al entregar\". Si es al entregar, la nota queda \"Por cobrar\".",
+      "Al tocar \"Entregar\" en una nota por cobrar, la app pregunta \"¿Cobraste esta nota?\": efectivo, transferencia o \"queda por cobrar\".",
+      "Calculadora de vuelto al cobrar en efectivo: escribe lo que te pasaron (o toca un billete) y te dice el vuelto.",
+      "Nueva lista \"Por cobrar\" en Pedidos, con el botón \"Cobrar\".",
+      "Cierre del día: el efectivo a rendir cuenta lo que realmente se cobró ese día (también notas de otro día cobradas al entregar)."
+    ]
+  },
+  {
+    "titulo": "Menú más cómodo y \"Imprimir en hoja\" en el PC",
+    "puntos": [
+      "En celulares angostos, los nombres del menú de abajo (Inventario, Reportes) ya no quedan pegados.",
+      "En el PC, al generar un pedido aparece \"Imprimir nota en hoja\": abre la nota para imprimirla en media carta, carta o tira."
+    ]
+  },
+  {
+    "titulo": "RUT y teléfono más fáciles, y arreglo de \"Generar sin imprimir\"",
+    "puntos": [
+      "\"Generar sin imprimir\" ya no intenta usar la impresora: antes, con la impresora apagada o lejos, mostraba \"No se pudo imprimir\".",
+      "El RUT se escribe solo con puntos y guion (escribe solo los números y la K). Si el dígito verificador no calza, avisa.",
+      "Teléfonos: elige el país a la izquierda (Chile viene marcado) y escribe el número normal, sin +56. Sirve para clientes, proveedores y datos de la nota."
+    ]
+  },
+  {
+    "titulo": "Descartar registros con problema",
+    "puntos": [
+      "En Ajustes → Trabajo sin señal, si un pedido, abono, visita o entrega queda \"Con problema\" (el servidor no lo acepta), ahora aparece \"Descartar\".",
+      "Antes de borrarlo, la app explica qué se pierde y pide confirmar. En los pedidos también está \"Ver nota\", para revisar lo que tenía y tomarlo de nuevo si hace falta.",
+      "Así ese registro deja de bloquear el cierre de sesión y el aviso rojo."
+    ]
+  },
+  {
+    "titulo": "Nueva pestaña Pedidos (entregas)",
+    "puntos": [
+      "Nueva pestaña \"Pedidos\" en el menú (camión): muestra las notas que faltan por entregar, ordenadas por ruta y cliente, las más antiguas primero. Las de hace 2 días o más salen marcadas.",
+      "Al entregar, toca \"Entregar\" en la nota. Con varias notas en una ruta, \"Entregar todos\" (pide confirmación). Si te equivocas, \"Deshacer\".",
+      "\"Entregados hoy y ayer\" muestra lo que ya se entregó. Puedes buscar por cliente o N° de nota y filtrar por ruta.",
+      "En cada nota se ve el estado: Pedido → Entregado. Una nota entregada ya no se puede editar (sí anular).",
+      "Carga para bodega tiene la opción \"Por entregar\": suma todo lo que falta entregar, de cualquier día.",
+      "Atajo: mantén presionado el ícono de COVECA y elige \"Pedidos por entregar\". Funciona sin señal."
+    ]
+  },
+  {
+    "titulo": "Cámara y \"Marcar visitado\"",
+    "puntos": [
+      "\"Tomar foto\" ahora abre la cámara directo (antes en algunos celulares abría la galería).",
+      "En la ficha del cliente: \"Marcar visitado\" para cuando pasas por el local y no hay pedido (cerrado, no estaba el encargado, no necesitaba nada). Si te equivocas, toca \"Deshacer\" en el aviso.",
+      "En la ruta aparece \"Visitado · sin pedido\" con el ícono de una puerta. Si después hace un pedido, pasa a \"Visitado\".",
+      "Funciona sin señal: se guarda en el celular y se sube solo.",
+      "\"Visitado\" ahora cambia de día a la medianoche de Chile (antes cambiaba a las 21:00)."
+    ]
+  },
+  {
+    "titulo": "Botón \"Nuevo\" para pedidos rápidos",
+    "puntos": [
+      "Nuevo círculo azul \"Nuevo\" a la derecha del menú: busca el cliente (sin importar acentos) y entra directo a elegir productos, sin pasar por la ruta.",
+      "Atajo: mantén presionado el ícono de COVECA en el celular y elige \"Nuevo pedido\"."
+    ]
+  },
+  {
+    "titulo": "Ajustes se mueve al engranaje",
+    "puntos": [
+      "Ajustes ya no está en el menú de abajo: se abre con el engranaje arriba a la izquierda en Rutas.",
+      "Así queda espacio en el menú para la nueva sección de Pedidos que viene pronto."
+    ]
+  },
+  {
+    "titulo": "Pedidos de Jose Daniel (parte 1)",
+    "puntos": [
+      "El buscador encuentra clientes y productos sin importar los acentos: \"Maria\" encuentra a \"María\".",
+      "Toca la foto del local o del producto para verla en grande. Atrás o × la cierra.",
+      "Nuevo botón \"Generar sin imprimir\" en Revisar pedido: guarda la nota y la entregas por QR, WhatsApp o PDF. Se imprime después desde la nota.",
+      "Ajustes → WhatsApp: elige si las notas y reportes se envían por WhatsApp Business (por defecto) o WhatsApp normal."
+    ]
+  },
+  {
+    "titulo": "Más protecciones al vender",
+    "puntos": [
+      "Si tocas atrás con productos elegidos, la app pregunta antes de descartar el pedido.",
+      "Cantidades sobre 999 piden confirmar, y el máximo es 9.999 por producto (evita errores de tipeo).",
+      "Los productos sin precio dicen \"Sin precio\" y no se pueden vender hasta corregirlos.",
+      "En Inventario, guardar un precio $0 o menor que el costo pide confirmar.",
+      "La sección \"Hoy\" de Rutas muestra la ruta correcta aunque la app haya quedado abierta desde ayer.",
+      "Mensajes de error más claros, en español, y el historial del cliente muestra la forma de pago con su nombre."
+    ]
+  },
+  {
+    "titulo": "Notas más seguras antes de salir a ruta",
+    "puntos": [
+      "La nota impresa ahora muestra su número (NOTA DE VENTA N° …).",
+      "Si algo falla al imprimir, el pedido ya queda guardado una sola vez y se abre la nota para reimprimirla. Ya no se duplica.",
+      "Si la app no tiene impresora elegida, avisa antes de guardar el pedido.",
+      "Las notas guardadas sin señal se pueden reimprimir con el nombre de cada producto.",
+      "Al editar una nota, la nota corregida mantiene el día de la venta (no se vuelve a cargar en bodega ni cambia el plazo del crédito).",
+      "Mientras se genera el pedido no se puede cambiar: lo impreso es igual a lo guardado."
+    ]
+  },
+  {
+    "titulo": "Marca como lista desplegable",
+    "puntos": [
+      "La marca se elige de una lista desplegable con las marcas ya usadas. Para una nueva, elige \"+ Agregar marca nueva…\" y escríbela.",
+      "Si escribes una marca que ya existe con otras mayúsculas o tildes, se usa la que ya estaba, para no repetirla."
+    ]
+  },
+  {
+    "titulo": "Marca con un toque",
+    "puntos": [
+      "Debajo del campo Marca aparecen botones con las marcas ya usadas: toca una y queda puesta. Al escribir, se filtran."
+    ]
+  },
+  {
+    "titulo": "Marca de los productos",
+    "puntos": [
+      "Cada producto puede tener su marca (Inventario → producto → Marca). Al escribirla, la app sugiere las marcas ya usadas.",
+      "La marca aparece en la lista de Inventario, en la tabla del PC y al tomar un pedido.",
+      "Los buscadores de Inventario, del pedido y de Compras también encuentran por marca."
+    ]
+  },
+  {
+    "titulo": "Foto de la factura en cada compra",
+    "puntos": [
+      "Al registrar una compra puedes tomar o subir la foto de la factura, guía o boleta del proveedor (hasta 4, una por página). Queda guardada con la compra.",
+      "Si guardas sin foto, la app te lo recuerda. También puedes agregarla o quitarla después desde el detalle de la compra.",
+      "Toca la foto para verla en grande."
+    ]
+  },
+  {
+    "titulo": "Compras a proveedores",
+    "puntos": [
+      "Nueva pantalla Compras (Inventario → Compras a proveedores, o desde la ficha del proveedor): registra cada factura o guía que llega con sus productos, cantidades y costos.",
+      "Al guardar, sube el stock y el producto queda con el último costo (con IVA incluido).",
+      "Si el costo cambió, la app muestra cómo queda el margen y sugiere el precio nuevo para mantenerlo; tú eliges en qué productos cambiar el precio.",
+      "No deja registrar dos veces la misma factura del mismo proveedor. Una compra mal ingresada se anula con motivo y devuelve el stock.",
+      "La ficha de cada producto muestra sus últimas compras. Solo para administradores."
+    ]
+  },
+  {
+    "titulo": "WhatsApp envía el mismo PDF",
+    "puntos": [
+      "La nota y todos los reportes se envían por WhatsApp como el mismo PDF que se guarda. Ya no se mandan como texto ni como imagen.",
+      "La solicitud de pedido al proveedor lleva el PDF y también la lista escrita en el mensaje.",
+      "Los PDF ahora pesan mucho menos (un reporte, unos 80 KB), así se envían rápido con datos móviles."
+    ]
+  },
+  {
+    "titulo": "Ajuste si la impresora falla",
+    "puntos": [
+      "\"Guardar nota en PDF\" aparece solo después del tercer intento fallido, junto con el QR y WhatsApp."
+    ]
+  },
+  {
+    "titulo": "Si la impresora falla",
+    "puntos": [
+      "Si la impresora no imprime, la app muestra el intento (1 de 3, 2 de 3) y permite reintentar o guardar la nota en PDF.",
+      "Al tercer intento fallido aparecen el código QR, \"Enviar por WhatsApp\" y \"Guardar nota en PDF\", con el aviso de que no se imprimió, para entregar la nota al cliente igual.",
+      "El pedido siempre queda guardado, aunque la impresora falle."
+    ]
+  },
+  {
+    "titulo": "Mejor uso con teclado en el PC",
+    "puntos": [
+      "Al moverte con la tecla Tab se ve claramente dónde estás, también en el menú azul.",
+      "En las tablas de Inventario y Clientes, la fila elegida se resalta y Enter abre su ficha.",
+      "La tecla / lleva directo al buscador."
+    ]
+  },
+  {
+    "titulo": "Confirmación más segura y ajuste en iPhone",
+    "puntos": [
+      "Para eliminar los datos de un cliente ahora hay que escribir \"eliminar cliente\" antes de confirmar.",
+      "En el iPhone con la app en la pantalla de inicio, el menú de abajo ya no queda elevado con un espacio vacío debajo."
+    ]
+  },
+  {
+    "titulo": "Privacidad de los clientes",
+    "puntos": [
+      "Nueva página \"Cómo cuidamos tus datos\", enlazada al pie de la nota digital que abre el QR.",
+      "En la ficha del cliente, el administrador puede \"Eliminar datos del cliente\" si el cliente lo pide: se borran sus datos personales y sus notas quedan guardadas sin su nombre."
+    ]
+  },
+  {
+    "titulo": "Correcciones",
+    "puntos": [
+      "El QR de la nota de prueba ahora abre una nota de ejemplo, en vez de mostrar texto o abrir Google.",
+      "En el iPhone, el botón Guardar ya no tapa lo último de pantallas largas como Datos de la nota."
+    ]
+  },
+  {
+    "titulo": "Enlace de la nota con vista previa",
+    "puntos": [
+      "Al compartir el enlace de la nota por WhatsApp, ahora aparece el logo de COVECA y el título \"Nota de venta\" en vez de un enlace sin imagen."
+    ]
+  },
+  {
+    "titulo": "Fotos más seguras",
+    "puntos": [
+      "Las fotos de clientes y productos solo aceptan imágenes de hasta 1 MB (la app ya las achica sola)."
+    ]
+  },
+  {
+    "titulo": "Aviso de precios bajo la lista",
+    "puntos": [
+      "Si una nota se vende más barata que el precio de lista, el administrador lo ve marcado en la nota, en Ventas de la semana y en el Cierre del día, con la diferencia en pesos.",
+      "La nota impresa no cambia. Los descuentos no se cuentan como precio bajo la lista."
+    ]
+  },
+  {
+    "titulo": "Correcciones y botón para actualizar",
+    "puntos": [
+      "Si elegiste \"Más tarde\" en el aviso de actualización, ahora puedes actualizar cuando quieras desde Ajustes → Versión.",
+      "Corregido: al cambiar rápido de pantalla con mala señal a veces aparecía \"Algo salió mal\".",
+      "Corregido: el modo oscuro no se activaba en el PC ni en el iPhone.",
+      "En el PC, Ajustes → Avanzado tiene \"Imprimir nota de prueba\" en media carta, carta o tira.",
+      "Incluye la nueva imagen de marca COVECA."
+    ]
+  },
+  {
+    "titulo": "Nueva imagen de marca COVECA",
+    "puntos": [
+      "El logo COVECA ahora se ve nítido en todas partes, con versiones para fondo claro y oscuro.",
+      "En el modo oscuro y en el menú del PC el logo ya no aparece sobre un recuadro blanco.",
+      "Las notas en PDF, la nota digital del QR y los reportes usan el logo en alta calidad."
+    ]
+  },
+  {
+    "titulo": "Impresión en el PC, nota digital por QR y más",
+    "puntos": [
+      "El código QR de la nota ahora abre una copia digital que el cliente puede ver y descargar en su teléfono.",
+      "El mensaje de WhatsApp al cliente incluye el enlace a su nota.",
+      "En Ajustes, cada equipo ve solo sus impresoras: el celular, la térmica Bluetooth; el PC, impresora normal o térmica.",
+      "La versión para PC tiene su propio estilo, para que se note que estás en el computador.",
+      "Al actualizar, este aviso muestra lo nuevo de cada versión."
+    ]
+  },
+  {
+    "titulo": "Mejoras pedidas por Jose Daniel",
+    "puntos": [
+      "\"Fiado\" pasa a llamarse \"Crédito\" y \"Pendiente\" pasa a \"Por visitar\".",
+      "Límite de crédito: vacío = sin tope; $0 = sin crédito disponible.",
+      "Los clientes desactivados quedan en Clientes → Desactivados y se pueden reactivar.",
+      "Planificar recorrido: eliges los clientes de cada salida, entran los que no tienen GPS y puedes mover las paradas.",
+      "Se puede guardar la ubicación del local al revisar el pedido."
+    ]
+  },
+  {
+    "titulo": "Versión para PC",
+    "puntos": [
+      "En el computador: menú a la izquierda, tablas ordenables y la ficha al lado de la lista.",
+      "Botón \"Crear y agregar otro\" para cargar productos y clientes uno tras otro."
+    ]
+  }
+]

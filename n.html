@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#3E4095">
+  <title>Nota de venta · COVECA</title>
+  <!-- Vista previa al compartir el enlace (WhatsApp, correo, redes). WhatsApp no ve lo que va después de #, así que es la misma para todas las notas. -->
+  <meta name="description" content="Copia digital de tu nota de venta COVECA. Ábrela para verla y descargarla.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="COVECA">
+  <meta property="og:title" content="Nota de venta · COVECA">
+  <meta property="og:description" content="Copia digital de tu nota de venta. Ábrela para verla y descargarla.">
+  <meta property="og:url" content="https://ishosegovia.github.io/coveca-app/n.html">
+  <meta property="og:image" content="https://ishosegovia.github.io/coveca-app/marca/vista-previa-nota.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Logo COVECA y el texto Nota de venta">
+  <meta property="og:locale" content="es_CL">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    /* Página pública y liviana que abre el QR de la nota: muestra la copia digital y permite descargarla. */
+    :root { --azul: #3E4095; --azul-oscuro: #2C2E73; --texto: #1D1F2B; --suave: #5B6070; --fondo: #F5F6FA; --borde: #D9DCE5; --rojo: #C42127; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); }
+    header { background: var(--azul); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 700; font-size: 17px; }
+    header .logo { height: 30px; width: auto; }
+    header span { padding-left: 12px; border-left: 1px solid rgba(255,255,255,.4); }
+    main { max-width: 480px; margin: 0 auto; padding: 16px; }
+    .nota { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--borde); background: #fff; }
+    .acciones { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+    .btn { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 10px; font: inherit; font-size: 17px; font-weight: 600; text-decoration: none; cursor: pointer; }
+    .prin { background: var(--azul); color: #fff; border: 0; }
+    .prin:active { background: var(--azul-oscuro); }
+    .sec { background: #fff; color: var(--azul); border: 2px solid var(--azul); }
+    p { font-size: 15px; color: var(--suave); text-align: center; line-height: 1.4; }
+    .msg { margin: 48px 8px; font-size: 17px; color: var(--texto); }
+    .error { color: var(--rojo); }
+    .privacidad { color: var(--azul); font-weight: 600; display: inline-block; padding: 12px 8px; }
+    .aviso-prueba { margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: #FBF0E0; color: #8A5300; font-weight: 600; text-align: left; }
+    .cargando { width: 36px; height: 36px; margin: 64px auto; border: 3px solid var(--borde); border-top-color: var(--azul); border-radius: 50%; animation: g .8s linear infinite; }
+    @keyframes g { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <header><img src="marca/coveca-negativo.svg" alt="COVECA" class="logo"><span>Nota de venta</span></header>
+  <main id="m"><div class="cargando" aria-label="Cargando"></div></main>
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+    import { dibujarNotaDigital } from './js/nota-digital.js';
+    const m = document.getElementById('m');
+    const id = (location.hash.slice(1) || new URLSearchParams(location.search).get('n') || '').trim();
+    const mensaje = (t, clase = '') => { m.innerHTML = `<p class="msg ${clase}">${t}</p>`; };
+    // QR de una nota de prueba o de ejemplo (no guardada): se muestra una nota de ejemplo, sin consultar el servidor.
+    const PRUEBA = { numero: 0, fecha: new Date().toISOString(), estado: 'generado', forma_pago: 'efectivo', subtotal: 18670, descuento: 0, descuento_lealtad: 0, total: 18670,
+      cliente: { nombre: 'Cliente de prueba' },
+      items: [{ nombre: 'Super 8 Oblea Clásica x24', cantidad: 2, precio: 5990, subtotal: 11980 }, { nombre: 'BigTime Menta x20', cantidad: 1, precio: 6690, subtotal: 6690 }],
+      negocio: { eslogan: 'Su comercializadora de confianza', leyenda: 'Este documento no representa una factura, solo es una nota de venta y guía de despacho.' } };
+    (async () => {
+      const esPrueba = id === 'prueba';
+      if (!esPrueba && !/^[0-9a-f-]{36}$/i.test(id)) return mensaje('Este enlace no corresponde a una nota de venta.', 'error');
+      let n = esPrueba ? PRUEBA : null;
+      if (!esPrueba) try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/nota_publica`, {
+          method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_id: id }) });
+        if (!r.ok) throw new Error();
+        n = await r.json();
+      } catch (_) { return mensaje('No se pudo cargar la nota. Revisa tu conexión a internet y vuelve a abrir el enlace.', 'error'); }
+      if (!n) return mensaje('Esta nota todavía no está disponible: el vendedor la subirá cuando tenga señal. Vuelve a abrir el enlace más tarde.');
+      const canvas = await dibujarNotaDigital(n);
+      // Imagen liviana: WebP (~60 KB); si el navegador no la sabe crear (iPhone antiguos), JPEG (~100 KB).
+      let blob = await new Promise((ok) => canvas.toBlob(ok, 'image/webp', 0.85));
+      if (!blob || blob.type !== 'image/webp') blob = await new Promise((ok) => canvas.toBlob(ok, 'image/jpeg', 0.85));
+      const ext = blob.type === 'image/webp' ? 'webp' : 'jpg';
+      const url = URL.createObjectURL(blob);
+      const nombre = `Nota-COVECA-${n.numero || 'sin-numero'}.${ext}`;
+      const archivo = new File([blob], nombre, { type: blob.type });
+      const compartir = navigator.canShare && navigator.canShare({ files: [archivo] });
+      document.title = `Nota N° ${n.numero || ''} · COVECA`;
+      m.innerHTML = `${esPrueba ? '<p class="aviso-prueba">Nota de prueba: así verá el cliente la copia digital de su nota al escanear el código QR.</p>' : ''}
+        <img class="nota" src="${url}" alt="Nota de venta N° ${n.numero || ''}">
+        <div class="acciones">
+          <a class="btn prin" href="${url}" download="${nombre}">Descargar nota</a>
+          ${compartir ? '<button class="btn sec" id="compartir">Compartir o guardar en el teléfono</button>' : ''}
+        </div>
+        <p>Copia digital de tu nota de venta. Este documento no es una boleta ni una factura.</p>
+        <p><a class="privacidad" href="privacidad.html">Cómo cuidamos tus datos</a></p>`;
+      document.getElementById('compartir')?.addEventListener('click', async () => {
+        try { await navigator.share({ files: [archivo], title: `Nota de venta COVECA N° ${n.numero || ''}` }); } catch (_) {}
+      });
+    })();
+  </script>
+</body>
+</html>

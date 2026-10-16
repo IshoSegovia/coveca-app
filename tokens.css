@@ -1,0 +1,76 @@
+/* Variables de diseño COVECA. Ver DESIGN.md.
+   Tema claro por defecto; el oscuro se activa solo desde Ajustes > Avanzado (html[data-tema="oscuro"]). */
+:root {
+  --azul: #3E4095;          /* acento: textos, bordes e íconos destacados */
+  --azul-oscuro: #2C2E73;   /* relleno azul presionado */
+  --rojo: #EC3237;
+  --rojo-texto: #C42127;
+  --verde: #1B5E20;
+  --ambar: #8A5300;
+  --texto: #1D1F2B;
+  --texto-suave: #5B6070;
+  --fondo: #F6F7FB;
+  --velo: color-mix(in srgb, #1D1F2B 72%, transparent);   /* oscurece la pantalla detrás del recorrido */
+  --superficie: #FFFFFF;
+  --borde: #E1E4EC;
+  /* Fondos suaves para etiquetas de estado y destacados (texto encima: color fuerte del mismo tono) */
+  --azul-suave: #E7E8F4;
+  --verde-suave: #E8F2E9;
+  --ambar-suave: #FBF0E0;
+  --rojo-suave: #FBE9EA;
+  /* Rellenos de marca con texto blanco encima (barra, botón principal, selección). Iguales en ambos temas. */
+  --relleno: #3E4095;
+  --sobre-relleno: #FFFFFF;
+  --rojo-relleno: #C42127;
+  --verde-relleno: #1B5E20;
+  --ambar-relleno: #8A5300;
+  --aviso-fondo: #1D1F2B;
+  --papel: #FFFFFF;         /* nota impresa, QR y fondo del logo: siempre blanco */
+  --luz-lista: #7BD88F;
+  /* Niveles del programa de lealtad (texto fuerte sobre fondo suave; siempre van con su nombre) */
+  --nivel-0: #8A4B1C; --nivel-0-suave: #F6E9DD;
+  --nivel-1: #4F5566; --nivel-1-suave: #E9ECF1;
+  --nivel-2: #7A5A00; --nivel-2-suave: #FAF0CF;
+  --nivel-3: #3E4095; --nivel-3-suave: #E4E5F6;
+  --radio: 12px;           /* campos y botones */
+  --radio-g: 18px;          /* tarjetas */
+  --radio-xl: 24px;         /* tarjeta destacada (Ruta de hoy) y hojas */
+  --gris-suave: #E9EBF2;    /* fondo del selector segmentado */
+  --borde-fuerte: #C9CDD9;  /* contorno de botones y campos */
+  /* Tarjeta "Ruta de hoy" (texto blanco encima) y sus toques de temporada; iguales en ambos temas */
+  --hero: #3E4095;
+  --hero-halloween: #2A1F44; --halloween: #F5A04A;
+  --hero-patrias: #2C2E73;
+  --hero-navidad: #1E4D2E;
+  --hero-ok: #2E9E4F;        /* puntos visitados del mini mapa */
+  --oro: #F2CD5C;
+  --medalla-0: #C98A55; --medalla-1: #C9CED8; --medalla-3: #9EA1F0;   /* relleno de las medallas pixel */
+  --toque: 48px;
+  --fuente: system-ui, Roboto, "Noto Sans", Arial, sans-serif;
+  color-scheme: light;
+}
+
+:root[data-tema="oscuro"] {
+  --azul: #A9ADF7;
+  --rojo-texto: #FF8F93;
+  --verde: #86CF8B;
+  --ambar: #F0B35A;
+  --texto: #E9EAF1;
+  --texto-suave: #A7ABBB;
+  --fondo: #121319;
+  --velo: color-mix(in srgb, #000 70%, transparent);
+  --superficie: #1C1D26;
+  --borde: #383B4A;
+  --azul-suave: #272A52;
+  --verde-suave: #1E3522;
+  --ambar-suave: #3B2B12;
+  --rojo-suave: #40201F;
+  --aviso-fondo: #3A3D4F;
+  --gris-suave: #262836;
+  --borde-fuerte: #4A4E61;
+  --nivel-0: #E9A877; --nivel-0-suave: #3A2516;
+  --nivel-1: #C9CEDA; --nivel-1-suave: #2C303B;
+  --nivel-2: #F2CD5C; --nivel-2-suave: #3A3010;
+  --nivel-3: #B4B7FA; --nivel-3-suave: #262A55;
+  color-scheme: dark;
+}
