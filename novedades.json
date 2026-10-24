@@ -1,0 +1,868 @@
+[
+  {
+    "titulo": "Menú y Ajustes más ordenados",
+    "puntos": [
+      "En \"Más\" ahora están Soporte y Programa de lealtad.",
+      "Soporte reúne los tickets, \"Cómo funciona la app\" y las novedades de cada versión.",
+      "Compras y pedidos a proveedores ahora están dentro de Proveedores.",
+      "En Ajustes la impresora tiene su propia sección, con la nota de prueba, y la apariencia (claro u oscuro) se cambia ahí mismo.",
+      "Nada cambió en cómo se vende: solo cambiaron de lugar."
+    ],
+    "pasos": [
+      {
+        "ir": "#/soporte",
+        "sel": [
+          [
+            "#ver-tour"
+          ],
+          []
+        ],
+        "t": "Soporte",
+        "s": "Aquí están los tickets, \"Cómo funciona la app\" y las novedades. Se abre desde \"Más\"."
+      },
+      {
+        "ir": "#/proveedores",
+        "sel": [
+          [
+            "#ir-compras"
+          ],
+          []
+        ],
+        "t": "Compras en Proveedores",
+        "s": "Las compras y los pedidos a proveedores ahora se abren desde aquí."
+      },
+      {
+        "ir": "#/ajustes",
+        "sel": [
+          [
+            "#fila-impresora"
+          ],
+          []
+        ],
+        "t": "Impresora",
+        "s": "La impresora tiene su propia sección: elegirla, cómo imprime y la nota de prueba."
+      },
+      {
+        "ir": "#/ajustes",
+        "sel": [
+          [
+            "#apariencia"
+          ],
+          []
+        ],
+        "t": "Apariencia",
+        "s": "El modo claro u oscuro se cambia aquí mismo."
+      }
+    ]
+  },
+  {
+    "titulo": "Cambios de productos",
+    "puntos": [
+      "Si un cliente quiere cambiar productos de una nota ya entregada, abre la nota y toca \"Registrar cambio\".",
+      "Eliges el motivo, lo que devuelve y lo que recibe. Los dos lados deben valer lo mismo.",
+      "Por cada producto devuelto eliges si vuelve a bodega o se da de baja. El stock se ajusta solo.",
+      "El cambio queda por entregar en Pedidos y en la Carga para bodega. Se imprime o se envía por WhatsApp.",
+      "Funciona sin señal."
+    ],
+    "pasos": [
+      {
+        "ir": "#/pedidos",
+        "sel": [
+          [
+            "a[href^=\"#/cambios/\"]"
+          ],
+          []
+        ],
+        "t": "Cambios por entregar",
+        "s": "Los cambios aparecen aquí junto a las notas. Toca el cambio para entregarlo."
+      },
+      {
+        "ir": "#/reportes/carga?modo=entregar",
+        "sel": [
+          [
+            ".resumen"
+          ],
+          []
+        ],
+        "t": "Carga para bodega",
+        "s": "Lo que reciben los clientes por cambios se suma a la carga, y lo que devuelven va en \"Para retirar\"."
+      }
+    ]
+  },
+  {
+    "titulo": "Mejoras de rendimiento y correcciones",
+    "puntos": [
+      "La app responde más fluida en el día a día.",
+      "Se corrigieron detalles menores."
+    ]
+  },
+  {
+    "titulo": "Avisar: elige si dice los km",
+    "puntos": [
+      "En Ajustes → WhatsApp puedes elegir si el aviso \"vamos en camino\" dice a cuántos km estás.",
+      "Viene activado. Si lo apagas, el aviso lleva solo el saludo y la nota."
+    ],
+    "pasos": [
+      {
+        "ir": "#/ajustes",
+        "sel": [
+          [
+            "#aviso-km"
+          ],
+          []
+        ],
+        "t": "Distancia en el aviso",
+        "s": "Marca o desmarca si quieres que el aviso al cliente diga a cuántos km estás."
+      }
+    ]
+  },
+  {
+    "titulo": "Pedidos: avisa al cliente que vas en camino",
+    "puntos": [
+      "En Pedidos → Por entregar, cada nota tiene ahora \"Ir\" (abre el mapa) y \"Avisar\".",
+      "\"Avisar\" abre WhatsApp con el cliente de esa nota, con la nota adjunta y el mensaje listo: que vas en camino y a cuántos km estás (aproximado, si el cliente tiene ubicación guardada).",
+      "Después de avisar, la nota muestra \"Avisado\" y la hora. Avisar no marca la entrega.",
+      "Para entregar, toca la nota y usa \"Entregar\": ahí registras cómo pagó y vuelves solo a Pedidos.",
+      "Todo funciona también sin señal: WhatsApp envía el aviso cuando vuelve la señal."
+    ],
+    "pasos": [
+      {
+        "ir": "#/pedidos",
+        "sel": [
+          [
+            "[data-avisar]"
+          ],
+          [
+            ".resumen-entrega"
+          ],
+          []
+        ],
+        "t": "Avisar al cliente",
+        "s": "Abre WhatsApp con la nota y el mensaje de que vas en camino. Después, la nota muestra \"Avisado\"."
+      },
+      {
+        "ir": "#/pedidos",
+        "sel": [
+          [
+            ".fila.entrega .fila-txt"
+          ],
+          []
+        ],
+        "t": "Para entregar, abre la nota",
+        "s": "Toca la nota y usa \"Entregar\": registras cómo pagó y vuelves a Pedidos."
+      }
+    ]
+  },
+  {
+    "titulo": "Tickets: confirma si quedó solucionado",
+    "puntos": [
+      "Cuando soporte arregla un error que reportaste, el ticket queda \"Por confirmar\" en vez de cerrarse solo.",
+      "Al abrir la app te preguntará: \"¿Se solucionó?\". Pruébalo y toca \"Sí, funciona\" o \"Sigue fallando\" (cuenta qué pasa y se avisa a soporte por WhatsApp).",
+      "Si tocas \"Más tarde\", te vuelve a preguntar en 30 minutos. Si en el segundo aviso eliges \"Más tarde\", se da por solucionado. También puedes responder desde el ticket.",
+      "El ticket ya no muestra los datos técnicos del celular: se siguen enviando solos a soporte, como antes.",
+      "Las mejoras se cierran solas y dicen desde qué versión están disponibles."
+    ],
+    "pasos": [
+      {
+        "ir": "#/tickets",
+        "sel": [
+          [
+            ".ticket-fila"
+          ],
+          [
+            ".filtros"
+          ],
+          []
+        ],
+        "t": "Tickets por confirmar",
+        "s": "Los errores arreglados quedan \"Por confirmar\" hasta que tú digas si funcionan. La app te lo preguntará al abrirla."
+      },
+      {
+        "ir": "#/tickets/nuevo",
+        "sel": [
+          [
+            "#form-ticket details.elegir-caja"
+          ],
+          []
+        ],
+        "t": "Datos que se agregan solos",
+        "s": "Al reportar, la app envía sola los datos técnicos del celular a soporte. Ya no los ves en el ticket, pero llegan igual."
+      }
+    ]
+  },
+  {
+    "titulo": "Cotizar a un cliente nuevo",
+    "puntos": [
+      "Si quien pide precios todavía no es cliente, en Nuevo → Cotización toca \"Cliente nuevo\": solo pide el nombre y el teléfono.",
+      "Si después hace el pedido, al convertir la cotización eliges su ruta y la app crea el cliente junto con la nota (también sin señal).",
+      "El cliente nuevo queda marcado \"Faltan datos\" hasta que un administrador complete su RUT, dirección y ubicación."
+    ],
+    "pasos": [
+      {
+        "ir": "#/nuevo?tipo=cotizacion",
+        "sel": [
+          "#cot-nuevo"
+        ],
+        "t": "Cliente nuevo",
+        "s": "Para cotizar a alguien que aún no está en la app: solo nombre y teléfono."
+      }
+    ]
+  },
+  {
+    "titulo": "Cotizaciones",
+    "puntos": [
+      "Cuando un cliente pide precios, haz una cotización: es como un pedido, pero no es una nota de venta, no descuenta stock y no cuenta en ventas.",
+      "En Nuevo elige \"Cotización\", busca el cliente y arma los productos igual que un pedido. En Revisar eliges hasta qué día vale (la app propone 3 días).",
+      "Se envía por WhatsApp como PDF (el mismo que se guarda) o se imprime. Funciona también sin señal.",
+      "Si el cliente acepta, abre la cotización y toca \"Convertir en pedido\": trae los mismos productos y, si sigue vigente, los mismos precios.",
+      "El cliente queda \"Visitado · cotización\" en la ruta. Las cotizaciones están en Más → Cotizaciones y en la ficha de cada cliente."
+    ],
+    "pasos": [
+      {
+        "ir": "#/nuevo",
+        "sel": [
+          ".seg-nuevo"
+        ],
+        "t": "Pedido o cotización",
+        "s": "Elige \"Cotización\" para darle precios al cliente sin generar una nota de venta."
+      },
+      {
+        "ir": "#/cotizaciones",
+        "sel": [
+          ".filtros"
+        ],
+        "t": "Tus cotizaciones",
+        "s": "Aquí ves las vigentes, las vencidas y las que ya se convirtieron en pedido."
+      },
+      {
+        "ir": "#/cotizaciones",
+        "sel": [
+          [
+            ".lista .fila"
+          ],
+          []
+        ],
+        "t": "Convertir en pedido",
+        "s": "Si el cliente acepta, abre su cotización y toca \"Convertir en pedido\": el pedido trae los mismos productos y precios mientras esté vigente."
+      }
+    ]
+  },
+  {
+    "titulo": "Recordatorio de cobro: solo transferencia",
+    "puntos": [
+      "El mensaje de \"Recordar por WhatsApp\" en Cuentas por cobrar ya no ofrece pagar en efectivo en la próxima visita.",
+      "Ahora recuerda la deuda y dice \"Puede pagar por transferencia a la cuenta:\" con los datos de la cuenta que están en Ajustes → Datos de la nota."
+    ],
+    "pasos": [
+      {
+        "ir": "#/reportes/cobrar",
+        "sel": [
+          ".recordar"
+        ],
+        "t": "Recordatorio por transferencia",
+        "s": "Este botón abre WhatsApp con el recordatorio de la deuda y los datos para pagar por transferencia."
+      }
+    ]
+  },
+  {
+    "titulo": "Tickets: te avisamos cuando cambian",
+    "puntos": [
+      "Cuando soporte empieza a revisar un ticket que enviaste, o lo deja resuelto, la app te avisa con una ventana la próxima vez que la abras.",
+      "Si está resuelto, el aviso dice qué pasó, qué hacer si vuelve a pasar y en qué versión se arregló.",
+      "En Tickets de soporte, los tickets con un cambio que aún no viste llevan la marca \"Novedad\"."
+    ],
+    "pasos": [
+      {
+        "ir": "#/tickets",
+        "sel": [
+          ".t-novedad"
+        ],
+        "t": "Novedad en tus tickets",
+        "s": "Esta marca aparece cuando un ticket que enviaste pasó a En revisión o quedó resuelto. Ábrelo para ver el detalle."
+      }
+    ]
+  },
+  {
+    "titulo": "Tickets: las últimas 6 pantallas",
+    "puntos": [
+      "El celular guarda solo las últimas 6 pantallas que abriste y todas van en el ticket; quita las que no tengan que ver con el problema.",
+      "Ya no se guardan pantallas tapadas por el menú \"Más\", las novedades o el visor de fotos, y \"Revisar pedido\" tiene su propia captura."
+    ]
+  },
+  {
+    "titulo": "Clientes por visitar: nuevo ciclo semanal y quincenal",
+    "puntos": [
+      "Los clientes semanales vuelven a \"Por visitar\" cada lunes, aunque la visita o el pedido se haya registrado un día después de su ruta.",
+      "Los clientes quincenales quedan como visitados 9 días desde la visita o el pedido, y después vuelven a \"Por visitar\" para la semana que les toca.",
+      "Los de otras frecuencias (cada 3 semanas, mensual) siguen igual que antes."
+    ],
+    "pasos": []
+  },
+  {
+    "titulo": "Tickets de soporte: soluciones guardadas y más datos para resolver",
+    "puntos": [
+      "En Tickets de soporte → Resueltos queda cada problema resuelto con qué pasó y qué hacer si vuelve a pasar. Puedes buscar con palabras (sin tildes) y filtrar por tema, como Impresora o Sin señal.",
+      "Al reportar un error hay tres preguntas rápidas: si pasa siempre o a veces, desde cuándo y qué esperabas que pasara.",
+      "En la app del celular, el ticket trae listas las últimas pantallas que abriste (las 6 más recientes marcadas). Puedes quitar las que no tengan que ver o marcar otras. Se borran 7 días después de resolver el ticket.",
+      "Las fotos de los tickets se guardan más livianas (unos 100 KB) y el ticket junta solo más datos del celular para encontrar la causa, sin nombres de clientes."
+    ],
+    "pasos": [
+      {
+        "ir": "#/tickets",
+        "sel": [
+          "[data-f=\"resueltos\"]"
+        ],
+        "t": "Problemas ya resueltos",
+        "s": "Antes de reportar algo, mira aquí si ya pasó y qué hacer. Puedes buscar por palabras o por tema."
+      },
+      {
+        "ir": "#/tickets/nuevo",
+        "sel": [
+          "#t-preguntas"
+        ],
+        "t": "Preguntas rápidas",
+        "s": "Al reportar un error, marca si pasa siempre o a veces y desde cuándo. Con eso soporte encuentra la causa más rápido."
+      }
+    ]
+  },
+  {
+    "titulo": "Pedidos a proveedores: Por enviar",
+    "puntos": [
+      "Un pedido que guardas sin enviar ahora queda como \"Por enviar\"; pasa a \"Enviado\" cuando lo mandas por WhatsApp.",
+      "Si lo enviaste por otro medio, toca \"Ya lo envié: marcar como enviado\" en el pedido.",
+      "En el PC, el botón atrás del navegador en \"Revisar pedido\" vuelve a elegir productos en vez de salir de la pantalla."
+    ]
+  },
+  {
+    "titulo": "Proveedores: sección propia, respaldo y pedido libre",
+    "puntos": [
+      "Proveedores ahora tiene su propia sección (en \"Más\" en el celular y en el menú lateral en el PC), fuera de Ajustes.",
+      "Cada producto puede tener un proveedor de respaldo, opcional, por si el principal no lo tiene.",
+      "Nuevo \"Pedido libre a proveedor\": eliges el proveedor y los productos que quieras, aunque no tengan stock bajo, y lo envías por WhatsApp o en PDF."
+    ],
+    "pasos": [
+      {
+        "ir": "#/proveedores",
+        "sel": [
+          "#pedido-libre"
+        ],
+        "t": "Pedido libre a proveedor",
+        "s": "Elige el proveedor y los productos que quieras pedir, tengan o no stock bajo. Se guarda y se envía por WhatsApp o PDF."
+      },
+      {
+        "ir": "#/inventario",
+        "sel": [
+          [
+            "#lista a"
+          ],
+          [
+            "#lista tbody tr"
+          ],
+          []
+        ],
+        "t": "Proveedor de respaldo",
+        "s": "En la ficha de cada producto puedes dejar un segundo proveedor, si quieres. Aparece en los pedidos libres a ese proveedor."
+      }
+    ]
+  },
+  {
+    "titulo": "Crear un producto nuevo desde Compras",
+    "puntos": [
+      "En Registrar compra ahora hay un botón \"Crear producto nuevo\" para cuando llega mercadería que aún no está en el inventario.",
+      "Creas el producto (ya queda con el proveedor de la compra) y vuelves a la compra con él agregado. Lo que llevabas escrito no se pierde.",
+      "Su stock sube con las unidades que registres en la compra."
+    ],
+    "pasos": [
+      {
+        "ir": "#/compras/nueva",
+        "sel": [
+          "#crear-producto"
+        ],
+        "t": "Crear producto nuevo",
+        "s": "Si llegó mercadería nueva, créala aquí y vuelves a la compra con el producto ya agregado."
+      }
+    ]
+  },
+  {
+    "titulo": "La app responde más rápido",
+    "puntos": [
+      "Las pantallas piden sus datos todas a la vez: el pedido, la ficha del cliente y la ruta se abren en un tercio del tiempo cuando la señal es justa.",
+      "Con señal débil, si el servidor tarda más de 6 segundos la app muestra los datos guardados en el celular y lo avisa arriba con \"Señal débil\". Puedes seguir vendiendo normal.",
+      "Con señal débil, la venta, la entrega y el cobro tampoco esperan: si el servidor no responde en 8 segundos, quedan guardados en el celular y se suben solos (sin duplicarse).",
+      "Al abrir la app ya no espera para revisar tu usuario: entra directo y lo revisa por detrás."
+    ]
+  },
+  {
+    "titulo": "Más temporadas en la tarjeta de ruta",
+    "puntos": [
+      "La tarjeta azul de Ruta de hoy ahora cambia de color y de dibujo en más fechas: Enamorados, Vuelta a clases, Pascua, Día de la Madre, Día del Niño y Año Nuevo, además de Halloween, Fiestas Patrias y Navidad.",
+      "Muestra cuántos días faltan para la fecha. Cuando pasa la temporada, la tarjeta vuelve a su azul de siempre."
+    ]
+  },
+  {
+    "titulo": "Tickets de soporte",
+    "puntos": [
+      "En Ajustes → Tickets de soporte puedes avisarle a soporte de un error o una idea para mejorar la app.",
+      "Cuentas qué pasó, eliges si es un error o una mejora y qué tan urgente es, y puedes agregar hasta 3 fotos y un video de hasta 30 segundos.",
+      "La app agrega sola los datos del celular (versión, señal, pantalla y errores recientes) y abre WhatsApp con el aviso.",
+      "Cada ticket muestra si está Nuevo, En revisión o Resuelto, con la respuesta de soporte."
+    ],
+    "pasos": [
+      {
+        "ir": "#/soporte",
+        "sel": [
+          "a[href=\"#/tickets\"]"
+        ],
+        "t": "Tickets de soporte",
+        "s": "Aquí reportas errores o ideas, con foto o video."
+      },
+      {
+        "ir": "#/tickets",
+        "sel": [
+          ".pie-fijo .btn.prin"
+        ],
+        "t": "Nuevo ticket",
+        "s": "Cuenta qué pasó y adjunta un pantallazo o un video corto. Soporte recibe el aviso por WhatsApp."
+      }
+    ]
+  },
+  {
+    "titulo": "Pedidos a proveedores",
+    "puntos": [
+      "En la ficha de cada proveedor está \"Hacer pedido\": la app te sugiere qué reponer según el stock y lo que vendiste en las últimas 4 semanas, y tú ajustas las cantidades.",
+      "El pedido se guarda con su número y se envía por WhatsApp (PDF y lista escrita) o se guarda en PDF para imprimir. No lleva costos.",
+      "Cuando llega la mercadería, \"Registrar la compra de este pedido\" llena la compra sola y el pedido queda como Recibido."
+    ],
+    "pasos": [
+      {
+        "ir": "#/proveedores",
+        "sel": [
+          [
+            ".lista .fila"
+          ],
+          []
+        ],
+        "t": "Hacer pedido",
+        "s": "Abre un proveedor y toca \"Hacer pedido\": armas el pedido con la sugerencia y se lo envías por WhatsApp o en hoja."
+      }
+    ]
+  },
+  {
+    "titulo": "Final de la nota impresa más fácil de leer",
+    "puntos": [
+      "Los datos para transferencia y la leyenda ahora salen con letra más grande y con más espacio hacia abajo, lejos del corte del papel."
+    ]
+  },
+  {
+    "titulo": "Fotos de clientes cuadradas y más grandes",
+    "puntos": [
+      "La foto de cada cliente ahora se ve cuadrada y más grande, para reconocer la fachada de un vistazo.",
+      "Cambia en Clientes, en la ficha del cliente y en la lista de la ruta. Las fotos que ya tenías se ven así sin hacer nada."
+    ],
+    "pasos": [
+      {
+        "ir": "#/clientes",
+        "sel": [
+          ".rango"
+        ],
+        "t": "Fotos más grandes",
+        "s": "La foto del local ahora es cuadrada y más grande, para reconocerlo rápido."
+      }
+    ]
+  },
+  {
+    "titulo": "La nota impresa ya no se corta al final",
+    "puntos": [
+      "La impresora ahora recibe la nota completa antes de desconectarse: antes el final (y el papel en blanco para cortar) a veces no alcanzaba a llegar.",
+      "Al final de la nota hay una franja como la de arriba y más papel en blanco, para cortar sin tocar el texto."
+    ]
+  },
+  {
+    "titulo": "La nota ahora tiene solo 3 opciones",
+    "puntos": [
+      "En todas las pantallas de la nota hay solo tres botones: Imprimir, Enviar por WhatsApp y Guardar en PDF.",
+      "Por WhatsApp el cliente recibe la nota como imagen a color, pequeña y fácil de ver en el teléfono.",
+      "Guardar en PDF entrega la hoja completa con el nuevo diseño de columna azul (original y copia en una hoja carta).",
+      "Se quitaron \"Copia al negocio\", la tira de 58 mm en el PC y la elección de tamaño de hoja."
+    ]
+  },
+  {
+    "titulo": "Te mostramos lo nuevo de cada versión",
+    "puntos": [
+      "Cuando la app se actualice verás esta ventana con lo nuevo, y con \"Muéstrame\" la app te lleva a cada cambio.",
+      "Si eliges \"Ahora no\", queda un aviso arriba del inicio para verlo después."
+    ],
+    "pasos": [
+      {
+        "ir": "#/soporte",
+        "sel": [
+          "#novedades details"
+        ],
+        "t": "Vuelve a verlo cuando quieras",
+        "s": "En Soporte → Novedades de esta versión está la lista de lo nuevo y el botón \"Mostrarme lo nuevo\"."
+      }
+    ]
+  },
+  {
+    "titulo": "Recorrido \"Cómo funciona\" más completo",
+    "puntos": [
+      "El recorrido ahora tiene 10 pasos: suma Tu semana, la ficha del cliente, el Cierre del día y qué revisar antes de salir a ruta.",
+      "Solo aparece la primera vez que entra un usuario nuevo y en el modo de ejemplo. Puedes verlo cuando quieras en Ajustes → Cómo funciona la app."
+    ],
+    "pasos": [
+      {
+        "ir": "#/soporte",
+        "sel": [
+          "#ver-tour"
+        ],
+        "t": "Recorrido de 10 pasos",
+        "s": "\"Cómo funciona la app\" ahora explica también Tu semana, la ficha del cliente, el Cierre del día y qué revisar antes de salir."
+      }
+    ]
+  },
+  {
+    "titulo": "Corregir el pedido antes de generarlo",
+    "puntos": [
+      "En \"Revisar pedido\" puedes subir o bajar la cantidad de cada producto, o quitar uno que agregaste por error, sin volver a la lista."
+    ]
+  },
+  {
+    "titulo": "Inicio más limpio y recorrido \"Cómo funciona\"",
+    "puntos": [
+      "La tarjeta azul del inicio ya no muestra el dibujo de la ruta: solo la ruta, los clientes, el aro de visitados y lo que falta entregar o cobrar.",
+      "Los botones Ver clientes y Planificar aparecen solo el día de la ruta; los otros días se toca la tarjeta para ver la próxima ruta.",
+      "Nuevo recorrido \"Cómo funciona\" en 6 pasos sobre la app: marca cada parte y la explica. Sale al instalar o actualizar, siempre en el modo de ejemplo, y en Ajustes → Cómo funciona la app."
+    ]
+  },
+  {
+    "titulo": "Nota en hoja grande (PDF)",
+    "puntos": [
+      "En cada nota, \"Guardar en PDF (hoja grande)\": elige media carta, carta o tira y se guarda con el diseño de la nota impresa.",
+      "En el PC se puede imprimir o guardar la hoja; por WhatsApp sigue saliendo la nota digital a color."
+    ]
+  },
+  {
+    "titulo": "Widgets nuevos y nota impresa con el diseño nuevo",
+    "puntos": [
+      "Ruta de hoy ahora se puede estirar: chico (aro y ruta), mediano o grande (con los próximos 3 clientes por visitar).",
+      "Widgets nuevos: Nuevo pedido (un toque), Pedidos (por entregar y por cobrar con su monto) y Tu semana (ventas y meta).",
+      "Para agregarlos: mantén presionado un espacio vacío de la pantalla de inicio → Widgets → COVECA.",
+      "La nota impresa en la térmica sale con el diseño nuevo (antes salía con el diseño antiguo de solo texto).",
+      "En cada nota hay un botón \"Enviar por WhatsApp\" para mandarla al cliente sin volver a imprimir.",
+      "La solicitud de pedido al proveedor se puede enviar por WhatsApp aunque el proveedor no tenga teléfono guardado."
+    ]
+  },
+  {
+    "titulo": "Próxima ruta y mejoras internas",
+    "puntos": [
+      "Los días sin ruta, el inicio muestra la próxima ruta de la semana con su avance y mini mapa. Tócala para ver sus clientes.",
+      "Revisión completa del código para que la app sea más ordenada y estable."
+    ]
+  },
+  {
+    "titulo": "Nueva imagen de la app",
+    "puntos": [
+      "Diseño renovado: encabezados claros, tarjetas y un menú nuevo con el + al centro. Inventario, Reportes y Ajustes están en \"Más\".",
+      "Inicio con la ruta de hoy: avance, mini mapa, lo que falta entregar y cobrar, y \"Tu semana\" con la meta de ventas.",
+      "En el pedido: \"Repetir\" el último pedido del cliente y \"Suele comprar\" para agregar con un toque.",
+      "Escanea el código de barras con la cámara para buscar o agregar productos.",
+      "Cuentas por cobrar: \"Recordar por WhatsApp\" arma el mensaje de cobro.",
+      "Nota impresa más limpia y nota digital (PDF y QR) a color.",
+      "Cierre del día: comparte el resumen del día como imagen.",
+      "Widget para la pantalla de inicio del teléfono con la ruta de hoy."
+    ]
+  },
+  {
+    "titulo": "Pedidos: ruta al día",
+    "puntos": [
+      "Cuando no queda nada por entregar, Pedidos muestra un camión de reparto con el mensaje \"¡Ruta al día!\" y una frase del día.",
+      "Cuando no queda nada por cobrar, aparece \"¡Todo cobrado!\"."
+    ]
+  },
+  {
+    "titulo": "Cuentas por cobrar más completo",
+    "puntos": [
+      "Reportes → Cuentas por cobrar ahora muestra dos partes: \"Entregadas sin pago\" (notas entregadas a las que falta registrar el pago) y \"Créditos pendientes\".",
+      "Arriba se ve el total por cobrar y cuántos clientes deben algo. Tocar una nota sin pago la abre para registrar el pago.",
+      "Se borraron las notas de prueba; la numeración sigue igual."
+    ]
+  },
+  {
+    "titulo": "Ajustes desde todas las secciones e \"Ir\" con GPS en la nota",
+    "puntos": [
+      "El engranaje de Ajustes (arriba a la izquierda) ahora está en Rutas, Clientes, Pedidos, Inventario y Reportes. Al volver de Ajustes regresas a la sección donde estabas.",
+      "En una nota por entregar, el botón \"Ir\" (al lado de \"Nota lista\") abre Google Maps con la ruta al local del cliente."
+    ]
+  },
+  {
+    "titulo": "Ir con GPS a la entrega",
+    "puntos": [
+      "En Pedidos, al lado de \"Entregar\" hay un botón de ubicación: abre Google Maps con la ruta directo al local del cliente (por GPS o por su dirección).",
+      "Los botones de cada nota ahora son más compactos."
+    ]
+  },
+  {
+    "titulo": "El pago se registra al entregar",
+    "puntos": [
+      "Al tomar el pedido ya no se elige forma de pago: la nota impresa no la lleva.",
+      "Al tocar \"Entregar\", la app pregunta \"¿Cómo pagó?\": efectivo (con calculadora de vuelto), transferencia o crédito.",
+      "Si queda a crédito, el plazo empieza a contar desde la entrega, y la app avisa si supera el límite del cliente (deja seguir igual).",
+      "Si entregas varias notas juntas (\"Entregar todos\"), quedan en \"Por cobrar\" para registrar el pago después.",
+      "Cierre del día: cuenta lo cobrado y lo dado a crédito ese día."
+    ]
+  },
+  {
+    "titulo": "Versión 2.0: entregas y cobros en cada nota",
+    "puntos": [
+      "Cada nota muestra su camino: Pedido → Entregado → Pagado, con un dibujo que dice cómo va (Nota lista, Entregada · por cobrar, Todo listo).",
+      "Al revisar el pedido en efectivo o transferencia, elige \"Cobrado ahora\" o \"Al entregar\". Si es al entregar, la nota queda \"Por cobrar\".",
+      "Al tocar \"Entregar\" en una nota por cobrar, la app pregunta \"¿Cobraste esta nota?\": efectivo, transferencia o \"queda por cobrar\".",
+      "Calculadora de vuelto al cobrar en efectivo: escribe lo que te pasaron (o toca un billete) y te dice el vuelto.",
+      "Nueva lista \"Por cobrar\" en Pedidos, con el botón \"Cobrar\".",
+      "Cierre del día: el efectivo a rendir cuenta lo que realmente se cobró ese día (también notas de otro día cobradas al entregar)."
+    ]
+  },
+  {
+    "titulo": "Menú más cómodo y \"Imprimir en hoja\" en el PC",
+    "puntos": [
+      "En celulares angostos, los nombres del menú de abajo (Inventario, Reportes) ya no quedan pegados.",
+      "En el PC, al generar un pedido aparece \"Imprimir nota en hoja\": abre la nota para imprimirla en media carta, carta o tira."
+    ]
+  },
+  {
+    "titulo": "RUT y teléfono más fáciles, y arreglo de \"Generar sin imprimir\"",
+    "puntos": [
+      "\"Generar sin imprimir\" ya no intenta usar la impresora: antes, con la impresora apagada o lejos, mostraba \"No se pudo imprimir\".",
+      "El RUT se escribe solo con puntos y guion (escribe solo los números y la K). Si el dígito verificador no calza, avisa.",
+      "Teléfonos: elige el país a la izquierda (Chile viene marcado) y escribe el número normal, sin +56. Sirve para clientes, proveedores y datos de la nota."
+    ]
+  },
+  {
+    "titulo": "Descartar registros con problema",
+    "puntos": [
+      "En Ajustes → Trabajo sin señal, si un pedido, abono, visita o entrega queda \"Con problema\" (el servidor no lo acepta), ahora aparece \"Descartar\".",
+      "Antes de borrarlo, la app explica qué se pierde y pide confirmar. En los pedidos también está \"Ver nota\", para revisar lo que tenía y tomarlo de nuevo si hace falta.",
+      "Así ese registro deja de bloquear el cierre de sesión y el aviso rojo."
+    ]
+  },
+  {
+    "titulo": "Nueva pestaña Pedidos (entregas)",
+    "puntos": [
+      "Nueva pestaña \"Pedidos\" en el menú (camión): muestra las notas que faltan por entregar, ordenadas por ruta y cliente, las más antiguas primero. Las de hace 2 días o más salen marcadas.",
+      "Al entregar, toca \"Entregar\" en la nota. Con varias notas en una ruta, \"Entregar todos\" (pide confirmación). Si te equivocas, \"Deshacer\".",
+      "\"Entregados hoy y ayer\" muestra lo que ya se entregó. Puedes buscar por cliente o N° de nota y filtrar por ruta.",
+      "En cada nota se ve el estado: Pedido → Entregado. Una nota entregada ya no se puede editar (sí anular).",
+      "Carga para bodega tiene la opción \"Por entregar\": suma todo lo que falta entregar, de cualquier día.",
+      "Atajo: mantén presionado el ícono de COVECA y elige \"Pedidos por entregar\". Funciona sin señal."
+    ]
+  },
+  {
+    "titulo": "Cámara y \"Marcar visitado\"",
+    "puntos": [
+      "\"Tomar foto\" ahora abre la cámara directo (antes en algunos celulares abría la galería).",
+      "En la ficha del cliente: \"Marcar visitado\" para cuando pasas por el local y no hay pedido (cerrado, no estaba el encargado, no necesitaba nada). Si te equivocas, toca \"Deshacer\" en el aviso.",
+      "En la ruta aparece \"Visitado · sin pedido\" con el ícono de una puerta. Si después hace un pedido, pasa a \"Visitado\".",
+      "Funciona sin señal: se guarda en el celular y se sube solo.",
+      "\"Visitado\" ahora cambia de día a la medianoche de Chile (antes cambiaba a las 21:00)."
+    ]
+  },
+  {
+    "titulo": "Botón \"Nuevo\" para pedidos rápidos",
+    "puntos": [
+      "Nuevo círculo azul \"Nuevo\" a la derecha del menú: busca el cliente (sin importar acentos) y entra directo a elegir productos, sin pasar por la ruta.",
+      "Atajo: mantén presionado el ícono de COVECA en el celular y elige \"Nuevo pedido\"."
+    ]
+  },
+  {
+    "titulo": "Ajustes se mueve al engranaje",
+    "puntos": [
+      "Ajustes ya no está en el menú de abajo: se abre con el engranaje arriba a la izquierda en Rutas.",
+      "Así queda espacio en el menú para la nueva sección de Pedidos que viene pronto."
+    ]
+  },
+  {
+    "titulo": "Mejoras pedidas en ruta (parte 1)",
+    "puntos": [
+      "El buscador encuentra clientes y productos sin importar los acentos: \"Maria\" encuentra a \"María\".",
+      "Toca la foto del local o del producto para verla en grande. Atrás o × la cierra.",
+      "Nuevo botón \"Generar sin imprimir\" en Revisar pedido: guarda la nota y la entregas por QR, WhatsApp o PDF. Se imprime después desde la nota.",
+      "Ajustes → WhatsApp: elige si las notas y reportes se envían por WhatsApp Business (por defecto) o WhatsApp normal."
+    ]
+  },
+  {
+    "titulo": "Más protecciones al vender",
+    "puntos": [
+      "Si tocas atrás con productos elegidos, la app pregunta antes de descartar el pedido.",
+      "Cantidades sobre 999 piden confirmar, y el máximo es 9.999 por producto (evita errores de tipeo).",
+      "Los productos sin precio dicen \"Sin precio\" y no se pueden vender hasta corregirlos.",
+      "En Inventario, guardar un precio $0 o menor que el costo pide confirmar.",
+      "La sección \"Hoy\" de Rutas muestra la ruta correcta aunque la app haya quedado abierta desde ayer.",
+      "Mensajes de error más claros, en español, y el historial del cliente muestra la forma de pago con su nombre."
+    ]
+  },
+  {
+    "titulo": "Notas más seguras antes de salir a ruta",
+    "puntos": [
+      "La nota impresa ahora muestra su número (NOTA DE VENTA N° …).",
+      "Si algo falla al imprimir, el pedido ya queda guardado una sola vez y se abre la nota para reimprimirla. Ya no se duplica.",
+      "Si la app no tiene impresora elegida, avisa antes de guardar el pedido.",
+      "Las notas guardadas sin señal se pueden reimprimir con el nombre de cada producto.",
+      "Al editar una nota, la nota corregida mantiene el día de la venta (no se vuelve a cargar en bodega ni cambia el plazo del crédito).",
+      "Mientras se genera el pedido no se puede cambiar: lo impreso es igual a lo guardado."
+    ]
+  },
+  {
+    "titulo": "Marca como lista desplegable",
+    "puntos": [
+      "La marca se elige de una lista desplegable con las marcas ya usadas. Para una nueva, elige \"+ Agregar marca nueva…\" y escríbela.",
+      "Si escribes una marca que ya existe con otras mayúsculas o tildes, se usa la que ya estaba, para no repetirla."
+    ]
+  },
+  {
+    "titulo": "Marca con un toque",
+    "puntos": [
+      "Debajo del campo Marca aparecen botones con las marcas ya usadas: toca una y queda puesta. Al escribir, se filtran."
+    ]
+  },
+  {
+    "titulo": "Marca de los productos",
+    "puntos": [
+      "Cada producto puede tener su marca (Inventario → producto → Marca). Al escribirla, la app sugiere las marcas ya usadas.",
+      "La marca aparece en la lista de Inventario, en la tabla del PC y al tomar un pedido.",
+      "Los buscadores de Inventario, del pedido y de Compras también encuentran por marca."
+    ]
+  },
+  {
+    "titulo": "Foto de la factura en cada compra",
+    "puntos": [
+      "Al registrar una compra puedes tomar o subir la foto de la factura, guía o boleta del proveedor (hasta 4, una por página). Queda guardada con la compra.",
+      "Si guardas sin foto, la app te lo recuerda. También puedes agregarla o quitarla después desde el detalle de la compra.",
+      "Toca la foto para verla en grande."
+    ]
+  },
+  {
+    "titulo": "Compras a proveedores",
+    "puntos": [
+      "Nueva pantalla Compras (Inventario → Compras a proveedores, o desde la ficha del proveedor): registra cada factura o guía que llega con sus productos, cantidades y costos.",
+      "Al guardar, sube el stock y el producto queda con el último costo (con IVA incluido).",
+      "Si el costo cambió, la app muestra cómo queda el margen y sugiere el precio nuevo para mantenerlo; tú eliges en qué productos cambiar el precio.",
+      "No deja registrar dos veces la misma factura del mismo proveedor. Una compra mal ingresada se anula con motivo y devuelve el stock.",
+      "La ficha de cada producto muestra sus últimas compras. Solo para administradores."
+    ]
+  },
+  {
+    "titulo": "WhatsApp envía el mismo PDF",
+    "puntos": [
+      "La nota y todos los reportes se envían por WhatsApp como el mismo PDF que se guarda. Ya no se mandan como texto ni como imagen.",
+      "La solicitud de pedido al proveedor lleva el PDF y también la lista escrita en el mensaje.",
+      "Los PDF ahora pesan mucho menos (un reporte, unos 80 KB), así se envían rápido con datos móviles."
+    ]
+  },
+  {
+    "titulo": "Ajuste si la impresora falla",
+    "puntos": [
+      "\"Guardar nota en PDF\" aparece solo después del tercer intento fallido, junto con el QR y WhatsApp."
+    ]
+  },
+  {
+    "titulo": "Si la impresora falla",
+    "puntos": [
+      "Si la impresora no imprime, la app muestra el intento (1 de 3, 2 de 3) y permite reintentar o guardar la nota en PDF.",
+      "Al tercer intento fallido aparecen el código QR, \"Enviar por WhatsApp\" y \"Guardar nota en PDF\", con el aviso de que no se imprimió, para entregar la nota al cliente igual.",
+      "El pedido siempre queda guardado, aunque la impresora falle."
+    ]
+  },
+  {
+    "titulo": "Mejor uso con teclado en el PC",
+    "puntos": [
+      "Al moverte con la tecla Tab se ve claramente dónde estás, también en el menú azul.",
+      "En las tablas de Inventario y Clientes, la fila elegida se resalta y Enter abre su ficha.",
+      "La tecla / lleva directo al buscador."
+    ]
+  },
+  {
+    "titulo": "Confirmación más segura y ajuste en iPhone",
+    "puntos": [
+      "Para eliminar los datos de un cliente ahora hay que escribir \"eliminar cliente\" antes de confirmar.",
+      "En el iPhone con la app en la pantalla de inicio, el menú de abajo ya no queda elevado con un espacio vacío debajo."
+    ]
+  },
+  {
+    "titulo": "Privacidad de los clientes",
+    "puntos": [
+      "Nueva página \"Cómo cuidamos tus datos\", enlazada al pie de la nota digital que abre el QR.",
+      "En la ficha del cliente, el administrador puede \"Eliminar datos del cliente\" si el cliente lo pide: se borran sus datos personales y sus notas quedan guardadas sin su nombre."
+    ]
+  },
+  {
+    "titulo": "Correcciones",
+    "puntos": [
+      "El QR de la nota de prueba ahora abre una nota de ejemplo, en vez de mostrar texto o abrir Google.",
+      "En el iPhone, el botón Guardar ya no tapa lo último de pantallas largas como Datos de la nota."
+    ]
+  },
+  {
+    "titulo": "Enlace de la nota con vista previa",
+    "puntos": [
+      "Al compartir el enlace de la nota por WhatsApp, ahora aparece el logo de COVECA y el título \"Nota de venta\" en vez de un enlace sin imagen."
+    ]
+  },
+  {
+    "titulo": "Fotos más seguras",
+    "puntos": [
+      "Las fotos de clientes y productos solo aceptan imágenes de hasta 1 MB (la app ya las achica sola)."
+    ]
+  },
+  {
+    "titulo": "Aviso de precios bajo la lista",
+    "puntos": [
+      "Si una nota se vende más barata que el precio de lista, el administrador lo ve marcado en la nota, en Ventas de la semana y en el Cierre del día, con la diferencia en pesos.",
+      "La nota impresa no cambia. Los descuentos no se cuentan como precio bajo la lista."
+    ]
+  },
+  {
+    "titulo": "Correcciones y botón para actualizar",
+    "puntos": [
+      "Si elegiste \"Más tarde\" en el aviso de actualización, ahora puedes actualizar cuando quieras desde Ajustes → Versión.",
+      "Corregido: al cambiar rápido de pantalla con mala señal a veces aparecía \"Algo salió mal\".",
+      "Corregido: el modo oscuro no se activaba en el PC ni en el iPhone.",
+      "En el PC, Ajustes → Avanzado tiene \"Imprimir nota de prueba\" en media carta, carta o tira.",
+      "Incluye la nueva imagen de marca COVECA."
+    ]
+  },
+  {
+    "titulo": "Nueva imagen de marca COVECA",
+    "puntos": [
+      "El logo COVECA ahora se ve nítido en todas partes, con versiones para fondo claro y oscuro.",
+      "En el modo oscuro y en el menú del PC el logo ya no aparece sobre un recuadro blanco.",
+      "Las notas en PDF, la nota digital del QR y los reportes usan el logo en alta calidad."
+    ]
+  },
+  {
+    "titulo": "Impresión en el PC, nota digital por QR y más",
+    "puntos": [
+      "El código QR de la nota ahora abre una copia digital que el cliente puede ver y descargar en su teléfono.",
+      "El mensaje de WhatsApp al cliente incluye el enlace a su nota.",
+      "En Ajustes, cada equipo ve solo sus impresoras: el celular, la térmica Bluetooth; el PC, impresora normal o térmica.",
+      "La versión para PC tiene su propio estilo, para que se note que estás en el computador.",
+      "Al actualizar, este aviso muestra lo nuevo de cada versión."
+    ]
+  },
+  {
+    "titulo": "Mejoras pedidas en ruta",
+    "puntos": [
+      "\"Fiado\" pasa a llamarse \"Crédito\" y \"Pendiente\" pasa a \"Por visitar\".",
+      "Límite de crédito: vacío = sin tope; $0 = sin crédito disponible.",
+      "Los clientes desactivados quedan en Clientes → Desactivados y se pueden reactivar.",
+      "Planificar recorrido: eliges los clientes de cada salida, entran los que no tienen GPS y puedes mover las paradas.",
+      "Se puede guardar la ubicación del local al revisar el pedido."
+    ]
+  },
+  {
+    "titulo": "Versión para PC",
+    "puntos": [
+      "En el computador: menú a la izquierda, tablas ordenables y la ficha al lado de la lista.",
+      "Botón \"Crear y agregar otro\" para cargar productos y clientes uno tras otro."
+    ]
+  }
+]
